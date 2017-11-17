@@ -11,3 +11,16 @@ C:\Users\io\source\repos\IDEOnline\WordColorMicroservice\obj\Debug\netcoreapp2.0
 C:\Users\io\source\repos\IDEOnline\WordColorMicroservice\obj\Debug\netcoreapp2.0\WordColorMicroservice.pdb
 C:\Users\io\source\repos\IDEOnline\WordColorMicroservice\bin\Debug\netcoreapp2.0\Content\clientPage.html
 C:\Users\io\source\repos\IDEOnline\WordColorMicroservice\bin\Debug\netcoreapp2.0\Content\KeyPress.js
+C:\Users\io\source\repos\GIT\IDEOnline\WordColorMicroservice\bin\Debug\netcoreapp2.0\Content\clientPage.html
+C:\Users\io\source\repos\GIT\IDEOnline\WordColorMicroservice\bin\Debug\netcoreapp2.0\Content\KeyPress.js
+C:\Users\io\source\repos\GIT\IDEOnline\WordColorMicroservice\bin\Debug\netcoreapp2.0\WordColorMicroservice.deps.json
+C:\Users\io\source\repos\GIT\IDEOnline\WordColorMicroservice\bin\Debug\netcoreapp2.0\WordColorMicroservice.runtimeconfig.json
+C:\Users\io\source\repos\GIT\IDEOnline\WordColorMicroservice\bin\Debug\netcoreapp2.0\WordColorMicroservice.runtimeconfig.dev.json
+C:\Users\io\source\repos\GIT\IDEOnline\WordColorMicroservice\bin\Debug\netcoreapp2.0\WordColorMicroservice.dll
+C:\Users\io\source\repos\GIT\IDEOnline\WordColorMicroservice\bin\Debug\netcoreapp2.0\WordColorMicroservice.pdb
+C:\Users\io\source\repos\GIT\IDEOnline\WordColorMicroservice\obj\Debug\netcoreapp2.0\WordColorMicroservice.csprojResolveAssemblyReference.cache
+C:\Users\io\source\repos\GIT\IDEOnline\WordColorMicroservice\obj\Debug\netcoreapp2.0\WordColorMicroservice.csproj.CoreCompileInputs.cache
+C:\Users\io\source\repos\GIT\IDEOnline\WordColorMicroservice\obj\Debug\netcoreapp2.0\WordColorMicroservice.AssemblyInfoInputs.cache
+C:\Users\io\source\repos\GIT\IDEOnline\WordColorMicroservice\obj\Debug\netcoreapp2.0\WordColorMicroservice.AssemblyInfo.cs
+C:\Users\io\source\repos\GIT\IDEOnline\WordColorMicroservice\obj\Debug\netcoreapp2.0\WordColorMicroservice.dll
+C:\Users\io\source\repos\GIT\IDEOnline\WordColorMicroservice\obj\Debug\netcoreapp2.0\WordColorMicroservice.pdb
