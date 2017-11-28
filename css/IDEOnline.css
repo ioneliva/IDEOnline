@@ -1,0 +1,53 @@
+#wrapper{
+	width:80%;
+	margin:auto;
+}
+
+#inputTextWindow{
+	width:100%;
+	min-height:500px;
+	font-size:18px;
+	word-wrap: break-word; 	/*long words now get splitted at the div border*/
+	border:3px solid;
+	padding-bottom:20px;
+	position:relative;
+	z-index:1;
+}
+
+#solutionWindow{
+	width:15%;
+	min-height:400px;
+	top:50px;
+	right:0px;
+	border:3px solid;
+	background-color:white;
+	text-align:center;
+	font-weight: bold;
+	position:absolute;
+	top:20px;
+	right:20px;
+	z-index:3; 				/*higher z-index makes it cover the underlaying element with lower z*/    
+}
+
+#output{
+	clear:both;
+	width:90%;
+	height:20%;
+	padding-bottom:50px;
+	padding-top:50ps;
+}
+
+#footer{
+	clear:both;
+	height:30px;
+	background-color:#000;
+	color:#fff;
+	text-align:center;
+	padding-top:10px;
+}
+
+@media only screen and (max-width: 300px) {
+  .text {
+	  font-size: 11px
+	  }
+}

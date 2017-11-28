@@ -1,9 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.16
+VisualStudioVersion = 15.0.27004.2009
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WordColorMicroservice", "WordColorMicroservice\WordColorMicroservice.csproj", "{2D20CDBC-0436-4AD9-BCA3-28AF5AB1C3DA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WordColorMicroservice", "WordColorMicroservice\WordColorMicroservice.csproj", "{2A7817CC-5D8E-44D1-A6B3-6569C1F6EEC9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Client Files", "Client Files", "{93886DB1-C275-4FA5-ADED-21B99915F1BE}"
+	ProjectSection(SolutionItems) = preProject
+		clientPage.html = clientPage.html
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{00B146DC-0B8E-420E-82B2-67C4F51430A8}"
+	ProjectSection(SolutionItems) = preProject
+		KeyPress.js = KeyPress.js
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +21,18 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{2D20CDBC-0436-4AD9-BCA3-28AF5AB1C3DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2D20CDBC-0436-4AD9-BCA3-28AF5AB1C3DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2D20CDBC-0436-4AD9-BCA3-28AF5AB1C3DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2D20CDBC-0436-4AD9-BCA3-28AF5AB1C3DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A7817CC-5D8E-44D1-A6B3-6569C1F6EEC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A7817CC-5D8E-44D1-A6B3-6569C1F6EEC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A7817CC-5D8E-44D1-A6B3-6569C1F6EEC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A7817CC-5D8E-44D1-A6B3-6569C1F6EEC9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{00B146DC-0B8E-420E-82B2-67C4F51430A8} = {93886DB1-C275-4FA5-ADED-21B99915F1BE}
+	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {3C86F4AF-A7E8-47A5-87D8-F3302DBFAC1E}
+		SolutionGuid = {D521E5BE-73D7-4C0E-8A84-1E89540473A6}
 	EndGlobalSection
 EndGlobal
