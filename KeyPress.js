@@ -19,22 +19,13 @@ function inputKeyPress(e) {
         word += c; //build a word
     }
     else {
-        //we have a delimiter read in c, post the word+delimiter. On server side we analize the delimiter as well
-        if (!!word.trim()) { //word must not be blank, otherwise the user just pressed space/tab/enter a few times          
+        //we have a delimiter read in c, post the word+delimiter. On server side we analize the delimiter as well    
             xhr.open("POST", "http://localhost:5001/", true); //third parameter set to true represents async communication
             xhr.setRequestHeader('Content-Type', 'application/json');
             var postJSON = JSON.stringify({ "word": word, "delimiter": c }); 
-            xhr.send(word+c);
-            console.log("sent post: " + postJSON);
-        }
-        /*
-        if (c.match(/[\[\].,\/#!$%\^&\*;:{}=\-_`~()<>]/)) { //if delimiter is not a blank,space,tab,etc. post it  
-            xhr.open("POST", "http://localhost:5001/", true);
-            xhr.setRequestHeader('Content-Type', 'application/json');
-            xhr.send(c);
-            console.log("sent post (delimiter): " + c);
-        }
-        */
+            xhr.send(postJSON);
+            //console.log("sent post: " + postJSON);
+
         //get answer from server
         xhr.onreadystatechange = function () {
             if (this.readyState === 4 && this.status === 200) { // HTTP 200 OK
@@ -42,7 +33,7 @@ function inputKeyPress(e) {
                 output.innerText = this.responseText; 
                 //get values as strings (server responds with a Json)
                 var obj = JSON.parse(this.responseText);
-                console.log("received response: " + obj.serverModified);
+                // console.log("received response: " + obj.serverModified);
                 replace(obj.originalWord, obj.serverModified);
             }
             else {
@@ -85,7 +76,6 @@ function replace(search, replace) {
     var firstNode = fragment.firstChild;
     range.insertNode(fragment);
     if (lastNode) {
-        range = range.cloneRange();
         range.setStartAfter(lastNode); //set cursor position
         range.collapse(true);  
         sel.removeAllRanges();

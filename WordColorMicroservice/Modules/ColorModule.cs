@@ -4,6 +4,7 @@ using Nancy.Extensions;
 using Nancy.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json.Linq;
 
 namespace WordColorMicroservice.Modules
 { 
@@ -16,44 +17,35 @@ namespace WordColorMicroservice.Modules
 
             Post("/", _ =>
             {
-                
                 //receiving post content
-                /*
-                var body = this.Request.Body; //this is the actual post content (as Json)
-                int length = (int)body.Length;
-                byte[] data = new byte[length];
-                body.Read(data, 0, length);
-                string clientWord = Encoding.Default.GetString(data); //this is it as string
-                */
-                string clientWord = RequestStream.FromStream(Request.Body).AsString();  //same as above, but using Nancy library
-
-
+                JObject clientMessage = JObject.Parse(RequestStream.FromStream(Request.Body).AsString());
+                string word = clientMessage["word"].ToString();
+                string delimiter = clientMessage["delimiter"].ToString();
 
                 //forming the proper html tags around the word for the client
-                string serverModified = MatchToColor(clientWord);
+                if (delimiter.Equals("\u0000")){//null is perfectly ok, means directional keys in this case
+                    delimiter = "\\u0000"; //need to trick Json format to ignore it, otherwise it complains about invalid values on client page
+                }
+                string serverModified = MatchToColor(word, delimiter);
                 //the post is async, so the client doesn't know which word it actually sent. We form a pair containing the original word to "remind"
                 Dictionary<string, string> responsePair=new Dictionary<string, string>();
-                responsePair.Add("originalWord", clientWord);
+                responsePair.Add("originalWord", word+delimiter);
                 responsePair.Add("serverModified", serverModified);
                 //sending response
                 return Response.AsJson(responsePair, HttpStatusCode.OK);
             });
         }
 
-        private string MatchToColor(string wordAndSeparator)
+        private string MatchToColor(string word, string delimiter)
         {
             List<string> cKeywords = new List<string>() {
                 "auto","break","case","char","const","continue","default","do","double","else","enum","extern","float","for","goto","if","int","long","register","return","short","signed","sizeof","static","struct","switch","typedef","union","unsigned","void","volatile","while",
             };
             string wordColor="black", delimiterColor="black";
             
-            //separate the word from delimiter
-            char delimiter = wordAndSeparator[wordAndSeparator.Length - 1];
-            string word = wordAndSeparator.Substring(0, wordAndSeparator.Length - 1);
-
             //match the delimiter to see if it's part of the special chars or just a space, tab, etc
             var regex = @"[\[\].,\/#!$%\^&\*;:{}=\-_`~()<>]$";
-            var match = Regex.Match(delimiter.ToString(), regex);
+            var match = Regex.Match(delimiter, regex);
 
             if (match.Success){
                 delimiterColor = "green";
