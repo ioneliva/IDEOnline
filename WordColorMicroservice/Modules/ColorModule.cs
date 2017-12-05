@@ -23,11 +23,11 @@ namespace WordColorMicroservice.Modules
                 string delimiter = clientMessage["delimiter"].ToString();
 
                 //forming the proper html tags around the word for the client
-                if (delimiter.Equals("\u0000")){//null is perfectly ok, means directional keys in this case
-                    delimiter = "\\u0000"; //need to trick Json format to ignore it, otherwise it complains about invalid values on client page
+                if (delimiter.Equals("\u0000")){//null is perfectly ok, means directional keys in this case, but
+                    delimiter = "\\u0000";      //need to trick Json format to ignore it, otherwise it complains about invalid values on client page (visible on console.log)
                 }
                 string serverModified = MatchToColor(word, delimiter);
-                //the post is async, so the client doesn't know which word it actually sent. We form a pair containing the original word to "remind"
+                //the post is async, so the client doesn't know which word is actually processed. We form a pair containing the original word to "remind"
                 Dictionary<string, string> responsePair=new Dictionary<string, string>();
                 responsePair.Add("originalWord", word+delimiter);
                 responsePair.Add("serverModified", serverModified);
@@ -50,7 +50,7 @@ namespace WordColorMicroservice.Modules
             if (match.Success){
                 delimiterColor = "green";
             }
-
+            //match the word
             if (cKeywords.Contains(word.ToLower())){
                 wordColor = "blue";
             }

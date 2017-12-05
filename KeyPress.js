@@ -51,9 +51,13 @@ function inputKeyPress(e) {
 function replace(search, replace) {
     var sel = window.getSelection();
     if (!sel.focusNode) {
+        console.log("nu am focus node");
         return;
     }
- 
+    else {
+        console.log("focus node: ", sel.focusNode.nodeValue);
+    }
+
     var startIndex = sel.focusNode.nodeValue.indexOf(search);
     var endIndex = startIndex + search.length;
     if (startIndex === -1) {

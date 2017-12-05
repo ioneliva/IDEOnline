@@ -6782,11 +6782,11 @@
       "hideWarningsAndErrors": true
     },
     "restore": {
-      "projectUniqueName": "c:\\Users\\io\\source\\repos\\Git\\IDEOnline\\WordColorMicroservice\\WordColorMicroservice.csproj",
+      "projectUniqueName": "C:\\Users\\io\\source\\repos\\Git\\IDEOnline\\WordColorMicroservice\\WordColorMicroservice.csproj",
       "projectName": "WordColorMicroservice",
-      "projectPath": "c:\\Users\\io\\source\\repos\\Git\\IDEOnline\\WordColorMicroservice\\WordColorMicroservice.csproj",
+      "projectPath": "C:\\Users\\io\\source\\repos\\Git\\IDEOnline\\WordColorMicroservice\\WordColorMicroservice.csproj",
       "packagesPath": "C:\\Users\\io\\.nuget\\packages\\",
-      "outputPath": "c:\\Users\\io\\source\\repos\\Git\\IDEOnline\\WordColorMicroservice\\obj\\",
+      "outputPath": "C:\\Users\\io\\source\\repos\\Git\\IDEOnline\\WordColorMicroservice\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
