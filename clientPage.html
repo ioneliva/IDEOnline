@@ -2,6 +2,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>  -->
     <title>Main Page</title>
 	<meta name="keywords" content="" />
 	<meta name="description" content="" />
@@ -10,15 +11,23 @@
 <body>
     <div id="wrapper">
         <div id="header">
-            <div class="menu">
-				<!--vrem meniu?-->
+            <!--tab tab ... activeTab newTab-->
+            <div id ="tabs" class="tabs">
+                <div id="activeTab" class="tab activeTab">
+                    <div class="inner-tab">file.css
+                        <button id="closeButton" class="closeButton">x</button>
+                    </div>
+                </div>
+                <div id="newTab" class="tab newTab">
+                    <div class="inner-tab">+</div>
+                </div>
             </div>
         </div>
 
 		<div id="content">
 			<!-- Any CSS text-related property will affect the whole text within a textarea/input.That's why we will try to use a contenteditable div to style each element inside -->
 			<div id="inputTextWindow" contenteditable="true" spellcheck="false" type="text"></div>
-			<div id="solutionWindow"">a solution tree will go here</div>
+			<div id="solutionWindow">a solution tree will go here</div>
 			<span id="output">Response from microservice: </span>
 		</div>
 		

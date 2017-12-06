@@ -1,5 +1,68 @@
 var word = "";
+var tabPageNo = 1;
+
 document.getElementById("inputTextWindow").addEventListener("keypress", inputKeyPress);
+document.getElementById("activeTab").addEventListener("click", clickOnTab); //init, this is the default tab present
+document.getElementById("newTab").addEventListener("click", clickOnTab);
+document.getElementById("closeButton").addEventListener("click", closeTab);
+
+function clickOnTab() {
+    if (this.className == "tab newTab") {
+        //old active tab becomes innactive
+        var active = document.getElementById("activeTab");
+        if (active) { 
+            active.id = "oldTab";
+            active.className = "tab";
+        } else {    //if there is no active tab, the user actually closed all the tabs manually
+            console.log("all tabs closed!");
+        }
+        //trasform this into active tab
+        this.id = "activeTab";
+        this.className = "tab activeTab";
+        //transform inner div
+        this.firstChild.innerHTML = "file" + tabPageNo + ".css";      //not working???
+        //console.log(this.firstChild.innerHTML);
+        //add a close button
+        var closeBtn = document.createElement("button");
+        closeBtn.id = "closeButton";
+        closeBtn.className = "closeButton";
+        closeBtn.innerHTML = "x";
+        //add the button to firstchild. Not working because we can't get first child
+        //this.firstChild.appendChild(closeBtn);
+        tabPageNo++;
+
+        //add the + tab again
+        var newTab = document.createElement("div");
+        newTab.id = "newPage";
+        newTab.className = "tab newTab";
+        var innerTab = document.createElement("div");
+        innerTab.className = "inner-tab";
+        innerTab.innerHTML = "+";
+        newTab.appendChild(innerTab);
+        document.getElementById("tabs").appendChild(newTab);
+        newTab.addEventListener("click", clickOnTab);
+    }
+    else { //user clicked on an old tab
+        //find current active tab
+        var active = document.getElementById("activeTab");
+        //make it inactive
+        active.id = "oldTab";
+        active.className = "tab";
+        //set the tab clicked as active
+        this.id = "activeTab";
+        this.className = "tab activeTab";
+    }
+}
+
+function closeTab() {
+    //remove all listeners on element and parents to avoid memory leak
+    this.parentElement.parentElement.removeEventListener("click", clickOnTab);
+    this.removeEventListener("click", closeTab);
+    //remove parent
+    parent = this.parentElement.parentElement.parentElement; //xButton <- innerTab <- Tab <-All Tabs 
+    parent.removeChild(parent.firstChild); //removed inner tab (and the x button)
+    parent.removeChild(parent.firstChild); //removed the tab
+}
 
 function inputKeyPress(e) {
     var c;
@@ -51,15 +114,14 @@ function inputKeyPress(e) {
 function replace(search, replace) {
     var sel = window.getSelection();
     if (!sel.focusNode) {
-        console.log("nu am focus node");
         return;
-    }
-    else {
-        console.log("focus node: ", sel.focusNode.nodeValue);
     }
 
     var startIndex = sel.focusNode.nodeValue.indexOf(search);
     var endIndex = startIndex + search.length;
+    console.log("searching |" + search + "| in |" + sel.focusNode.nodeValue + "|");
+    console.log("startIndex=" + startIndex);
+    console.log("endIndex=" + endIndex);
     if (startIndex === -1) {
         return;
     }

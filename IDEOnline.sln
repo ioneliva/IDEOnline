@@ -15,6 +15,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{00B1
 		KeyPress.js = KeyPress.js
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "css", "css", "{91FE92FC-D760-42AB-A867-AD07A3D8B8A7}"
+	ProjectSection(SolutionItems) = preProject
+		css\IDEOnline.css = css\IDEOnline.css
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +36,7 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{00B146DC-0B8E-420E-82B2-67C4F51430A8} = {93886DB1-C275-4FA5-ADED-21B99915F1BE}
+		{91FE92FC-D760-42AB-A867-AD07A3D8B8A7} = {93886DB1-C275-4FA5-ADED-21B99915F1BE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D521E5BE-73D7-4C0E-8A84-1E89540473A6}
