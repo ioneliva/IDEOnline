@@ -13,22 +13,22 @@ function clickOnTab() {
         if (active) { 
             active.id = "oldTab";
             active.className = "tab";
-        } else {    //if there is no active tab, the user actually closed all the tabs manually
-            console.log("all tabs closed!");
-        }
-        //trasform this into active tab
+        } 
+        //trasform this + tab into active tab
         this.id = "activeTab";
         this.className = "tab activeTab";
         //transform inner div
-        this.firstChild.innerHTML = "file" + tabPageNo + ".css";      //not working???
-        //console.log(this.firstChild.innerHTML);
+        var par = document.createElement("p");
+        par.innerHTML = "file" + tabPageNo + ".css";
+        this.firstChild.replaceChild(par, this.firstChild.firstChild);
         //add a close button
         var closeBtn = document.createElement("button");
         closeBtn.id = "closeButton";
         closeBtn.className = "closeButton";
         closeBtn.innerHTML = "x";
-        //add the button to firstchild. Not working because we can't get first child
-        //this.firstChild.appendChild(closeBtn);
+        closeBtn.addEventListener("click", closeTab);
+        //add the button to firstchild
+        this.firstChild.appendChild(closeBtn);
         tabPageNo++;
 
         //add the + tab again
@@ -55,13 +55,26 @@ function clickOnTab() {
 }
 
 function closeTab() {
+    allTabs = this.parentElement.parentElement.parentElement; //xButton <- innerTab <- Tab <-All Tabs 
+    tab = this.parentElement.parentElement;
+
+    //if we are trying to close the active tab, make previous tab the active one. If there is no previous, next tab becomes active
+    if (tab.className == "tab activeTab") {
+        if (tab.previousElementSibling != null) {
+            tab.previousElementSibling.id = "activeTab";
+            tab.previousElementSibling.className = "tab activeTab";
+        } else {
+            if (tab.previousElementSibling == null && tab.nextElementSibling.className != "tab newTab") { 
+                tab.nextElementSibling.id = "activeTab";
+                tab.nextElementSibling.className = "tab activeTab";
+            }
+        }
+    }
     //remove all listeners on element and parents to avoid memory leak
-    this.parentElement.parentElement.removeEventListener("click", clickOnTab);
+    tab.removeEventListener("click", clickOnTab);
     this.removeEventListener("click", closeTab);
     //remove parent
-    parent = this.parentElement.parentElement.parentElement; //xButton <- innerTab <- Tab <-All Tabs 
-    parent.removeChild(parent.firstChild); //removed inner tab (and the x button)
-    parent.removeChild(parent.firstChild); //removed the tab
+    allTabs.removeChild(tab);
 }
 
 function inputKeyPress(e) {
