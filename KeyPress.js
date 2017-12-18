@@ -7,7 +7,7 @@ document.getElementById("newTab").addEventListener("click", clickOnTab);
 document.getElementById("closeButton").addEventListener("click", closeTab);
 
 function clickOnTab() {
-    if (this.className == "tab newTab") {
+    if (this.className == "tab newTab") { //user clicked on the + tab
         //old active tab becomes innactive
         var active = document.getElementById("activeTab");
         if (active) { 
@@ -20,7 +20,9 @@ function clickOnTab() {
         //transform inner div
         var par = document.createElement("p");
         par.innerHTML = "file" + tabPageNo + ".css";
-        this.firstChild.replaceChild(par, this.firstChild.firstChild);
+        //replaceChild does not work with new "Element" functions, we do it manually
+        this.firstElementChild.removeChild(this.firstElementChild.firstElementChild);
+        this.firstElementChild.appendChild(par);                                    
         //add a close button
         var closeBtn = document.createElement("button");
         closeBtn.id = "closeButton";
@@ -28,7 +30,7 @@ function clickOnTab() {
         closeBtn.innerHTML = "x";
         closeBtn.addEventListener("click", closeTab);
         //add the button to firstchild
-        this.firstChild.appendChild(closeBtn);
+        this.firstElementChild.appendChild(closeBtn);
         tabPageNo++;
 
         //add the + tab again
@@ -37,7 +39,9 @@ function clickOnTab() {
         newTab.className = "tab newTab";
         var innerTab = document.createElement("div");
         innerTab.className = "inner-tab";
-        innerTab.innerHTML = "+";
+        var par = document.createElement("p");
+        par.innerHTML = "+";
+        innerTab.appendChild(par);
         newTab.appendChild(innerTab);
         document.getElementById("tabs").appendChild(newTab);
         newTab.addEventListener("click", clickOnTab);
