@@ -1,10 +1,17 @@
 var word = "";
 var tabPageNo = 1;
 
-document.getElementById("inputTextWindow").addEventListener("keypress", inputKeyPress);
-document.getElementById("activeTab").addEventListener("click", clickOnTab); //init, this is the default tab present
-document.getElementById("newTab").addEventListener("click", clickOnTab);
-document.getElementById("closeButton").addEventListener("click", closeTab);
+if (document.addEventListener) {                // For all major browsers, except IE 8 and earlier
+    document.getElementById("inputTextWindow").addEventListener("keydown", inputKeyPress);
+    document.getElementById("activeTab").addEventListener("click", clickOnTab); //init, this is the default tab
+    document.getElementById("newTab").addEventListener("click", clickOnTab);
+    document.getElementById("closeButton").addEventListener("click", closeTab);
+} else if (document.attachEvent) {              // For IE 8 and earlier versions
+    document.getElementById("inputTextWindow").attachEvent("keydown", inputKeyPress);
+    document.getElementById("activeTab").attachEvent("click", clickOnTab); //init, this is the default tab
+    document.getElementById("newTab").attachEvent("click", clickOnTab);
+    document.getElementById("closeButton").attachEvent("click", closeTab);
+} 
 
 function clickOnTab() {
     if (this.className == "tab newTab") { //user clicked on the + tab
@@ -28,7 +35,11 @@ function clickOnTab() {
         closeBtn.id = "closeButton";
         closeBtn.className = "closeButton";
         closeBtn.innerHTML = "x";
-        closeBtn.addEventListener("click", closeTab);
+        if (document.addEventListener) {
+            closeBtn.addEventListener("click", closeTab);
+        } else if (document.attachEvent) {
+            closeBtn.attachEvent("click", closeTab);
+        }
         //add the button to firstchild
         this.firstElementChild.appendChild(closeBtn);
         tabPageNo++;
@@ -37,7 +48,11 @@ function clickOnTab() {
         wdw.contentEditable = "true";
         wdw.setAttribute("spellcheck", "false");
         wdw.setAttribute("type", "text");
-        wdw.addEventListener("keypress", inputKeyPress);
+        if (document.addEventListener) {
+            wdw.addEventListener("keydown", inputKeyPress);
+        } else if (document.attachEvent) {
+            wdw.attachEvent("keydown", inputKeyPress);
+        }
         document.getElementById("content").appendChild(wdw);
 
         //add the + tab again
@@ -51,7 +66,11 @@ function clickOnTab() {
         innerTab.appendChild(par);
         newTab.appendChild(innerTab);
         document.getElementById("tabs").appendChild(newTab);
-        newTab.addEventListener("click", clickOnTab);
+        if (document.addEventListener) {
+            newTab.addEventListener("click", clickOnTab);
+        } else if (document.attachEvent) {
+            newTab.attachEvent("click", clickOnTab);
+        }
     }
     else { //user clicked on an old tab
         //find current active tab
@@ -91,69 +110,119 @@ function closeTab() {
 function inputKeyPress(e) {
     var c;
 
-    //get the code for last key pressed. (unicode a=97, b=98, etc)
-    if (window.event) { // IE                    
+    if (window.event && e.keyCode) { // IE                    
         c = e.keyCode;
     } else if (e.which) { // Netscape/Firefox/Opera                   
         c = e.which;
     }
-    //convert character code to corresponding string from unicode, will be removed later in favor of unicode comparison TODO
-    c = String.fromCharCode(c);
+
+    //console.log("pressed " + c);
+    //c = String.fromCharCode(c).toLowerCase();
 
     var xhr = new XMLHttpRequest();//used for posting
 
-    if (c.match(/[a-zA-Z0-9]+/)) { //problem here with backspace, word registeres chars that are deleted TODO treat the case backspace is used
-        word += c; //build a word
-    }
-    else {
-        //we have a delimiter read in c, post the word+delimiter. On server side we analize the delimiter as well    
-            xhr.open("POST", "http://localhost:5001/", true); //third parameter set to true represents async communication
-            xhr.setRequestHeader('Content-Type', 'application/json');
-            var postJSON = JSON.stringify({ "word": word, "delimiter": c }); 
-            xhr.send(postJSON);
-            //console.log("sent post: " + postJSON);
+    switch (true) {
+        case (c == 8 && word.length > 0):
+            console.log("pressed backspace");
+            word = word.substring(0, word.length - 1);
+            break;
+        case (c == 46 && word.length > 0):
+            console.log("pressed delete");
+            word = word.substr(1);
+            break;
+        case ((c >= 48 && c <= 57)||(c>=65 && c<=90)):
+            console.log("pressed alphanumeric ");
+            word += convert(c); //build a word
+            break;
+        case (c == 16 || c == 17 || c == 18                    //shift,ctr,alt 
+                            ||(c>=112 && c<=123 )):            //F1-F12
+            break;
+        default:   //separator
+            {
+                console.log("pressed separator " + c);
+                //console.log("text total: "+document.getElementById("inputTextWindow").innerText );
 
-        //get answer from server
-        xhr.onreadystatechange = function () {
-            if (this.readyState === 4 && this.status === 200) { // HTTP 200 OK
-                var output = document.getElementById("output");
-                output.innerText = this.responseText; 
-                //get values as strings (server responds with a Json)
-                var obj = JSON.parse(this.responseText);
-                // console.log("received response: " + obj.serverModified);
-                replace(obj.originalWord, obj.serverModified);
+                //post the word+delimiter. On server side we analize the delimiter as well    
+                xhr.open("POST", "http://localhost:5001/", true); //third parameter set to true represents async communication
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                c = convert(c);
+                var postJSON = JSON.stringify({ "word": word, "delimiter": c });
+                xhr.send(postJSON);
+                console.log("sent post: " + "word:" + word + ",delimiter:" + c);
+
+                //get answer from server
+                xhr.onreadystatechange = function () {
+                    if (this.readyState === 4 && this.status === 200) { // HTTP 200 OK
+                        var output = document.getElementById("output");
+                        output.innerText = this.responseText;
+                        //get values as strings (server responds with a Json)
+                        var obj = JSON.parse(this.responseText);
+                        // console.log("received response: " + obj.serverModified);
+                        replace(obj.originalWord, obj.serverModified);
+                    }
+                    else {
+                        // Word coloring microservice is down
+                    }
+                };
+                word = ""; //get ready for the next word
             }
-            else {
-                // server returned an error. Ignoring (for now)
-            }
-        };
-
-        word = ""; //get ready for the next word
     }
-
-
 }
+
+//convert KeyCode into string symbol (String.fromCharCode() does not work for chars >=144 like ,/}[] etc)
+//for values under 92 it uses the formula below. For above 96 it uses the keycode (apparently...)
+//Firefox has exception keycodes for some symbols I will treat separate here
+function convert(keyCode) {
+    var chr;
+    switch (keyCode) {
+        case 222: chr = "'";
+            break;
+        case 220: chr = "\\";
+            break;
+        case 219: chr = "[";
+            break;
+        case 221: chr = "]";
+            break;
+        case 171: chr = "-";
+    }
+    let chrCode = keyCode - 48 * Math.floor(keyCode / 48);         
+    chr = String.fromCharCode((96 <= keyCode) ? chrCode : keyCode);
+    return chr.toLowerCase();
+}
+
 
 //replace first parameter with second
 function replace(search, replace) {
     var sel = window.getSelection();
-    if (!sel.focusNode) {
+    var currentFocus = sel.focusNode;
+    if (!currentFocus) {
         return;
     }
 
-    var startIndex = sel.focusNode.nodeValue.indexOf(search);
+    if (currentFocus.nodeValue == null) { //pressed enter, need to focus on previous div, on the last word, as the current one would be empty
+        if (currentFocus.previousSibling.lastChild.nodeValue != null) {
+            //console.log("PREV SIBBLING IS " + currentFocus.previousSibling.lastChild);
+            var startIndex = currentFocus.previousSibling.lastChild.nodeValue.indexOf(search);
+        }
+        else {//no text was entered, just a bunch of presses on the enter key
+            return;
+        }
+    }
+    else {
+        var startIndex = currentFocus.nodeValue.indexOf(search);
+    }
     var endIndex = startIndex + search.length;
-    console.log("searching |" + search + "| in |" + sel.focusNode.nodeValue + "|");
-    console.log("startIndex=" + startIndex);
-    console.log("endIndex=" + endIndex);
+    //console.log("replacing |" + search + "| in |" + currentFocus.nodeValue + "|");
+    //console.log("startIndex=" + startIndex);
+    //console.log("endIndex=" + endIndex);
     if (startIndex === -1) {
         return;
     }
     //console.log("focus node: ", sel.focusNode.nodeValue);
     var range = document.createRange();
     //Set the range to contain search text
-    range.setStart(sel.focusNode, startIndex);
-    range.setEnd(sel.focusNode, endIndex);
+    range.setStart(currentFocus, startIndex);
+    range.setEnd(currentFocus, endIndex);
     //Delete search text
     range.deleteContents();
     //Insert replace text

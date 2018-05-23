@@ -6782,11 +6782,11 @@
       "hideWarningsAndErrors": true
     },
     "restore": {
-      "projectUniqueName": "C:\\Users\\io\\source\\repos\\Git\\IDEOnline\\WordColorMicroservice\\WordColorMicroservice.csproj",
+      "projectUniqueName": "C:\\Users\\io\\source\\repos\\IDEOnline\\WordColorMicroservice\\WordColorMicroservice.csproj",
       "projectName": "WordColorMicroservice",
-      "projectPath": "C:\\Users\\io\\source\\repos\\Git\\IDEOnline\\WordColorMicroservice\\WordColorMicroservice.csproj",
+      "projectPath": "C:\\Users\\io\\source\\repos\\IDEOnline\\WordColorMicroservice\\WordColorMicroservice.csproj",
       "packagesPath": "C:\\Users\\io\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\io\\source\\repos\\Git\\IDEOnline\\WordColorMicroservice\\obj\\",
+      "outputPath": "C:\\Users\\io\\source\\repos\\IDEOnline\\WordColorMicroservice\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
@@ -6818,32 +6818,32 @@
         "dependencies": {
           "Microsoft.AspNetCore": {
             "target": "Package",
-            "version": "2.0.0"
-          },
-          "Nancy": {
-            "target": "Package",
-            "version": "2.0.0-clinteastwood"
+            "version": "[2.0.0, )"
           },
           "Microsoft.AspNetCore.Cors": {
             "target": "Package",
-            "version": "2.0.1"
-          },
-          "Microsoft.AspNetCore.Owin": {
-            "target": "Package",
-            "version": "2.0.0"
-          },
-          "Microsoft.NETCore.App": {
-            "target": "Package",
-            "version": "2.0",
-            "autoReferenced": true
+            "version": "[2.0.1, )"
           },
           "Microsoft.AspNetCore.Hosting": {
             "target": "Package",
-            "version": "2.0.0"
+            "version": "[2.0.0, )"
+          },
+          "Microsoft.AspNetCore.Owin": {
+            "target": "Package",
+            "version": "[2.0.0, )"
+          },
+          "Microsoft.NETCore.App": {
+            "target": "Package",
+            "version": "[2.0.0, )",
+            "autoReferenced": true
+          },
+          "Nancy": {
+            "target": "Package",
+            "version": "[2.0.0-clinteastwood, )"
           },
           "Newtonsoft.Json": {
             "target": "Package",
-            "version": "10.0.3"
+            "version": "[10.0.3, )"
           }
         },
         "imports": [
