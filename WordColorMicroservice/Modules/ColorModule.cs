@@ -23,8 +23,10 @@ namespace WordColorMicroservice.Modules
                 string delimiter = clientMessage["delimiter"].ToString();
 
                 //forming the proper html tags around the word for the client
-                if (delimiter.Equals("\u0000")){//null is perfectly ok, means directional keys in this case, but
-                    delimiter = "\\u0000";      //need to trick Json format to ignore it, otherwise it complains about invalid values on client page (visible on console.log)
+                if (delimiter.Equals("Enter")|| delimiter.Equals("Shift")|| delimiter.Equals("Backspace")
+                || delimiter.Equals("ArrowLeft")|| delimiter.Equals("ArrowDown")|| delimiter.Equals("ArrowRight")|| delimiter.Equals("ArrowUp"))
+                {
+                    delimiter = "";   
                 }
                 string serverModified = MatchToColor(word, delimiter);
                 //the post is async, so the client doesn't know which word is actually processed. We form a pair containing the original word to "remind"

@@ -109,46 +109,32 @@ function closeTab() {
 
 function inputKeyPress(e) {
     var c;
+    var xhr = new XMLHttpRequest();//used for posting
+    //console.log("text total: "+document.getElementById("inputTextWindow").innerText ); this is the whole text without html markups
 
-    if (window.event && e.keyCode) { // IE                    
-        c = e.keyCode;
-    } else if (e.which) { // Netscape/Firefox/Opera                   
-        c = e.which;
+    if (e.key) { //the new recommneded way (won't work in Safari)
+        c = e.key;
+    } else {
+        if (window.event && e.keyCode) { // IE and legacy                    
+            c = e.keyCode;
+        } else if (e.which) { // Netscape/Firefox/Opera                   
+            c = e.which;
+        }
     }
 
-    //console.log("pressed " + c);
-    //c = String.fromCharCode(c).toLowerCase();
-
-    var xhr = new XMLHttpRequest();//used for posting
-
-    switch (true) {
-        case (c == 8 && word.length > 0):
-            console.log("pressed backspace");
-            word = word.substring(0, word.length - 1);
-            break;
-        case (c == 46 && word.length > 0):
-            console.log("pressed delete");
-            word = word.substr(1);
-            break;
-        case ((c >= 48 && c <= 57)||(c>=65 && c<=90)):
-            console.log("pressed alphanumeric ");
-            word += convert(c); //build a word
-            break;
-        case (c == 16 || c == 17 || c == 18                    //shift,ctr,alt 
-                            ||(c>=112 && c<=123 )):            //F1-F12
-            break;
-        default:   //separator
-            {
-                console.log("pressed separator " + c);
-                //console.log("text total: "+document.getElementById("inputTextWindow").innerText );
-
-                //post the word+delimiter. On server side we analize the delimiter as well    
+    if (c === "Backspace" && word.length > 0) {
+        word = word.substring(0, word.length - 1);
+    } else {
+        if (c.match(/^[a-zA-Z0-9]+$/i) && c != "Delete" && c != "Shift" && c != "Alt" && c != "Control" && c != "F1" && c != "F5" && c != "F6" && c != "Enter"
+                    && c!="ArrowLeft" && c!="ArrowDown" && c!="ArrowRight"&&c!="ArrowUp") {
+            word += c; //build a word
+        } else {
+       //post the word+delimiter   
                 xhr.open("POST", "http://localhost:5001/", true); //third parameter set to true represents async communication
                 xhr.setRequestHeader('Content-Type', 'application/json');
-                c = convert(c);
                 var postJSON = JSON.stringify({ "word": word, "delimiter": c });
                 xhr.send(postJSON);
-                console.log("sent post: " + "word:" + word + ",delimiter:" + c);
+                //console.log("sent post: " + "word:" + word + ",delimiter:" + c);
 
                 //get answer from server
                 xhr.onreadystatechange = function () {
@@ -165,80 +151,77 @@ function inputKeyPress(e) {
                     }
                 };
                 word = ""; //get ready for the next word
-            }
+        }
     }
-}
 
-//convert KeyCode into string symbol (String.fromCharCode() does not work for chars >=144 like ,/}[] etc)
-//for values under 92 it uses the formula below. For above 96 it uses the keycode (apparently...)
-//Firefox has exception keycodes for some symbols I will treat separate here
-function convert(keyCode) {
-    var chr;
-    switch (keyCode) {
-        case 222: chr = "'";
-            break;
-        case 220: chr = "\\";
-            break;
-        case 219: chr = "[";
-            break;
-        case 221: chr = "]";
-            break;
-        case 171: chr = "-";
-    }
-    let chrCode = keyCode - 48 * Math.floor(keyCode / 48);         
-    chr = String.fromCharCode((96 <= keyCode) ? chrCode : keyCode);
-    return chr.toLowerCase();
 }
-
 
 //replace first parameter with second
 function replace(search, replace) {
+    var range = document.createRange();
     var sel = window.getSelection();
     var currentFocus = sel.focusNode;
     if (!currentFocus) {
         return;
     }
-
     if (currentFocus.nodeValue == null) { //pressed enter, need to focus on previous div, on the last word, as the current one would be empty
         if (currentFocus.previousSibling.lastChild.nodeValue != null) {
-            //console.log("PREV SIBBLING IS " + currentFocus.previousSibling.lastChild);
             var startIndex = currentFocus.previousSibling.lastChild.nodeValue.indexOf(search);
+            if (startIndex === -1) {
+                return;
+            }
+            var endIndex = startIndex + search.length;
+            range.setStart(currentFocus.previousSibling.lastChild, startIndex);
+            range.setEnd(currentFocus.previousSibling.lastChild, endIndex);
+            //Delete search text
+            range.deleteContents();
+            //Insert replace text
+            var el = document.createElement("div"); //placeholder div, we pull the elements from it into the fragment
+            el.innerHTML = replace;
+            var fragment = document.createDocumentFragment();
+            var node, lastNode;
+            while (node = el.firstChild) {
+                lastNode = fragment.appendChild(node);
+            }
+            var firstNode = fragment.firstChild;
+            range.insertNode(fragment);
+            if (lastNode) {
+                range.setStartAfter(currentFocus); //set cursor position
+                range.collapse(true);
+                sel.removeAllRanges();
+                sel.addRange(range);
+            }
         }
         else {//no text was entered, just a bunch of presses on the enter key
             return;
         }
     }
-    else {
+    else {  //normal case, replace node in the same focus
         var startIndex = currentFocus.nodeValue.indexOf(search);
-    }
-    var endIndex = startIndex + search.length;
-    //console.log("replacing |" + search + "| in |" + currentFocus.nodeValue + "|");
-    //console.log("startIndex=" + startIndex);
-    //console.log("endIndex=" + endIndex);
-    if (startIndex === -1) {
-        return;
-    }
-    //console.log("focus node: ", sel.focusNode.nodeValue);
-    var range = document.createRange();
-    //Set the range to contain search text
-    range.setStart(currentFocus, startIndex);
-    range.setEnd(currentFocus, endIndex);
-    //Delete search text
-    range.deleteContents();
-    //Insert replace text
-    var el = document.createElement("div"); //placeholder div, we pull the elements from it into the fragment
-    el.innerHTML = replace;
-    var fragment = document.createDocumentFragment(), node, lastNode;
-    while (node = el.firstChild) {
-        lastNode = fragment.appendChild(node);
-    }
-    var firstNode = fragment.firstChild;
-    range.insertNode(fragment);
-    if (lastNode) {
-        range.setStartAfter(lastNode); //set cursor position
-        range.collapse(true);  
-        sel.removeAllRanges();
-        sel.addRange(range);
+        if (startIndex === -1) {
+            return;
+        }
+        var endIndex = startIndex + search.length;
+        range.setStart(currentFocus, startIndex);
+        range.setEnd(currentFocus, endIndex);
+        //Delete search text
+        range.deleteContents();
+        //Insert replace text
+        var el = document.createElement("div"); //placeholder div, we pull the elements from it into the fragment
+        el.innerHTML = replace;
+        var fragment = document.createDocumentFragment();
+        var node, lastNode;
+        while (node = el.firstChild) {
+            lastNode = fragment.appendChild(node);
+        }
+        var firstNode = fragment.firstChild;
+        range.insertNode(fragment);
+        if (lastNode) {
+            range.setStartAfter(lastNode); //set cursor position
+            range.collapse(true);
+            sel.removeAllRanges();
+            sel.addRange(range);
+        }
     }
 
 }
