@@ -2,7 +2,7 @@ var word = "";
 var tabPageNo = 1;
 
 if (document.addEventListener) {                // For all major browsers, except IE 8 and earlier
-    document.getElementById("inputTextWindow").addEventListener("keydown", inputKeyPress);
+    document.getElementById("inputTextWindow").addEventListener("keypress", inputKeyPress);
     document.getElementById("activeTab").addEventListener("click", clickOnTab); //init, this is the default tab
     document.getElementById("newTab").addEventListener("click", clickOnTab);
     document.getElementById("closeButton").addEventListener("click", closeTab);
@@ -108,7 +108,7 @@ function closeTab() {
 }
 
 function inputKeyPress(e) {
-    var c;
+    var c, delimiter;
     var xhr = new XMLHttpRequest();//used for posting
     //console.log("text total: "+document.getElementById("inputTextWindow").innerText ); this is the whole text without html markups
 
@@ -122,50 +122,75 @@ function inputKeyPress(e) {
         }
     }
 
-    if (c === "Backspace" && word.length > 0) {
+    if (c === "Backspace" && word) {
         word = word.substring(0, word.length - 1);
-    } else {
-        if (c.match(/^[a-zA-Z0-9]+$/i) && c != "Delete" && c != "Shift" && c != "Alt" && c != "Control" && c != "F1" && c != "F5" && c != "F6" && c != "Enter"
-                    && c!="ArrowLeft" && c!="ArrowDown" && c!="ArrowRight"&&c!="ArrowUp") {
-            word += c; //build a word
-        } else {
-       //post the word+delimiter   
-                xhr.open("POST", "http://localhost:5001/", true); //third parameter set to true represents async communication
-                xhr.setRequestHeader('Content-Type', 'application/json');
-                var postJSON = JSON.stringify({ "word": word, "delimiter": c });
-                xhr.send(postJSON);
-                //console.log("sent post: " + "word:" + word + ",delimiter:" + c);
+        delimiter = "";
+    } else { //keyboard shortcuts
+        if (c == "v" && e.ctrlKey) {
+            console.log("text total: "+document.getElementById("inputTextWindow").innerText );// this is the whole text without html markups
+            //resend the text of the node back to server for recoloring TODO
+        }
+        else { //non printable
+            if (c === "Shift" || c === "Alt" || c === "Enter" || c === "F1" || c === "F2" || c === "F3"
+                || c === "F4" || c === "F5" || c === "F6" || c === "F7" || c === "F8" || c === "F9" || c === "F10"
+                || c === "F11" || c === "F12" || c === "ArrowLeft" || c === "ArrowDown" || c === "ArrowRight" || c === "ArrowUp"
+                || c === "Insert" || c === "Delete" || c === "Home" || c === "End" || c === "PageUp" || c === "PageDown") {
+                delimiter = c;
+            }
+            else {
+                if (c.match(/^[a-zA-Z0-9\_]+$/i)) { //alphanumerc
+                    word += c; //build a word
+                }
+                else {
+                    delimiter = c;
+                }
+            }
+        }
+    }
+    if (delimiter) {
+        //post the word+delimiter   
+        xhr.open("POST", "http://localhost:5001/", true); //third parameter set to true represents async communication
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        var postJSON = JSON.stringify({ "word": word, "delimiter": delimiter });
+        xhr.send(postJSON);
+        //console.log("sent post: " + "word:" + word + ",delimiter:" + delimiter);
 
-                //get answer from server
-                xhr.onreadystatechange = function () {
-                    if (this.readyState === 4 && this.status === 200) { // HTTP 200 OK
-                        var output = document.getElementById("output");
-                        output.innerText = this.responseText;
-                        //get values as strings (server responds with a Json)
-                        var obj = JSON.parse(this.responseText);
-                        // console.log("received response: " + obj.serverModified);
-                        replace(obj.originalWord, obj.serverModified);
+        //get answer from server
+        xhr.onreadystatechange = function () {
+            if (this.readyState === 4 && this.status === 200) { // HTTP 200 OK
+                var output = document.getElementById("output");
+                output.innerText = this.responseText;
+                //get values as strings (server responds with a Json)
+                var obj = JSON.parse(this.responseText);
+                // console.log("received response: " + obj.serverModified);
+                if (obj.originalWord.length > 0 && obj.serverModified.length>0) {
+                    if (c === "Enter") {
+                        replace(obj.originalWord, obj.serverModified, true);
                     }
                     else {
-                        // Word coloring microservice is down
+                        replace(obj.originalWord, obj.serverModified, false);
                     }
-                };
-                word = ""; //get ready for the next word
-        }
+                }
+            }
+            else {
+                // Word coloring microservice is down
+            }
+        };
+        word = ""; //get ready for the next word
     }
 
 }
 
-//replace first parameter with second
-function replace(search, replace) {
+//replace first parameter with second in the focus node. If the third parameter is true, Enter was pressed and we need to replace it in last the node above 
+function replace(search, replace, newline) {
     var range = document.createRange();
     var sel = window.getSelection();
     var currentFocus = sel.focusNode;
     if (!currentFocus) {
         return;
     }
-    if (currentFocus.nodeValue == null) { //pressed enter, need to focus on previous div, on the last word, as the current one would be empty
-        if (currentFocus.previousSibling.lastChild.nodeValue != null) {
+    if (newline == true) {
+        if (currentFocus.previousSibling != null && currentFocus.previousSibling.lastChild.nodeValue != null) {
             var startIndex = currentFocus.previousSibling.lastChild.nodeValue.indexOf(search);
             if (startIndex === -1) {
                 return;
@@ -186,13 +211,13 @@ function replace(search, replace) {
             var firstNode = fragment.firstChild;
             range.insertNode(fragment);
             if (lastNode) {
-                range.setStartAfter(currentFocus); //set cursor position
+                range.setStartBefore(currentFocus); //set cursor position
                 range.collapse(true);
                 sel.removeAllRanges();
                 sel.addRange(range);
             }
         }
-        else {//no text was entered, just a bunch of presses on the enter key
+        else {//no text was entered, just multiple presses on the Enter key
             return;
         }
     }

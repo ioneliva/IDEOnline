@@ -23,8 +23,11 @@ namespace WordColorMicroservice.Modules
                 string delimiter = clientMessage["delimiter"].ToString();
 
                 //forming the proper html tags around the word for the client
-                if (delimiter.Equals("Enter")|| delimiter.Equals("Shift")|| delimiter.Equals("Backspace")
-                || delimiter.Equals("ArrowLeft")|| delimiter.Equals("ArrowDown")|| delimiter.Equals("ArrowRight")|| delimiter.Equals("ArrowUp"))
+                List<string> nonPrintable = new List<string>(){
+                    "Alt","Control","Shift","Enter","F1","F2","F3","F4","F5","F6","F7","F8","F9","F10","F11","F12","ArrowLeft","ArrowDown","ArrowRight",
+                    "ArrowUp","Insert","Delete","Home","End","PageUp","PageDown"
+                };
+                if (nonPrintable.Contains(delimiter))
                 {
                     delimiter = "";   
                 }
@@ -40,8 +43,10 @@ namespace WordColorMicroservice.Modules
 
         private string MatchToColor(string word, string delimiter)
         {
+            string ret="";
             List<string> cKeywords = new List<string>() {
-                "auto","break","case","char","const","continue","default","do","double","else","enum","extern","float","for","goto","if","int","long","register","return","short","signed","sizeof","static","struct","switch","typedef","union","unsigned","void","volatile","while",
+                "auto","break","case","char","const","continue","default","do","double","else","enum","extern","float","for","goto","if","int","long","register",
+                "return","short","signed","sizeof","static","struct","switch","typedef","union","unsigned","void","volatile","while",
             };
             string wordColor="black", delimiterColor="black";
             
@@ -56,9 +61,20 @@ namespace WordColorMicroservice.Modules
             if (cKeywords.Contains(word.ToLower())){
                 wordColor = "blue";
             }
-            return "<span style=\"color:"+ wordColor + "\">" + word + "</span><span style=\"color:"+ delimiterColor + "\">" + delimiter + "</span>";
+            if ((word.Length>0) && (delimiter.Length>0))
+            {
+                ret= "<span style=\"color:" + wordColor + "\">" + word + "</span><span style=\"color:" + delimiterColor + "\">" + delimiter + "</span>";
+            }
+            if ((word.Length ==0) && (delimiter.Length > 0))
+            {
+                ret = "<span style=\"color:" + delimiterColor + "\">" + delimiter + "</span>";
+            }
+            if ((word.Length > 0) && (delimiter.Length == 0))
+            {
+                ret= "<span style=\"color:" + wordColor + "\">" + word + "</span>";
+            }
+            return ret;
         }
-
 
     }
 }
