@@ -109,8 +109,6 @@ function closeTab() {
 
 function inputKeyPress(e) {
     var c, delimiter;
-    var xhr = new XMLHttpRequest();//used for posting
-    //console.log("text total: "+document.getElementById("inputTextWindow").innerText ); this is the whole text without html markups
 
     if (e.key) { //the new recommneded way (won't work in Safari)
         c = e.key;
@@ -122,53 +120,68 @@ function inputKeyPress(e) {
         }
     }
 
+
     if (c === "Backspace" && word) {
         word = word.substring(0, word.length - 1);
         delimiter = "";
-    } else { //keyboard shortcuts
-        if (c == "v" && e.ctrlKey) {
-            console.log("text total: "+document.getElementById("inputTextWindow").innerText );// this is the whole text without html markups
-            //resend the text of the node back to server for recoloring TODO
+    }
+    else { //keyboard shortcuts
+        if (c == "z" && e.ctrlKey) { //undo
+            //get previous state from server (undo stack), replace
+            
         }
-        else { //non printable
-            if (c === "Shift" || c === "Alt" || c === "Enter" || c === "F1" || c === "F2" || c === "F3"
-                || c === "F4" || c === "F5" || c === "F6" || c === "F7" || c === "F8" || c === "F9" || c === "F10"
-                || c === "F11" || c === "F12" || c === "ArrowLeft" || c === "ArrowDown" || c === "ArrowRight" || c === "ArrowUp"
-                || c === "Insert" || c === "Delete" || c === "Home" || c === "End" || c === "PageUp" || c === "PageDown") {
-                delimiter = c;
+        else {
+            if (c == "y" && e.ctrlKey) { //redo
+                //get previous state from server (redo stack), replace
             }
             else {
-                if (c.match(/^[a-zA-Z0-9\_]+$/i)) { //alphanumerc
-                    word += c; //build a word
+                if (c == "k" && e.ctrlKey) { //for testing
+                    console.log("html text total: " + document.getElementById("inputTextWindow").innerHTML);// this is the whole text with html markups
+                    console.log("text total: " + document.getElementById("inputTextWindow").innerText);// this is the whole text without html markups
+                    //resend the text of the node back to server for recoloring TODO
                 }
-                else {
-                    delimiter = c;
+                else { //non printable
+                    if (c === "Shift" || c === "Alt" || c === "Enter" || c === "F1" || c === "F2" || c === "F3"
+                        || c === "F4" || c === "F5" || c === "F6" || c === "F7" || c === "F8" || c === "F9" || c === "F10"
+                        || c === "F11" || c === "F12" || c === "ArrowLeft" || c === "ArrowDown" || c === "ArrowRight" || c === "ArrowUp"
+                        || c === "Insert" || c === "Delete" || c === "Home" || c === "End" || c === "PageUp" || c === "PageDown") {
+                        delimiter = c;
+                    }
+                    else {
+                        if (c.match(/^[a-zA-Z0-9\_]+$/i)) { //alphanumeric
+                            word += c; //build a word
+                        }
+                        else {
+                            delimiter = c;
+                        }
+                    }
                 }
             }
         }
     }
+    
     if (delimiter) {
-        //post the word+delimiter   
+        //post the word+delimiter to word coloring microservice  
+        var xhr = new XMLHttpRequest();
         xhr.open("POST", "http://localhost:5001/", true); //third parameter set to true represents async communication
-        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.setRequestHeader('Content-Type', 'application/json; charset = utf - 8');
+        xhr.setRequestHeader('Accept', 'application/json');
         var postJSON = JSON.stringify({ "word": word, "delimiter": delimiter });
         xhr.send(postJSON);
-        //console.log("sent post: " + "word:" + word + ",delimiter:" + delimiter);
 
-        //get answer from server
+        //get answer from word coloring microservice
         xhr.onreadystatechange = function () {
             if (this.readyState === 4 && this.status === 200) { // HTTP 200 OK
                 var output = document.getElementById("output");
                 output.innerText = this.responseText;
                 //get values as strings (server responds with a Json)
-                var obj = JSON.parse(this.responseText);
-                // console.log("received response: " + obj.serverModified);
-                if (obj.originalWord.length > 0 && obj.serverModified.length>0) {
+                var wordColoringMS = JSON.parse(this.responseText);
+                if (wordColoringMS.originalWord.length > 0 && wordColoringMS.serverModified.length>0) {
                     if (c === "Enter") {
-                        replace(obj.originalWord, obj.serverModified, true);
+                        replace(wordColoringMS.originalWord, wordColoringMS.serverModified, true);
                     }
                     else {
-                        replace(obj.originalWord, obj.serverModified, false);
+                        replace(wordColoringMS.originalWord, wordColoringMS.serverModified, false);
                     }
                 }
             }
@@ -176,12 +189,22 @@ function inputKeyPress(e) {
                 // Word coloring microservice is down
             }
         };
-        word = ""; //get ready for the next word
+        //post the current state to undo/redo microservice
+        var currentState = document.getElementById("inputTextWindow").innerHTML;
+        var xhr1 = new XMLHttpRequest();
+        xhr1.open("PUT", "http://localhost:5002/", true);
+        xhr1.setRequestHeader('Content-Type', 'application/json; charset = utf - 8');
+        xhr1.setRequestHeader('Accept', 'application/json');
+        var postJSONState = JSON.stringify({ "state": currentState });
+        xhr1.send(postJSONState);
+        //we don't need a response from the server, it's just building up the state stack
+     
+        word = ""; //get ready for the next word 
     }
 
 }
 
-//replace first parameter with second in the focus node. If the third parameter is true, Enter was pressed and we need to replace it in last the node above 
+//replace first parameter with second in the focus node. If the third parameter is true, Enter was pressed and we need to replace it in last the node above the current one
 function replace(search, replace, newline) {
     var range = document.createRange();
     var sel = window.getSelection();
@@ -189,6 +212,7 @@ function replace(search, replace, newline) {
     if (!currentFocus) {
         return;
     }
+
     if (newline == true) {
         if (currentFocus.previousSibling != null && currentFocus.previousSibling.lastChild.nodeValue != null) {
             var startIndex = currentFocus.previousSibling.lastChild.nodeValue.indexOf(search);
@@ -208,7 +232,6 @@ function replace(search, replace, newline) {
             while (node = el.firstChild) {
                 lastNode = fragment.appendChild(node);
             }
-            var firstNode = fragment.firstChild;
             range.insertNode(fragment);
             if (lastNode) {
                 range.setStartBefore(currentFocus); //set cursor position
@@ -239,7 +262,6 @@ function replace(search, replace, newline) {
         while (node = el.firstChild) {
             lastNode = fragment.appendChild(node);
         }
-        var firstNode = fragment.firstChild;
         range.insertNode(fragment);
         if (lastNode) {
             range.setStartAfter(lastNode); //set cursor position

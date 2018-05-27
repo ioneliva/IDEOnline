@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using Nancy.Extensions;
 using Nancy.IO;
-using System.Linq;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json.Linq;
 
 namespace WordColorMicroservice.Modules
-{ 
+{
     public class ColorModule : NancyModule
     {
         public ColorModule()
