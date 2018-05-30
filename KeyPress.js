@@ -109,64 +109,42 @@ function closeTab() {
 
 function inputKeyPress(e) {
     var c, delimiter;
-   
-    if (e.key) { //the new recommneded way (won't work in Safari)
-        c = e.key;
-    } else {
-        if (window.event && e.keyCode) { // IE and legacy                    
-            c = e.keyCode;
-        } else if (e.which) { // Netscape/Firefox/Opera                   
-            c = e.which;
-        }
-    }
+
+    c = readMyPressedKey(e);
 
     if (c === "Backspace" && word) {
         word = word.substring(0, word.length - 1);
         delimiter = "";
-    }
-    else { //keyboard shortcuts
+    } else { //keyboard shortcuts
         if (c == "z" && e.ctrlKey) { //undo
             //request previous state
             postRequest("GET", "http://localhost:5002/undo", {"":""} , function (response) {
                 document.getElementById("inputTextWindow").innerHTML = response;
             }, function (err) {
                 // Do/Undo microservice is down
-            });
-        }
-        else {
+                });
+        } else {
             if (c == "y" && e.ctrlKey) { //redo
                 //request next state
-                postRequest("GET", "http://localhost:5002/redo", {"":""}, function (response) {
+                postRequest("GET", "http://localhost:5002/redo", { "": "" }, function (response) {
                     document.getElementById("inputTextWindow").innerHTML = response;
                 }, function (err) {
-                    // Do/Undo microservice is down
-                });
-            }
-            else {
-                if (c == "k" && e.ctrlKey) { //for testing
-                    console.log("html text total: " + document.getElementById("inputTextWindow").innerHTML);// this is the whole text with html markups
-                    console.log("text total: " + document.getElementById("inputTextWindow").innerText);// this is the whole text without html markups
-                    //resend the text of the node back to server for recoloring TODO
-                }
-                else { //non printable
-                    if (c === "Shift" || c === "Alt" || c === "Enter" || c === "F1" || c === "F2" || c === "F3"
-                        || c === "F4" || c === "F5" || c === "F6" || c === "F7" || c === "F8" || c === "F9" || c === "F10"
-                        || c === "F11" || c === "F12" || c === "ArrowLeft" || c === "ArrowDown" || c === "ArrowRight" || c === "ArrowUp"
-                        || c === "Insert" || c === "Delete" || c === "Home" || c === "End" || c === "PageUp" || c === "PageDown") {
+                        // Do/Undo microservice is down
+                    })
+            }else { //non printable
+                if (isNonPrintableSymbol(c)) {
+                    delimiter = c;
+                } else {
+                    if (c.match(/^[a-zA-Z0-9\_]+$/i)) { //alphanumeric
+                        word += c; //build a word
+                    } else {
                         delimiter = c;
-                    }
-                    else {
-                        if (c.match(/^[a-zA-Z0-9\_]+$/i)) { //alphanumeric
-                            word += c; //build a word
-                        }
-                        else {
-                            delimiter = c;
-                        }
                     }
                 }
             }
         }
     }
+}
     
     if (delimiter) {
         //post the word+delimiter to word coloring microservice  
@@ -179,8 +157,7 @@ function inputKeyPress(e) {
                 if (c === "Enter") {
                     //decorate with color spans
                     replace(wordColoringMS.originalWord, wordColoringMS.serverModified, true);
-                }
-                else {
+                }else {
                     //decorate with color spans
                     replace(wordColoringMS.originalWord, wordColoringMS.serverModified, false);
                 }
@@ -189,11 +166,35 @@ function inputKeyPress(e) {
                 postRequest("PUT", "http://localhost:5002/", { "state": currentState });
             }
         }, function (err) {
-                // Word coloring microservice is down
+            // Word coloring microservice is down
             });
-
         word = ""; //get ready for the next word 
     }
+}
+
+function isNonPrintableSymbol(c) {
+    ret = false;
+    if (c === "Shift" || c === "Alt" || c === "Enter" || c === "F1" || c === "F2" || c === "F3"
+        || c === "F4" || c === "F5" || c === "F6" || c === "F7" || c === "F8" || c === "F9" || c === "F10"
+        || c === "F11" || c === "F12" || c === "ArrowLeft" || c === "ArrowDown" || c === "ArrowRight" || c === "ArrowUp"
+        || c === "Insert" || c === "Delete" || c === "Home" || c === "End" || c === "PageUp" || c === "PageDown") {
+        ret = true;
+    }
+    return ret;
+}
+
+function readMyPressedKey(event) {
+    var ret="";
+    if (event.key) { //the new recommneded way (won't work in Safari)
+        ret = event.key;
+    } else {
+        if (window.event && event.keyCode) { // IE and legacy                    
+            ret = event.keyCode;
+        } else if (event.which) { // Netscape/Firefox/Opera                   
+            ret = event.which;
+        }
+    }
+    return ret;
 }
 
 //send request to server
@@ -251,8 +252,7 @@ function replace(search, replace, newline) {
                 sel.removeAllRanges();
                 sel.addRange(range);
             }
-        }
-        else {//no text was entered, just multiple presses on the Enter key
+        }else {//no text was entered, just multiple presses on the Enter key
             return;
         }
     }
