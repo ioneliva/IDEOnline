@@ -127,39 +127,20 @@ function inputKeyPress(e) {
     else { //keyboard shortcuts
         if (c == "z" && e.ctrlKey) { //undo
             //request previous state
-            var xhr = new XMLHttpRequest(); //used for communication with the server
-            xhr.open("POST", "http://localhost:5002/", true);
-            xhr.setRequestHeader('Content-Type', 'text/plain; charset = utf - 8'); 
-            xhr.setRequestHeader('Accept', 'text/plain');                    
-            xhr.send("UNDO");
-            //receive response from Do/Undo Microservice
-            xhr.onreadystatechange = function () {
-                if (this.readyState === 4 && this.status === 200) { // HTTP 200 OK
-                    document.getElementById("inputTextWindow").innerHTML = this.responseText;
-                }
-                else {
-                    // Do/Undo microservice is down
-                }
-            };
+            postRequest("GET", "http://localhost:5002/undo", {"":""} , function (response) {
+                document.getElementById("inputTextWindow").innerHTML = response;
+            }, function (err) {
+                // Do/Undo microservice is down
+            });
         }
         else {
             if (c == "y" && e.ctrlKey) { //redo
-                //get previous state from server (redo stack), replace
-                //request previous state
-                var xhr = new XMLHttpRequest(); //used for communication with the server
-                xhr.open("POST", "http://localhost:5002/", true);
-                xhr.setRequestHeader('Content-Type', 'text/plain; charset = utf - 8');
-                xhr.setRequestHeader('Accept', 'text/plain');
-                xhr.send("REDO");
-                //receive response from Do/Undo Microservice
-                xhr.onreadystatechange = function () {
-                    if (this.readyState === 4 && this.status === 200) { // HTTP 200 OK
-                        document.getElementById("inputTextWindow").innerHTML = this.responseText;
-                    }
-                    else {
-                        // Do/Undo microservice is down
-                    }
-                };
+                //request next state
+                postRequest("GET", "http://localhost:5002/redo", {"":""}, function (response) {
+                    document.getElementById("inputTextWindow").innerHTML = response;
+                }, function (err) {
+                    // Do/Undo microservice is down
+                });
             }
             else {
                 if (c == "k" && e.ctrlKey) { //for testing
@@ -189,55 +170,51 @@ function inputKeyPress(e) {
     
     if (delimiter) {
         //post the word+delimiter to word coloring microservice  
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", "http://localhost:5001/", true); //third parameter set to true represents async communication
-        xhr.setRequestHeader('Content-Type', 'application/json; charset = utf - 8');
-        xhr.setRequestHeader('Accept', 'application/json');
-        var postJSON = JSON.stringify({ "word": word, "delimiter": delimiter });
-        xhr.send(postJSON);
-
-        //get answer from word coloring microservice
-        xhr.onreadystatechange = function () {
-            if (this.readyState === 4 && this.status === 200) { // HTTP 200 OK
-                var output = document.getElementById("output");
-                output.innerText = this.responseText;
-                //get values as strings (server responds with a Json)
-                var wordColoringMS = JSON.parse(this.responseText);
-                if (wordColoringMS.originalWord.length > 0 && wordColoringMS.serverModified.length>0) {
-                    if (c === "Enter") {
-                        //decorate with color spans
-                        replace(wordColoringMS.originalWord, wordColoringMS.serverModified, true);
-                        //then post the current state to undo/redo microservice
-                        var xhr1 = new XMLHttpRequest(); //used for communication with the server
-                        var currentState = document.getElementById("inputTextWindow").innerHTML;
-                        xhr1.open("PUT", "http://localhost:5002/", true);
-                        xhr1.setRequestHeader('Content-Type', 'application/json; charset = utf - 8');
-                        xhr1.setRequestHeader('Accept', 'application/json');
-                        var postJSONState = JSON.stringify({ "state": currentState });
-                        xhr1.send(postJSONState);
-                    }
-                    else {
-                        //decorate with color spans
-                        replace(wordColoringMS.originalWord, wordColoringMS.serverModified, false);
-                        //then post the current state to undo/redo microservice
-                        var xhr1 = new XMLHttpRequest(); //used for communication with the server
-                        var currentState = document.getElementById("inputTextWindow").innerHTML;
-                        xhr1.open("PUT", "http://localhost:5002/", true);
-                        xhr1.setRequestHeader('Content-Type', 'application/json; charset = utf - 8');
-                        xhr1.setRequestHeader('Accept', 'application/json');
-                        var postJSONState = JSON.stringify({ "state": currentState });
-                        xhr1.send(postJSONState);
-                    }
+        postRequest("POST", "http://localhost:5001/", { "word": word, "delimiter": delimiter }, function (response) {
+            var output = document.getElementById("output");
+            output.innerText = response; //easy debugging, we show the server response on page
+            //get values as strings (server responds with a Json)
+            var wordColoringMS = JSON.parse(response);
+            if (wordColoringMS.originalWord.length > 0 && wordColoringMS.serverModified.length > 0) {
+                if (c === "Enter") {
+                    //decorate with color spans
+                    replace(wordColoringMS.originalWord, wordColoringMS.serverModified, true);
                 }
+                else {
+                    //decorate with color spans
+                    replace(wordColoringMS.originalWord, wordColoringMS.serverModified, false);
+                }
+                //post the current state to undo/redo microservice
+                var currentState = document.getElementById("inputTextWindow").innerHTML;
+                postRequest("PUT", "http://localhost:5002/", { "state": currentState });
             }
-            else {
+        }, function (err) {
                 // Word coloring microservice is down
-            }
-        };
+            });
 
         word = ""; //get ready for the next word 
     }
 }
+
+//send request to server
+function postRequest(verb, url, body, successCallback, errorCallback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open(verb, url);
+    xhr.setRequestHeader('Content-Type', 'application/json; charset = utf - 8');
+    xhr.setRequestHeader('Accept', 'application/json');
+
+    xhr.addEventListener("load", function onLoad() {
+        if (xhr.readyState ==4 && xhr.status === 200) {
+            successCallback(xhr.response);
+        }
+    });
+
+    xhr.addEventListener("error", errorCallback);
+
+    var postJSONState = JSON.stringify(body);
+    xhr.send(postJSONState);
+}
+
 
 //replace first parameter with second in the focus node. If the third parameter is true, Enter was pressed and we need to replace it in last the node above the current one
 function replace(search, replace, newline) {

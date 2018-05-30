@@ -22,6 +22,49 @@ namespace DoUndoMicroservice.Modules
         //Nancy module normal work
         public DoUndoModule()
         {
+            //undo request
+            Get("/undo", _ =>
+            {
+                string previousState = "";
+                if (undoStack.Count > 1)    //stack.peek() returns exception if there aren't any elements left, and stack.pop() can set it 0,so we test it
+                {
+                    redoStack.Push(undoStack.Pop());    //remove last state from undo stack, place it in redo stack
+                    previousState = undoStack.Peek();
+                }
+                else
+                {
+                    if (undoStack.Count == 1)
+                    {
+                        redoStack.Push(undoStack.Peek());
+                        undoStack.Pop();
+                    }
+                }
+                Response response = Response.AsText(previousState, contentType: "text/plain", encoding: System.Text.Encoding.UTF8);
+                response.StatusCode = HttpStatusCode.OK; //200
+
+                return response;
+            });
+
+            //redo request
+            Get("/redo", _ =>
+            {
+                string nextState = "";
+                if (redoStack.Count > 0)    //no problems here, peek() is before pop(), will never try to peek at 0 elements
+                {
+                    nextState = redoStack.Peek();
+                    undoStack.Push(redoStack.Pop());    //remove the last state from redo, place in undo
+
+                } else          //user pressed redo when there was nothing left to redo
+                {
+                    return HttpStatusCode.NotAcceptable;
+                }
+                Response response = Response.AsText(nextState, contentType: "text/plain", encoding: System.Text.Encoding.UTF8);
+                response.StatusCode = HttpStatusCode.OK;
+
+                return response;
+            });
+
+            //request to add a new state to the stack
             Put("/", _ =>
             {
                 JObject clientMessage = JObject.Parse(RequestStream.FromStream(Request.Body).AsString());
@@ -30,48 +73,6 @@ namespace DoUndoMicroservice.Modules
                 return HttpStatusCode.Accepted; //202
             });
 
-
-            Post("/", _ =>
-            {
-                Response response=(Response)"Unrecognized message";
-                response.StatusCode = HttpStatusCode.BadRequest;
-                //get post from client
-                string clientMessage = RequestStream.FromStream(Request.Body).AsString();
-
-                //undo
-                if (clientMessage.Equals("UNDO")) 
-                {
-                    string previousState="";
-                    if (undoStack.Count >1) //stack.peek() returns exception if there aren't any elements left, and stack.pop() can set it 0
-                    {
-                        redoStack.Push(undoStack.Pop()); //remove last state from undo stack, place it in redo stack
-                        previousState = undoStack.Peek();
-                    }else
-                    {
-                        if (undoStack.Count == 1)
-                        {
-                            redoStack.Push(undoStack.Peek());
-                        }
-                    }
-                    response = Response.AsText(previousState, contentType: "text/plain", encoding: System.Text.Encoding.UTF8);
-                    response.StatusCode = HttpStatusCode.OK; //200
-                }
-
-                //redo
-                if (clientMessage.Equals("REDO") && redoStack.Count>0) //no problems here, peek() is before pop(), will never try to peek at 0 elements
-                {
-                    string nextState = "";
-                    nextState = redoStack.Peek();
-                    undoStack.Push(redoStack.Pop());//remove the last state from redo, place in undo
-                    response = Response.AsText(nextState, contentType: "text/plain", encoding: System.Text.Encoding.UTF8);
-                    response.StatusCode = HttpStatusCode.OK;
-                }
-
-                //send result back to client
-                return response;
-            });
-
         }
-
     }
 }
