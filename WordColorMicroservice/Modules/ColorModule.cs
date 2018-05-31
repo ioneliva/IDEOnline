@@ -4,6 +4,8 @@ using Nancy.Extensions;
 using Nancy.IO;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json.Linq;
+using System;
+using System.Text;
 
 namespace WordColorMicroservice.Modules
 {
@@ -11,69 +13,50 @@ namespace WordColorMicroservice.Modules
     {
         public ColorModule()
         {
-            Get("/", _ => Response.AsFile("just a placeholder, maybe later I'll implemet sending the dictionaries to the client on request")
-            );
-
             Post("/", _ =>
             {
                 //receiving post content
                 JObject clientMessage = JObject.Parse(RequestStream.FromStream(Request.Body).AsString());
-                string word = clientMessage["word"].ToString();
-                string delimiter = clientMessage["delimiter"].ToString();
+                string unprocessedText = clientMessage["unprocessedText"].ToString();
 
-                //forming the proper html tags around the word for the client
-                List<string> nonPrintable = new List<string>(){
-                    "Alt","Control","Shift","Enter","F1","F2","F3","F4","F5","F6","F7","F8","F9","F10","F11","F12","ArrowLeft","ArrowDown","ArrowRight",
-                    "ArrowUp","Insert","Delete","Home","End","PageUp","PageDown"
-                };
-                if (nonPrintable.Contains(delimiter))
-                {
-                    delimiter = "";   
-                }
-                string serverModified = MatchToColor(word, delimiter);
-                //the post is async, so the client doesn't know which word is actually processed. We form a pair containing the original word to "remind"
+                //forming the proper html tags around the words for the client
+                string processedText = Process(unprocessedText);
+
                 Dictionary<string, string> responsePair=new Dictionary<string, string>();
-                responsePair.Add("originalWord", word+delimiter);
-                responsePair.Add("serverModified", serverModified);
+                responsePair.Add("processedText", processedText);
                 //sending response
                 return Response.AsJson(responsePair, HttpStatusCode.OK);
             });
         }
 
-        private string MatchToColor(string word, string delimiter)
+        private string Process(string text)
         {
-            string ret="";
+            const string DELIMITERCOLOR = "green";
+            const string KEYWORDCOLOR = "blue";
+            string ret = "";
             List<string> cKeywords = new List<string>() {
                 "auto","break","case","char","const","continue","default","do","double","else","enum","extern","float","for","goto","if","int","long","register",
                 "return","short","signed","sizeof","static","struct","switch","typedef","union","unsigned","void","volatile","while",
             };
-            string wordColor="black", delimiterColor="black";
-            
-            //match the delimiter to see if it's part of the special chars or just a space, tab, etc
-            var regex = @"[\[\].,\/#!$%\^&\*;:{}=\-_`~()<>]$";
-            var match = Regex.Match(delimiter, regex);
+            List<char> delimiters = new List<char>(){
+                '@', '\"', '\'', '\\', '[', ']', '.', ',', '/', '#', '!', '$', '%', '^', '&', '*', ';', ':', '{', '}', '=', '-', '+', '_', '`', '~', '(', ')', '<', '>'
+            };
+            List<string> nonPrintable = new List<string>(){
+                    "Alt","Control","Shift","Enter","F1","F2","F3","F4","F5","F6","F7","F8","F9","F10","F11","F12","ArrowLeft","ArrowDown","ArrowRight",
+                    "ArrowUp","Insert","Delete","Home","End","PageUp","PageDown"
+            };
 
-            if (match.Success){
-                delimiterColor = "green";
+            StringBuilder sb = new StringBuilder(text);
+            for (int i = 0; i < delimiters.Count; i++){
+                sb.Replace(delimiters[i].ToString(), "<span style=\"color:" + DELIMITERCOLOR + "\">" + delimiters[i].ToString() + "</span>");
             }
-            //match the word
-            if (cKeywords.Contains(word.ToLower())){
-                wordColor = "blue";
-            }
-            if ((word.Length>0) && (delimiter.Length>0))
+            for (int i = 0; i < cKeywords.Count; i++)
             {
-                ret= "<span style=\"color:" + wordColor + "\">" + word + "</span><span style=\"color:" + delimiterColor + "\">" + delimiter + "</span>";
+                sb.Replace(cKeywords[i], "<span style=\"color:" + KEYWORDCOLOR + "\">" + cKeywords[i] + "</span>");
             }
-            if ((word.Length ==0) && (delimiter.Length > 0))
-            {
-                ret = "<span style=\"color:" + delimiterColor + "\">" + delimiter + "</span>";
-            }
-            if ((word.Length > 0) && (delimiter.Length == 0))
-            {
-                ret= "<span style=\"color:" + wordColor + "\">" + word + "</span>";
-            }
+            ret = sb.ToString();
+
             return ret;
         }
-
     }
 }

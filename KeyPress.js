@@ -1,8 +1,7 @@
-var word = "";
 var tabPageNo = 1;
 
 if (document.addEventListener) {                // For all major browsers, except IE 8 and earlier
-    document.getElementById("inputTextWindow").addEventListener("keypress", inputKeyPress);
+    document.getElementById("inputTextWindow").addEventListener("keyup", inputKeyPress);
     document.getElementById("activeTab").addEventListener("click", clickOnTab); //init, this is the default tab
     document.getElementById("newTab").addEventListener("click", clickOnTab);
     document.getElementById("closeButton").addEventListener("click", closeTab);
@@ -112,67 +111,47 @@ function inputKeyPress(e) {
 
     c = readMyPressedKey(e);
 
-    getCurrentPosition();
-
-    if (c === "Backspace" && word) {
-        word = word.substring(0, word.length - 1);
-        delimiter = "";
-    } else { //keyboard shortcuts
-        if (c == "z" && e.ctrlKey) { //undo
-            //request previous state
-            postRequest("GET", "http://localhost:5002/undo", null , function (response) {
+    //keyboard shortcuts
+    if (c == "z" && e.ctrlKey) {                    //undo
+        //request previous state
+        postRequest("GET", "http://localhost:5002/undo", null, function (response) {
+            document.getElementById("inputTextWindow").innerHTML = response;
+        }, function (err) {
+            // Do/Undo microservice is down
+            });
+    } else {
+        if (c == "y" && e.ctrlKey) {                //redo
+            //request next state
+            postRequest("GET", "http://localhost:5002/redo", null, function (response) {
                 document.getElementById("inputTextWindow").innerHTML = response;
             }, function (err) {
                 // Do/Undo microservice is down
-                });
-        } else {
-            if (c == "y" && e.ctrlKey) { //redo
-                //request next state
-                postRequest("GET", "http://localhost:5002/redo", null, function (response) {
-                    document.getElementById("inputTextWindow").innerHTML = response;
-                }, function (err) {
-                        // Do/Undo microservice is down
-                    })
-            }else { //non printable
-                if (isNonPrintableSymbol(c)) {
+                })
+        } else {                                    //non printable
+            if (isNonPrintableSymbol(c)) {
+                delimiter = "c";
+            } else {                                //printable, but not alphanumeric
+                if (!c.match(/^[a-zA-Z0-9\_]+$/i)) {
                     delimiter = c;
-                } else {
-                    if (c.match(/^[a-zA-Z0-9\_]+$/i)) { //alphanumeric
-                        word += c; //build a word
-                    } else {
-                        delimiter = c;
-                    }
                 }
             }
         }
     }
     
     if (delimiter) {
-        //post the word+delimiter to word coloring microservice  
-        postRequest("POST", "http://localhost:5001/", { "word": word, "delimiter": delimiter }, function (response) {
-            var output = document.getElementById("output");
-            output.innerText = response; //easy debugging, we show the server response on page
+        //post the text to word coloring microservice for processing
+        var unprocessedText = document.getElementById("inputTextWindow").innerText;
+        console.log("unprocessed text: " + unprocessedText);
+        postRequest("POST", "http://localhost:5001/", { "unprocessedText": unprocessedText }, function (response) {
+            document.getElementById("output").innerText = response; //easy debugging, we show the server response on page
             //get values as strings (server responds with a Json)
             var wordColoringMS = JSON.parse(response);
-            if (wordColoringMS.originalWord.length > 0 && wordColoringMS.serverModified.length > 0) {
-                if (c === "Enter") {
-                    //decorate with color spans
-                    replace(wordColoringMS.originalWord, wordColoringMS.serverModified, true);
-                }else {
-                    //decorate with color spans
-                    replace(wordColoringMS.originalWord, wordColoringMS.serverModified, false);
-                }
-                //post the current state to undo/redo microservice
-                var currentState = document.getElementById("inputTextWindow").innerHTML;
-                postRequest("PUT", "http://localhost:5002/", { "state": currentState });
-            }
+            var processedText = wordColoringMS.processedText;
+            document.getElementById("inputTextWindow").innerHTML = processedText;
         }, function (err) {
             // Word coloring microservice is down
             });
-        word = ""; //get ready for the next word 
     }
-
-
 }
 
 function isNonPrintableSymbol(c) {
@@ -219,83 +198,4 @@ function postRequest(verb, url, body, successCallback, errorCallback) {
 
     var postJSONState = JSON.stringify(body);
     xhr.send(postJSONState);
-}
-
-function getCurrentPosition() {
-    var range = document.createRange();
-    var sel = window.getSelection();
-    var currentFocus = sel.focusNode;
-
-
-    //console.log("sel.focusNode:" + sel.focusNode);                        //asta imi da [object:text] sau [object:parinte] in afara
-    //console.log("parent: " + sel.focusNode.parentNode);                   //asta imi da [oject:span] sau [obj:parinte] cand sunt in afara spanului
-    //console.log("sel.focusNode.nodevalue: " + sel.focusNode.nodeValue);   //asta imi da valoare textului sau null cand sunt in afara
-}
-
-//replace first parameter with second in the focus node. If the third parameter is true, Enter was pressed and we need to replace it in last the node above the current one
-function replace(search, replace, newline) {
-    var range = document.createRange();
-    var sel = window.getSelection();
-    var currentFocus = sel.focusNode;
-    if (!currentFocus) {
-        return;
-    }
-
-    if (newline == true) {
-        if (currentFocus.previousSibling != null && currentFocus.previousSibling.lastChild.nodeValue != null) {
-            var startIndex = currentFocus.previousSibling.lastChild.nodeValue.indexOf(search);
-            if (startIndex === -1) {
-                return;
-            }
-            var endIndex = startIndex + search.length;
-            range.setStart(currentFocus.previousSibling.lastChild, startIndex);
-            range.setEnd(currentFocus.previousSibling.lastChild, endIndex);
-            //Delete search text
-            range.deleteContents();
-            //Insert replace text
-            var el = document.createElement("div"); //placeholder div, we pull the elements from it into the fragment
-            el.innerHTML = replace;
-            var fragment = document.createDocumentFragment();
-            var node, lastNode;
-            while (node = el.firstChild) {
-                lastNode = fragment.appendChild(node);
-            }
-            range.insertNode(fragment);
-            if (lastNode) {
-                range.setStartBefore(currentFocus); //set cursor position
-                range.collapse(true);
-                sel.removeAllRanges();
-                sel.addRange(range);
-            }
-        }else {//no text was entered, just multiple presses on the Enter key
-            return;
-        }
-    }
-    else {  //normal case, replace node in the same focus
-        var startIndex = currentFocus.nodeValue.indexOf(search);
-        if (startIndex === -1) {
-            return;
-        }
-        var endIndex = startIndex + search.length;
-        range.setStart(currentFocus, startIndex);
-        range.setEnd(currentFocus, endIndex);
-        //Delete search text
-        range.deleteContents();
-        //Insert replace text
-        var el = document.createElement("div"); //placeholder div, we pull the elements from it into the fragment
-        el.innerHTML = replace;
-        var fragment = document.createDocumentFragment();
-        var node, lastNode;
-        while (node = el.firstChild) {
-            lastNode = fragment.appendChild(node);
-        }
-        range.insertNode(fragment);
-        if (lastNode) {
-            range.setStartAfter(lastNode); //set cursor position
-            range.collapse(true);
-            sel.removeAllRanges();
-            sel.addRange(range);
-        }
-    }
-
 }
