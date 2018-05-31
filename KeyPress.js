@@ -112,13 +112,15 @@ function inputKeyPress(e) {
 
     c = readMyPressedKey(e);
 
+    getCurrentPosition();
+
     if (c === "Backspace" && word) {
         word = word.substring(0, word.length - 1);
         delimiter = "";
     } else { //keyboard shortcuts
         if (c == "z" && e.ctrlKey) { //undo
             //request previous state
-            postRequest("GET", "http://localhost:5002/undo", {"":""} , function (response) {
+            postRequest("GET", "http://localhost:5002/undo", null , function (response) {
                 document.getElementById("inputTextWindow").innerHTML = response;
             }, function (err) {
                 // Do/Undo microservice is down
@@ -126,7 +128,7 @@ function inputKeyPress(e) {
         } else {
             if (c == "y" && e.ctrlKey) { //redo
                 //request next state
-                postRequest("GET", "http://localhost:5002/redo", { "": "" }, function (response) {
+                postRequest("GET", "http://localhost:5002/redo", null, function (response) {
                     document.getElementById("inputTextWindow").innerHTML = response;
                 }, function (err) {
                         // Do/Undo microservice is down
@@ -144,7 +146,6 @@ function inputKeyPress(e) {
             }
         }
     }
-}
     
     if (delimiter) {
         //post the word+delimiter to word coloring microservice  
@@ -170,6 +171,8 @@ function inputKeyPress(e) {
             });
         word = ""; //get ready for the next word 
     }
+
+
 }
 
 function isNonPrintableSymbol(c) {
@@ -203,19 +206,31 @@ function postRequest(verb, url, body, successCallback, errorCallback) {
     xhr.open(verb, url);
     xhr.setRequestHeader('Content-Type', 'application/json; charset = utf - 8');
     xhr.setRequestHeader('Accept', 'application/json');
-
+    if (body === null) {
+        xhr.setRequestHeader('Content-Type', 'text/plain; charset = utf - 8');
+        xhr.setRequestHeader('Accept', 'text/plain'); 
+    }
     xhr.addEventListener("load", function onLoad() {
         if (xhr.readyState ==4 && xhr.status === 200) {
             successCallback(xhr.response);
         }
     });
-
     xhr.addEventListener("error", errorCallback);
 
     var postJSONState = JSON.stringify(body);
     xhr.send(postJSONState);
 }
 
+function getCurrentPosition() {
+    var range = document.createRange();
+    var sel = window.getSelection();
+    var currentFocus = sel.focusNode;
+
+
+    //console.log("sel.focusNode:" + sel.focusNode);                        //asta imi da [object:text] sau [object:parinte] in afara
+    //console.log("parent: " + sel.focusNode.parentNode);                   //asta imi da [oject:span] sau [obj:parinte] cand sunt in afara spanului
+    //console.log("sel.focusNode.nodevalue: " + sel.focusNode.nodeValue);   //asta imi da valoare textului sau null cand sunt in afara
+}
 
 //replace first parameter with second in the focus node. If the third parameter is true, Enter was pressed and we need to replace it in last the node above the current one
 function replace(search, replace, newline) {
