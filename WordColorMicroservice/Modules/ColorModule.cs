@@ -9,68 +9,64 @@ namespace WordColorMicroservice.Modules
 {
     public class ColorModule : NancyModule
     {
+        private static int id;
+
         public ColorModule()
         {
-            Get("/", _ => Response.AsFile("just a placeholder, maybe later I'll implemet sending the dictionaries to the client on request")
-            );
-
             Post("/", _ =>
             {
-                //receiving post content
                 JObject clientMessage = JObject.Parse(RequestStream.FromStream(Request.Body).AsString());
                 string word = clientMessage["word"].ToString();
                 string delimiter = clientMessage["delimiter"].ToString();
 
-                //forming the proper html tags around the word for the client
-                List<string> nonPrintable = new List<string>(){
-                    "Alt","Control","Shift","Enter","F1","F2","F3","F4","F5","F6","F7","F8","F9","F10","F11","F12","ArrowLeft","ArrowDown","ArrowRight",
-                    "ArrowUp","Insert","Delete","Home","End","PageUp","PageDown"
-                };
-                if (nonPrintable.Contains(delimiter))
+                string responseMessage = MatchToColor(word, delimiter);
+
+                if (responseMessage.Length > 0)
                 {
-                    delimiter = "";   
+                    Dictionary<string, string> responsePair = new Dictionary<string, string>();
+                    responsePair.Add("serverResponse", responseMessage);
+                    return Response.AsJson(responsePair, HttpStatusCode.OK);
                 }
-                string serverModified = MatchToColor(word, delimiter);
-                //the post is async, so the client doesn't know which word is actually processed. We form a pair containing the original word to "remind"
-                Dictionary<string, string> responsePair=new Dictionary<string, string>();
-                responsePair.Add("originalWord", word+delimiter);
-                responsePair.Add("serverModified", serverModified);
-                //sending response
-                return Response.AsJson(responsePair, HttpStatusCode.OK);
+                else
+                {
+                    return HttpStatusCode.Continue;                }
             });
         }
 
         private string MatchToColor(string word, string delimiter)
         {
             string ret="";
-            List<string> cKeywords = new List<string>() {
-                "auto","break","case","char","const","continue","default","do","double","else","enum","extern","float","for","goto","if","int","long","register",
-                "return","short","signed","sizeof","static","struct","switch","typedef","union","unsigned","void","volatile","while",
-            };
-            string wordColor="black", delimiterColor="black";
-            
+
+            string wordColor = Resources.Colors.BLACK;
+            string delimiterColor = Resources.Colors.BLACK;
+
             //match the delimiter to see if it's part of the special chars or just a space, tab, etc
-            var regex = @"[\[\].,\/#!$%\^&\*;:{}=\-_`~()<>]$";
+            if (Resources.Delimiters.NONPRINTABLE.Contains(delimiter))
+            {
+                delimiter = "";
+            }
+            var regex = Resources.Delimiters.PRINTABLE;
             var match = Regex.Match(delimiter, regex);
 
             if (match.Success){
-                delimiterColor = "green";
+                delimiterColor = Resources.Colors.GREEN;
             }
+
             //match the word
-            if (cKeywords.Contains(word.ToLower())){
-                wordColor = "blue";
+            if (Resources.KeyWords.C_LANGUAGE.Contains(word.ToLower())){
+                wordColor = Resources.Colors.BLUE;
             }
-            if ((word.Length>0) && (delimiter.Length>0))
-            {
-                ret= "<span style=\"color:" + wordColor + "\">" + word + "</span><span style=\"color:" + delimiterColor + "\">" + delimiter + "</span>";
+
+            id++; //this unique id is assigned to each <span> block. Used to refer to each block individually if needed 
+
+            if ((word.Length>0) && (delimiter.Length>0)){
+                ret= "<span id=" + id + " style=\"color:" + wordColor + "\">" + word + "</span><span style=\"color:" + delimiterColor + "\">" + delimiter + "</span>";
             }
-            if ((word.Length ==0) && (delimiter.Length > 0))
-            {
-                ret = "<span style=\"color:" + delimiterColor + "\">" + delimiter + "</span>";
+            if ((word.Length ==0) && (delimiter.Length > 0)){
+                ret = "<span id=" + id + " style=\"color:" + delimiterColor + "\">" + delimiter + "</span>";
             }
-            if ((word.Length > 0) && (delimiter.Length == 0))
-            {
-                ret= "<span style=\"color:" + wordColor + "\">" + word + "</span>";
+            if ((word.Length > 0) && (delimiter.Length == 0)){
+                ret= "<span id=" + id + " style=\"color:" + wordColor + "\">" + word + "</span>";
             }
             return ret;
         }

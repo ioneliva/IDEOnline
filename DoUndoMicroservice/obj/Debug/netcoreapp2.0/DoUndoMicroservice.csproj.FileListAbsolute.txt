@@ -1,4 +1,3 @@
-C:\Users\io\source\repos\IDEOnline\DoUndoMicroservice\obj\Debug\netcoreapp2.0\DoUndoMicroservice.csprojAssemblyReference.cache
 C:\Users\io\source\repos\IDEOnline\DoUndoMicroservice\obj\Debug\netcoreapp2.0\DoUndoMicroservice.csproj.CoreCompileInputs.cache
 C:\Users\io\source\repos\IDEOnline\DoUndoMicroservice\obj\Debug\netcoreapp2.0\DoUndoMicroservice.AssemblyInfoInputs.cache
 C:\Users\io\source\repos\IDEOnline\DoUndoMicroservice\obj\Debug\netcoreapp2.0\DoUndoMicroservice.AssemblyInfo.cs

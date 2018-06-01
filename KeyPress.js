@@ -1,8 +1,10 @@
 var word = "";
+var savedRange;
 var tabPageNo = 1;
 
 if (document.addEventListener) {                // For all major browsers, except IE 8 and earlier
     document.getElementById("inputTextWindow").addEventListener("keypress", inputKeyPress);
+    //document.getElementById("inputTextWindow").addEventListener("mouseup", getCurrentPosition);
     document.getElementById("activeTab").addEventListener("click", clickOnTab); //init, this is the default tab
     document.getElementById("newTab").addEventListener("click", clickOnTab);
     document.getElementById("closeButton").addEventListener("click", closeTab);
@@ -112,14 +114,11 @@ function inputKeyPress(e) {
 
     c = readMyPressedKey(e);
 
-    getCurrentPosition();
-
     if (c === "Backspace" && word) {
         word = word.substring(0, word.length - 1);
         delimiter = "";
     } else { //keyboard shortcuts
         if (c == "z" && e.ctrlKey) { //undo
-            //request previous state
             postRequest("GET", "http://localhost:5002/undo", null , function (response) {
                 document.getElementById("inputTextWindow").innerHTML = response;
             }, function (err) {
@@ -127,7 +126,6 @@ function inputKeyPress(e) {
                 });
         } else {
             if (c == "y" && e.ctrlKey) { //redo
-                //request next state
                 postRequest("GET", "http://localhost:5002/redo", null, function (response) {
                     document.getElementById("inputTextWindow").innerHTML = response;
                 }, function (err) {
@@ -151,17 +149,12 @@ function inputKeyPress(e) {
         //post the word+delimiter to word coloring microservice  
         postRequest("POST", "http://localhost:5001/", { "word": word, "delimiter": delimiter }, function (response) {
             var output = document.getElementById("output");
-            output.innerText = response; //easy debugging, we show the server response on page
-            //get values as strings (server responds with a Json)
+            output.innerText = response; 
             var wordColoringMS = JSON.parse(response);
-            if (wordColoringMS.originalWord.length > 0 && wordColoringMS.serverModified.length > 0) {
-                if (c === "Enter") {
-                    //decorate with color spans
-                    replace(wordColoringMS.originalWord, wordColoringMS.serverModified, true);
-                }else {
-                    //decorate with color spans
-                    replace(wordColoringMS.originalWord, wordColoringMS.serverModified, false);
-                }
+            if (wordColoringMS.serverResponse!="100") {
+                //decorate with color spans
+                insertHtmlAtCursor(wordColoringMS.serverResponse);
+
                 //post the current state to undo/redo microservice
                 var currentState = document.getElementById("inputTextWindow").innerHTML;
                 postRequest("PUT", "http://localhost:5002/", { "state": currentState });
@@ -177,8 +170,8 @@ function inputKeyPress(e) {
 
 function isNonPrintableSymbol(c) {
     ret = false;
-    if (c === "Shift" || c === "Alt" || c === "Enter" || c === "F1" || c === "F2" || c === "F3"
-        || c === "F4" || c === "F5" || c === "F6" || c === "F7" || c === "F8" || c === "F9" || c === "F10"
+    if (c === "Shift" || c === "Alt" || c=="Control" || c === "Enter" || c === "F1" || c === "F2" || c === "F3"
+        || c === "F4" || c === "F5" || c === "F6" || c === "F7" || c === "F8" || c === "F9" || c === "F10" || c ==="Escape"
         || c === "F11" || c === "F12" || c === "ArrowLeft" || c === "ArrowDown" || c === "ArrowRight" || c === "ArrowUp"
         || c === "Insert" || c === "Delete" || c === "Home" || c === "End" || c === "PageUp" || c === "PageDown") {
         ret = true;
@@ -188,12 +181,12 @@ function isNonPrintableSymbol(c) {
 
 function readMyPressedKey(event) {
     var ret="";
-    if (event.key) { //the new recommneded way (won't work in Safari)
+    if (event.key) {                                //the new recommneded way (won't work in Safari)
         ret = event.key;
     } else {
-        if (window.event && event.keyCode) { // IE and legacy                    
+        if (window.event && event.keyCode) {        // IE and legacy                    
             ret = event.keyCode;
-        } else if (event.which) { // Netscape/Firefox/Opera                   
+        } else if (event.which) {                   // Netscape/Firefox/Opera                   
             ret = event.which;
         }
     }
@@ -206,10 +199,7 @@ function postRequest(verb, url, body, successCallback, errorCallback) {
     xhr.open(verb, url);
     xhr.setRequestHeader('Content-Type', 'application/json; charset = utf - 8');
     xhr.setRequestHeader('Accept', 'application/json');
-    if (body === null) {
-        xhr.setRequestHeader('Content-Type', 'text/plain; charset = utf - 8');
-        xhr.setRequestHeader('Accept', 'text/plain'); 
-    }
+
     xhr.addEventListener("load", function onLoad() {
         if (xhr.readyState ==4 && xhr.status === 200) {
             successCallback(xhr.response);
@@ -221,81 +211,43 @@ function postRequest(verb, url, body, successCallback, errorCallback) {
     xhr.send(postJSONState);
 }
 
-function getCurrentPosition() {
+/*
+ * A bit of research for the next function -source MDN and w3schools. Usage inspired from StackOverflow
+ * var selection = window.getSelection();              //range of text and objects selected with mouse drag or Shift+dirrectional keys
+ * var anchor = selection.anchorNode;                  //Returns the Node in which the selection begins.
+ * var focusNode = selection.focusNode;                //Returns the Node in which the selection ends.
+ * var type = selection.type;                          //returns "Caret" for click or "Range" for drag
+ * var singlePoint = selection.isCollapsed;            //Returns a Boolean indicating whether the selection's start and end points are at the same position.
+ * var rangeX = selection.getRangeAt(index);           //method returns a range object representing one of the ranges currently selected.
+    */
+//replace focused node with the parameter
+function insertHtmlAtCursor(html) {
     var range = document.createRange();
-    var sel = window.getSelection();
-    var currentFocus = sel.focusNode;
-
-
-    //console.log("sel.focusNode:" + sel.focusNode);                        //asta imi da [object:text] sau [object:parinte] in afara
-    //console.log("parent: " + sel.focusNode.parentNode);                   //asta imi da [oject:span] sau [obj:parinte] cand sunt in afara spanului
-    //console.log("sel.focusNode.nodevalue: " + sel.focusNode.nodeValue);   //asta imi da valoare textului sau null cand sunt in afara
-}
-
-//replace first parameter with second in the focus node. If the third parameter is true, Enter was pressed and we need to replace it in last the node above the current one
-function replace(search, replace, newline) {
-    var range = document.createRange();
-    var sel = window.getSelection();
-    var currentFocus = sel.focusNode;
-    if (!currentFocus) {
-        return;
-    }
-
-    if (newline == true) {
-        if (currentFocus.previousSibling != null && currentFocus.previousSibling.lastChild.nodeValue != null) {
-            var startIndex = currentFocus.previousSibling.lastChild.nodeValue.indexOf(search);
-            if (startIndex === -1) {
-                return;
-            }
-            var endIndex = startIndex + search.length;
-            range.setStart(currentFocus.previousSibling.lastChild, startIndex);
-            range.setEnd(currentFocus.previousSibling.lastChild, endIndex);
-            //Delete search text
+    var sel;
+        
+    if (window.getSelection) { //Moz/Chrome and modern IE
+        sel = window.getSelection();
+        if (sel.getRangeAt && sel.rangeCount) {
+            range.selectNode(sel.anchorNode);                       //set range to envelop selection
             range.deleteContents();
-            //Insert replace text
-            var el = document.createElement("div"); //placeholder div, we pull the elements from it into the fragment
-            el.innerHTML = replace;
-            var fragment = document.createDocumentFragment();
+
+            var el = document.createElement("div");                 //the div is a carrier for our element, determined by the html code
+            el.innerHTML = html;
+            var frag = document.createDocumentFragment();
             var node, lastNode;
-            while (node = el.firstChild) {
-                lastNode = fragment.appendChild(node);
+            while ((node = el.firstChild)) {
+                lastNode = frag.appendChild(node);                  //The returned value is the appended child
             }
-            range.insertNode(fragment);
+            range.insertNode(frag);
+
             if (lastNode) {
-                range.setStartBefore(currentFocus); //set cursor position
-                range.collapse(true);
+                range.setStartAfter(lastNode);                      //set cursor position
+                range.collapse(true);                               //true -collapse to start, false-to end
                 sel.removeAllRanges();
                 sel.addRange(range);
             }
-        }else {//no text was entered, just multiple presses on the Enter key
-            return;
         }
+    } else if (document.selection && document.selection.type != "Control") { //legacy IE
+        document.selection.createRange().pasteHTML(html);
     }
-    else {  //normal case, replace node in the same focus
-        var startIndex = currentFocus.nodeValue.indexOf(search);
-        if (startIndex === -1) {
-            return;
-        }
-        var endIndex = startIndex + search.length;
-        range.setStart(currentFocus, startIndex);
-        range.setEnd(currentFocus, endIndex);
-        //Delete search text
-        range.deleteContents();
-        //Insert replace text
-        var el = document.createElement("div"); //placeholder div, we pull the elements from it into the fragment
-        el.innerHTML = replace;
-        var fragment = document.createDocumentFragment();
-        var node, lastNode;
-        while (node = el.firstChild) {
-            lastNode = fragment.appendChild(node);
-        }
-        range.insertNode(fragment);
-        if (lastNode) {
-            range.setStartAfter(lastNode); //set cursor position
-            range.collapse(true);
-            sel.removeAllRanges();
-            sel.addRange(range);
-        }
-    }
-
 }
