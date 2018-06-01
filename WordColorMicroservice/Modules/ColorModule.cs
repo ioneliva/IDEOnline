@@ -60,7 +60,9 @@ namespace WordColorMicroservice.Modules
             id++; //this unique id is assigned to each <span> block. Used to refer to each block individually if needed 
 
             if ((word.Length>0) && (delimiter.Length>0)){
-                ret= "<span id=" + id + " style=\"color:" + wordColor + "\">" + word + "</span><span style=\"color:" + delimiterColor + "\">" + delimiter + "</span>";
+                ret = "<span id=" + id + " style=\"color:" + wordColor + "\">" + word + "</span>";
+                id++;
+                ret+= "<span id=" + id + " style=\"color:" + delimiterColor + "\">" + delimiter + "</span>";
             }
             if ((word.Length ==0) && (delimiter.Length > 0)){
                 ret = "<span id=" + id + " style=\"color:" + delimiterColor + "\">" + delimiter + "</span>";

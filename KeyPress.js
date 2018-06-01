@@ -229,7 +229,20 @@ function insertHtmlAtCursor(html) {
         sel = window.getSelection();
         if (sel.getRangeAt && sel.rangeCount) {
             range.selectNode(sel.anchorNode);                       //set range to envelop selection
-            range.deleteContents();
+            //console.log("the parent is: " + sel.anchorNode.parentNode);
+            //console.log("Parent id = : " + sel.anchorNode.parentNode.getAttribute("id"));
+            //console.log("the node is: " + sel.anchorNode);
+            //console.log("the child is: " + sel.anchorNode.firstChild);
+
+            //range.deleteContents() deletes only the contents, no matter if you wrap the range around the html element. Default broser behaviour, can't be overwritten
+            //we bypass it by deleting it from the DOM
+            if (sel.anchorNode.parentNode instanceof HTMLDivElement) {
+                range.deleteContents();
+            } else { //parent is span, we are in the node text insdide it
+                var nodeToDelete = document.getElementById(sel.anchorNode.parentNode.getAttribute("id"));
+                //console.log("we delete span with id=" + nodeToDelete.getAttribute("id"));
+                nodeToDelete.remove();
+            }
 
             var el = document.createElement("div");                 //the div is a carrier for our element, determined by the html code
             el.innerHTML = html;
