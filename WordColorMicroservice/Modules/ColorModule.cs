@@ -9,22 +9,23 @@ namespace WordColorMicroservice.Modules
 {
     public class ColorModule : NancyModule
     {
-        private static int id;
+        private static int id; //this unique id is assigned to each <span> block. Used to refer to each block individually if needed 
 
         public ColorModule()
         {
             Post("/", _ =>
             {
                 JObject clientMessage = JObject.Parse(RequestStream.FromStream(Request.Body).AsString());
-                string word = clientMessage["word"].ToString();
-                string delimiter = clientMessage["delimiter"].ToString();
+                string compositeWord = clientMessage["word_and_delimiter"].ToString();
 
-                string responseMessage = MatchToColor(word, delimiter);
+                string responseMessage = MatchToColor(compositeWord);
 
                 if (responseMessage.Length > 0)
                 {
-                    Dictionary<string, string> responsePair = new Dictionary<string, string>();
-                    responsePair.Add("serverResponse", responseMessage);
+                    Dictionary<string, string> responsePair = new Dictionary<string, string>
+                    {
+                        { "serverResponse", responseMessage }
+                    };
                     return Response.AsJson(responsePair, HttpStatusCode.OK);
                 }
                 else
@@ -33,43 +34,51 @@ namespace WordColorMicroservice.Modules
             });
         }
 
-        private string MatchToColor(string word, string delimiter)
+        private string MatchToColor(string compositeWord)
         {
-            string ret="";
-
+            string word="", ret = "";
+            char delimiter;
+            var regex = Resources.Delimiters.PRINTABLE;
             string wordColor = Resources.Colors.BLACK;
             string delimiterColor = Resources.Colors.BLACK;
 
-            //match the delimiter to see if it's part of the special chars or just a space, tab, etc
-            if (Resources.Delimiters.NONPRINTABLE.Contains(delimiter))
+            //split de composite word into word+delimiter, construct the span <word><delimiter> structure
+            for (int i = 0; i < compositeWord.Length; i++)
             {
-                delimiter = "";
-            }
-            var regex = Resources.Delimiters.PRINTABLE;
-            var match = Regex.Match(delimiter, regex);
+                if ((char.IsLetter(compositeWord[i]) || (char.IsNumber(compositeWord[i])))) //alphanumerc char
+                {
+                    word += compositeWord[i];
+                    //the last symbol of the composite word is not a delimiter(that means we encountered the delimiter in the middle of the composite word, or not at all)
+                    // we need to trigger the coloring
+                    if (i==compositeWord.Length-1) 
+                    {
+                        if (Resources.KeyWords.C_LANGUAGE.Contains(word.ToLower()))
+                        {
+                            wordColor = Resources.Colors.BLUE;
+                        }
+                        ret += "<span id=" + (id++) + " style=\"color:" + wordColor + "\">" + word + "</span>";
+                    }
+                }
+                else{       //reached a delimiter
+                    //adding the word(up to the encountered delimiter) to the span structure
+                    if (Resources.KeyWords.C_LANGUAGE.Contains(word.ToLower()))
+                    {
+                        wordColor = Resources.Colors.BLUE;
+                    }
+                    ret += "<span id=" + (id++) + " style=\"color:" + wordColor + "\">" + word + "</span>";
+                    //adding the delimiter to the span structure
+                    delimiter = compositeWord[i];
+                    if (Regex.Match(delimiter.ToString(), regex).Success)
+                    {
+                        delimiterColor = Resources.Colors.GREEN;
+                    }
+                    ret += "<span id=" + (id++) + " style=\"color:" + delimiterColor + "\">" + delimiter + "</span>";
 
-            if (match.Success){
-                delimiterColor = Resources.Colors.GREEN;
-            }
+                    //getting ready for the next word from the composite
+                    word = "";
+                }
+            } 
 
-            //match the word
-            if (Resources.KeyWords.C_LANGUAGE.Contains(word.ToLower())){
-                wordColor = Resources.Colors.BLUE;
-            }
-
-            id++; //this unique id is assigned to each <span> block. Used to refer to each block individually if needed 
-
-            if ((word.Length>0) && (delimiter.Length>0)){
-                ret = "<span id=" + id + " style=\"color:" + wordColor + "\">" + word + "</span>";
-                id++;
-                ret+= "<span id=" + id + " style=\"color:" + delimiterColor + "\">" + delimiter + "</span>";
-            }
-            if ((word.Length ==0) && (delimiter.Length > 0)){
-                ret = "<span id=" + id + " style=\"color:" + delimiterColor + "\">" + delimiter + "</span>";
-            }
-            if ((word.Length > 0) && (delimiter.Length == 0)){
-                ret= "<span id=" + id + " style=\"color:" + wordColor + "\">" + word + "</span>";
-            }
             return ret;
         }
 

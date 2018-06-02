@@ -1,9 +1,7 @@
-var word = "";
-var savedRange;
 var tabPageNo = 1;
 
 if (document.addEventListener) {                // For all major browsers, except IE 8 and earlier
-    document.getElementById("inputTextWindow").addEventListener("keypress", inputKeyPress);
+    document.getElementById("inputTextWindow").addEventListener("keyup", inputKeyPress);
     //document.getElementById("inputTextWindow").addEventListener("mouseup", getCurrentPosition);
     document.getElementById("activeTab").addEventListener("click", clickOnTab); //init, this is the default tab
     document.getElementById("newTab").addEventListener("click", clickOnTab);
@@ -110,44 +108,46 @@ function closeTab() {
 }
 
 function inputKeyPress(e) {
-    var c, delimiter;
+    var c, word;
+    var needToSend = false;
 
     c = readMyPressedKey(e);
 
-    if (c === "Backspace" && word) {
-        word = word.substring(0, word.length - 1);
-        delimiter = "";
-    } else { //keyboard shortcuts
-        if (c == "z" && e.ctrlKey) { //undo
-            postRequest("GET", "http://localhost:5002/undo", null , function (response) {
+    if (isNonPrintableSymbol(c)) {              //non printable delimiter
+        needToSend = true;
+    } else {
+        if (!c.match(/^[a-zA-Z0-9\_]+$/i)) {    //normal delimiter (anything not alphanumeric)
+            needToSend = true;
+        } 
+    }
+
+    //keyboard shortcuts
+    if (c == "z" && e.ctrlKey) { //undo
+        postRequest("GET", "http://localhost:5002/undo", null, function (response) {
+            document.getElementById("inputTextWindow").innerHTML = response;
+        }, function (err) {
+            // Do/Undo microservice is down
+        });
+    } else {
+        if (c == "y" && e.ctrlKey) { //redo
+            postRequest("GET", "http://localhost:5002/redo", null, function (response) {
                 document.getElementById("inputTextWindow").innerHTML = response;
             }, function (err) {
                 // Do/Undo microservice is down
-                });
-        } else {
-            if (c == "y" && e.ctrlKey) { //redo
-                postRequest("GET", "http://localhost:5002/redo", null, function (response) {
-                    document.getElementById("inputTextWindow").innerHTML = response;
-                }, function (err) {
-                        // Do/Undo microservice is down
-                    })
-            }else { //non printable
-                if (isNonPrintableSymbol(c)) {
-                    delimiter = c;
-                } else {
-                    if (c.match(/^[a-zA-Z0-9\_]+$/i)) { //alphanumeric
-                        word += c; //build a word
-                    } else {
-                        delimiter = c;
-                    }
-                }
-            }
+            });
         }
     }
     
-    if (delimiter) {
-        //post the word+delimiter to word coloring microservice  
-        postRequest("POST", "http://localhost:5001/", { "word": word, "delimiter": delimiter }, function (response) {
+    if (needToSend) {
+        //post the contents of the current focus node to word coloring microservice  
+        sel = window.getSelection();
+        if (sel.anchorNode.nodeValue) {
+            word = sel.anchorNode.nodeValue;
+        } else if (sel.anchorNode.previousSibling && sel.anchorNode.previousSibling.lastChild) { //newline was pressed
+            word = sel.anchorNode.previousSibling.lastChild.nodeValue;
+        }
+
+        postRequest("POST", "http://localhost:5001/", { "word_and_delimiter": word }, function (response) {
             var output = document.getElementById("output");
             output.innerText = response; 
             var wordColoringMS = JSON.parse(response);
