@@ -12,7 +12,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Client Files", "Client File
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{00B146DC-0B8E-420E-82B2-67C4F51430A8}"
 	ProjectSection(SolutionItems) = preProject
-		KeyPress.js = KeyPress.js
+		scripts\editorUtilities.js = scripts\editorUtilities.js
+		scripts\tabs.js = scripts\tabs.js
+		scripts\textEditing.js = scripts\textEditing.js
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "css", "css", "{91FE92FC-D760-42AB-A867-AD07A3D8B8A7}"
@@ -20,7 +22,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "css", "css", "{91FE92FC-D76
 		css\IDEOnline.css = css\IDEOnline.css
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DoUndoMicroservice", "DoUndoMicroservice\DoUndoMicroservice.csproj", "{E0E86DDB-9EC8-4888-A74B-2C54BD2D83A9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DoUndoMicroservice", "DoUndoMicroservice\DoUndoMicroservice.csproj", "{E0E86DDB-9EC8-4888-A74B-2C54BD2D83A9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
