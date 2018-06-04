@@ -2,10 +2,12 @@ var savedRange;
 
 if (document.addEventListener) {                // For all major browsers, except IE<8
     document.getElementById("inputTextWindow").addEventListener("keydown", saveRange);
+    document.getElementById("inputTextWindow").addEventListener("mousedown", restoreRange);
 } else if (document.attachEvent) {              // For IE<8
     document.getElementById("inputTextWindow").attachEvent("keydown", saveRange);
 } 
 
+//filter
 function isPositionalChar(c) {
     ret = false;
     if (c == "Enter" || c === "ArrowLeft" || c === "ArrowDown" || c === "ArrowRight" || c === "ArrowUp"
@@ -15,6 +17,7 @@ function isPositionalChar(c) {
     return ret;
 }
 
+//read key on event
 function readMyPressedKey(event) {
     var ret = "";
     if (event.key) {                                //the new recommneded way (won't work in Safari)
@@ -47,6 +50,17 @@ function postRequest(verb, url, body, successCallback, errorCallback) {
     xhr.send(postJSONState);
 }
 
+/*
+ * A bit of research for the next functions -source MDN and w3schools.
+ * var selection = window.getSelection();              //range of text and objects selected with mouse drag or Shift+dirrectional keys
+ * var anchor = selection.anchorNode;                  //Returns the Node in which the selection begins.
+ * var focusNode = selection.focusNode;                //Returns the Node in which the selection ends.
+ * var type = selection.type;                          //returns "Caret" for click or "Range" for drag
+ * var singlePoint = selection.isCollapsed;            //Returns a Boolean indicating whether the selection's start and end points are at the same position.
+ * var rangeX = selection.getRangeAt(index);           //method returns a range object representing one of the ranges currently selected.
+    */
+
+//save current range
 function saveRange() {
     if (window.getSelection) { //Moz,Opera, IE>9
         var sel = window.getSelection();
@@ -58,29 +72,48 @@ function saveRange() {
     }
 }
 
+//replace current range with the saved one
 function restoreRange() {
     if (savedRange) {
+        console.log("range wants to jump here: " + window.getSelection().anchorNode.nodeValue);
         if (window.getSelection) {//Moz,Opera, IE>9
             var sel = window.getSelection();
             sel.removeAllRanges();
             sel.addRange(savedRange);
+            console.log("but we force it here: " + window.getSelection().anchorNode.nodeValue);
         } else if (document.selection && range.select) {//IE<8
             range.select();
         }
     }
 }
 
-/*
- * A bit of research for the next function -source MDN and w3schools.
- * var selection = window.getSelection();              //range of text and objects selected with mouse drag or Shift+dirrectional keys
- * var anchor = selection.anchorNode;                  //Returns the Node in which the selection begins.
- * var focusNode = selection.focusNode;                //Returns the Node in which the selection ends.
- * var type = selection.type;                          //returns "Caret" for click or "Range" for drag
- * var singlePoint = selection.isCollapsed;            //Returns a Boolean indicating whether the selection's start and end points are at the same position.
- * var rangeX = selection.getRangeAt(index);           //method returns a range object representing one of the ranges currently selected.
-    */
-//replace focused node with the parameter
-function insertHtmlAtCursor(html, newLine) {
+//get caret position (within a node, not the whole text! ex. <aa><b|bb><c> will return 1)
+function getCursorPosition() {
+    var sel, range;
+    if (window.selection) {
+        sel = window.getSelection();
+        if (sel.rangeCount) {
+            range = sel.getRangeAt(0);
+            return range.endOffset;
+        }
+    }
+}
+
+//set caret position
+function setCursorPositionAt(pos) {
+    var sel, range;
+    if (window.selection) {
+        sel = window.getSelection;
+        sel.removeAllRanges();
+        range = document.createRange();
+        range.endOffset = pos;
+        range.collapse(false);
+        sel.addRange(range);
+    }
+}
+
+//replace focused node with the first parameter. Second parameter is a work-around because range doesn't get saved properly on newline
+function insertServerHtml(html, newLine) {
     var range = document.createRange();
     var sel;
 

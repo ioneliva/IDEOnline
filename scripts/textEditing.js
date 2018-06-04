@@ -32,7 +32,7 @@ function inputKeyPress(e) {
     }
     
     if (needToSend) {
-        if (isPositionalChar(c)) {    //these keys make the cursor jump to another position, we need to analyze the word we jump from
+        if (isPositionalChar(c) && c!="Enter") {    //these keys make the cursor jump to another position, we need to analyze the word we jump from
             restoreRange();
         }
 
@@ -52,7 +52,7 @@ function inputKeyPress(e) {
             var wordColoringMS = JSON.parse(response);
             if (wordColoringMS.serverResponse!="100") {
                 //decorate with color spans
-                insertHtmlAtCursor(wordColoringMS.serverResponse, newLine);
+                insertServerHtml(wordColoringMS.serverResponse, newLine);
 
                 //post the current state to undo/redo microservice
                 var currentState = document.getElementById("inputTextWindow").innerHTML;
