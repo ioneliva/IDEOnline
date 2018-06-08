@@ -14,7 +14,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{00B1
 	ProjectSection(SolutionItems) = preProject
 		scripts\editorUtilities.js = scripts\editorUtilities.js
 		scripts\tabs.js = scripts\tabs.js
-		scripts\textEditing.js = scripts\textEditing.js
+		scripts\textEditor.js = scripts\textEditor.js
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "css", "css", "{91FE92FC-D760-42AB-A867-AD07A3D8B8A7}"

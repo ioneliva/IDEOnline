@@ -1,12 +1,3 @@
-var savedRange;
-
-if (document.addEventListener) {                // For all major browsers, except IE<8
-    document.getElementById("inputTextWindow").addEventListener("keydown", saveRange);
-    document.getElementById("inputTextWindow").addEventListener("mousedown", restoreRange);
-} else if (document.attachEvent) {              // For IE<8
-    document.getElementById("inputTextWindow").attachEvent("keydown", saveRange);
-} 
-
 //filter
 function isPositionalChar(c) {
     ret = false;
@@ -65,7 +56,8 @@ function saveRange() {
     if (window.getSelection) { //Moz,Opera, IE>9
         var sel = window.getSelection();
         if (sel.getRangeAt && sel.rangeCount) {
-            savedRange = sel.getRangeAt(0);
+            var clone = sel.getRangeAt(0).cloneRange();
+            return clone;
         }
     } else if (document.selection && document.selection.createRange) { //IE<8
         savedRange = document.selection.createRange();
@@ -73,14 +65,14 @@ function saveRange() {
 }
 
 //replace current range with the saved one
-function restoreRange() {
+function restoreRange(savedRange) {
     if (savedRange) {
-        console.log("range wants to jump here: " + window.getSelection().anchorNode.nodeValue);
+        //console.log("range wants to jump here: " + window.getSelection().anchorNode.nodeValue);
         if (window.getSelection) {//Moz,Opera, IE>9
             var sel = window.getSelection();
             sel.removeAllRanges();
             sel.addRange(savedRange);
-            console.log("but we force it here: " + window.getSelection().anchorNode.nodeValue);
+            //console.log("but we force it here: " + window.getSelection().anchorNode.nodeValue);
         } else if (document.selection && range.select) {//IE<8
             range.select();
         }
@@ -117,8 +109,10 @@ function insertServerHtml(html, newLine) {
     var range = document.createRange();
     var sel;
 
+
     if (window.getSelection) { //Moz,Opera IE>9
         sel = window.getSelection();
+
         if (sel.getRangeAt && sel.rangeCount) {
 
             if (newLine) {
@@ -144,7 +138,7 @@ function insertServerHtml(html, newLine) {
                 lastNode = frag.appendChild(node);                  //The returned value is the appended child
             }
             range.insertNode(frag);
-
+  
             if (lastNode) {
                 range.setStartAfter(lastNode);                      //set cursor position
                 range.collapse(true);                               //true -collapse to start, false-to end
