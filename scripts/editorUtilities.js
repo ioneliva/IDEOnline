@@ -50,7 +50,6 @@ function postRequest(verb, url, body, successCallback, errorCallback) {
  * var singlePoint = selection.isCollapsed;            //Returns a Boolean indicating whether the selection's start and end points are at the same position.
  * var rangeX = selection.getRangeAt(index);           //method returns a range object representing one of the ranges currently selected.
     */
-
 //save current range
 function saveRange() {
     if (window.getSelection) { //Moz,Opera, IE>9
@@ -67,66 +66,111 @@ function saveRange() {
 //replace current range with the saved one
 function restoreRange(savedRange) {
     if (savedRange) {
-        //console.log("range wants to jump here: " + window.getSelection().anchorNode.nodeValue);
+        //console.log("range wants to jump here: " + window.getSelection().focusNode.nodeValue);
         if (window.getSelection) {//Moz,Opera, IE>9
             var sel = window.getSelection();
             sel.removeAllRanges();
             sel.addRange(savedRange);
-            //console.log("but we force it here: " + window.getSelection().anchorNode.nodeValue);
+            //console.log("but we force it here: " + window.getSelection().focusNode.nodeValue);
         } else if (document.selection && range.select) {//IE<8
             range.select();
         }
     }
 }
 
-//get caret position (within a node, not the whole text! ex. <aa><b|bb><c> will return 1)
-function getCursorPosition() {
-    var sel, range;
-    if (window.selection) {
-        sel = window.getSelection();
-        if (sel.rangeCount) {
-            range = sel.getRangeAt(0);
-            return range.endOffset;
+//get current cursor position
+function getCursorPosition(parentId) {
+    var selection = window.getSelection(),
+        charCount = -1,
+        node;
+
+    if (selection.focusNode) {
+        node = selection.focusNode;
+        charCount = selection.focusOffset;
+
+        while (node) {
+            if (node.id === parentId) {
+                break;
+            }
+
+            if (node.previousSibling) {
+                node = node.previousSibling;
+                charCount += node.textContent.length;
+            } else {
+                node = node.parentNode;
+                if (node === null) {
+                    break;
+                }
+            }
+        }
+    }
+    return charCount;
+}
+
+//recursive, get range end offset in element for wanted cursor position
+function createRange(node, chars, range) {
+    if (!range) {
+        range = document.createRange()
+        range.selectNode(node);
+        range.setStart(node, 0);
+    }
+
+    if (chars.count === 0) {
+        range.setEnd(node, chars.count);
+    } else if (node && chars.count > 0) {
+        if (node.nodeType === Node.TEXT_NODE) {
+            if (node.textContent.length < chars.count) {
+                chars.count -= node.textContent.length;
+            } else {
+                range.setEnd(node, chars.count);
+                chars.count = 0;
+            }
+        } else {
+            for (var lp = 0; lp < node.childNodes.length; lp++) {
+                range = createRange(node.childNodes[lp], chars, range);
+
+                if (chars.count === 0) {
+                    break;
+                }
+            }
+        }
+    }
+    return range;
+}
+
+//set cursor position after chars characters in contentEditable window
+function setCurrentCursorPosition(chars) {
+    if (chars >= 0) {
+        var selection = window.getSelection();
+
+        range = createRange(document.getElementById("inputTextWindow"), { count: chars });
+
+        if (range) {
+            range.collapse(false);
+            selection.removeAllRanges();
+            selection.addRange(range);
         }
     }
 }
 
-//set caret position
-function setCursorPositionAt(pos) {
-    var sel, range;
-    if (window.selection) {
-        sel = window.getSelection;
-        sel.removeAllRanges();
-        range = document.createRange();
-        range.endOffset = pos;
-        range.collapse(false);
-        sel.addRange(range);
-    }
-}
-
-//replace focused node with the first parameter. Second parameter is a work-around because range doesn't get saved properly on newline
-function insertServerHtml(html, newLine) {
+//replace focused node with the first parameter
+function insertServerHtml(html) {
     var range = document.createRange();
     var sel;
-
 
     if (window.getSelection) { //Moz,Opera IE>9
         sel = window.getSelection();
 
         if (sel.getRangeAt && sel.rangeCount) {
 
-            if (newLine) {
-                range.selectNode(sel.anchorNode.previousSibling.lastChild);
-            } else {
-                range.selectNode(sel.anchorNode);                               //set range to envelop selection
-            }
+            range.selectNode(sel.focusNode);                               //set range to envelop selection
 
             //range.deleteContents() deletes only the contents, no matter if you wrap the range around the html element. Default broser behaviour, can't be overwritten
             //we bypass it by deleting it from the DOM
-            if (sel.anchorNode.parentNode instanceof HTMLDivElement) {
+            if (sel.focusNode.parentNode instanceof HTMLDivElement) {
                 range.deleteContents();
             } else { //parent is span, we are in the node text insdide it
-                var nodeToDelete = document.getElementById(sel.anchorNode.parentNode.getAttribute("id"));
+                var nodeToDelete = document.getElementById(sel.focusNode.parentNode.getAttribute("id"));
                 nodeToDelete.remove();
             }
 
@@ -138,13 +182,15 @@ function insertServerHtml(html, newLine) {
                 lastNode = frag.appendChild(node);                  //The returned value is the appended child
             }
             range.insertNode(frag);
-  
+
+            /*
             if (lastNode) {
                 range.setStartAfter(lastNode);                      //set cursor position
                 range.collapse(true);                               //true -collapse to start, false-to end
                 sel.removeAllRanges();
                 sel.addRange(range);
             }
+            */
         }
     } else if (document.selection && document.selection.type != "Control") { //IE<8
         document.selection.createRange().pasteHTML(html);
