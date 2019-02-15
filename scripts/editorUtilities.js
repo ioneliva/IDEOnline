@@ -50,33 +50,6 @@ function postRequest(verb, url, body, successCallback, errorCallback) {
  * var singlePoint = selection.isCollapsed;            //Returns a Boolean indicating whether the selection's start and end points are at the same position.
  * var rangeX = selection.getRangeAt(index);           //method returns a range object representing one of the ranges currently selected.
     */
-//save current range
-function saveRange() {
-    if (window.getSelection) { //Moz,Opera, IE>9
-        var sel = window.getSelection();
-        if (sel.getRangeAt && sel.rangeCount) {
-            var clone = sel.getRangeAt(0).cloneRange();
-            return clone;
-        }
-    } else if (document.selection && document.selection.createRange) { //IE<8
-        savedRange = document.selection.createRange();
-    }
-}
-
-//replace current range with the saved one
-function restoreRange(savedRange) {
-    if (savedRange) {
-        //console.log("range wants to jump here: " + window.getSelection().focusNode.nodeValue);
-        if (window.getSelection) {//Moz,Opera, IE>9
-            var sel = window.getSelection();
-            sel.removeAllRanges();
-            sel.addRange(savedRange);
-            //console.log("but we force it here: " + window.getSelection().focusNode.nodeValue);
-        } else if (document.selection && range.select) {//IE<8
-            range.select();
-        }
-    }
-}
 
 //get current cursor position
 function getCursorPosition(parentId) {
@@ -107,10 +80,10 @@ function getCursorPosition(parentId) {
     return charCount;
 }
 
-//recursive, get range end offset in element for wanted cursor position
+//get range end offset in element for wanted cursor position
 function createRange(node, chars, range) {
     if (!range) {
-        range = document.createRange()
+        range = document.createRange();
         range.selectNode(node);
         range.setStart(node, 0);
     }
@@ -146,55 +119,36 @@ function setCurrentCursorPosition(chars) {
         range = createRange(document.getElementById("inputTextWindow"), { count: chars });
 
         if (range) {
-            range.collapse(false);
+            range.collapse(false);   //true -collapse to start, false-to end
             selection.removeAllRanges();
             selection.addRange(range);
         }
     }
 }
 
-//replace focused node with the first parameter
-function insertServerHtml(html) {
+function replaceNodeWithHTML(node, html) {
     var range = document.createRange();
-    var sel;
 
-    if (window.getSelection) { //Moz,Opera IE>9
-        sel = window.getSelection();
+    range.selectNode(node);   //set range to envelop node
 
-        if (sel.getRangeAt && sel.rangeCount) {
-
-            range.selectNode(sel.focusNode);                               //set range to envelop selection
-
-            //range.deleteContents() deletes only the contents, no matter if you wrap the range around the html element. Default broser behaviour, can't be overwritten
-            //we bypass it by deleting it from the DOM
-            if (sel.focusNode.parentNode instanceof HTMLDivElement) {
-                range.deleteContents();
-            } else { //parent is span, we are in the node text insdide it
-                var nodeToDelete = document.getElementById(sel.focusNode.parentNode.getAttribute("id"));
-                nodeToDelete.remove();
-            }
-
-            var el = document.createElement("div");                 //the div is a carrier for our element, determined by the html code
-            el.innerHTML = html;
-            var frag = document.createDocumentFragment();
-            var node, lastNode;
-            while ((node = el.firstChild)) {
-                lastNode = frag.appendChild(node);                  //The returned value is the appended child
-            }
-            range.insertNode(frag);
-
-            /*
-            if (lastNode) {
-                range.setStartAfter(lastNode);                      //set cursor position
-                range.collapse(true);                               //true -collapse to start, false-to end
-                sel.removeAllRanges();
-                sel.addRange(range);
-            }
-            */
-        }
-    } else if (document.selection && document.selection.type != "Control") { //IE<8
-        document.selection.createRange().pasteHTML(html);
+    //range.deleteContents() deletes only the contents of the element, not the tags, no matter if you wrap the range around the html element. Default broser behaviour, can't be overwritten
+    //we bypass it by deleting it from the DOM
+    if (node.parentNode instanceof HTMLDivElement) {
+        range.deleteContents();
     }
+    else { //parent is span, we are in the node text insdide it
+        var nodeToDelete = document.getElementById(node.parentNode.getAttribute("id"));
+        nodeToDelete.remove();
+    }
+
+    var el = document.createElement("div");                 //this div is a temporary carrier for our html
+    el.innerHTML = html;
+    var frag = document.createDocumentFragment();
+    var aLittleHTML;
+    while ((aLittleHTML = el.firstChild)) {
+        frag.appendChild(aLittleHTML);
+    }
+    range.insertNode(frag);
 }
 
 
