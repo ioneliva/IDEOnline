@@ -46,8 +46,9 @@ function handleKeyboard(e) {
     if (!c.match(/^[a-zA-Z0-9\_]+$/i) || isPositionalChar(c)) {
 
         cursorPosition = getCursorPosition("inputTextWindow");
+
         wordComposite = oldNode.nodeValue;
-        //console.log("cursor at " + cursorPosition);
+        console.log("cursor at " + cursorPosition);
         //console.log("sending word "+word);
 
         //send data to server
@@ -60,8 +61,11 @@ function handleKeyboard(e) {
                 replaceNodeWithHTML(oldNode, wordColoringMS.serverResponse);
 
                 //put cursor back at the correct position
-                //console.log("punem cursor pe pos " + cursorPosition);
-                setCurrentCursorPosition(cursorPosition);
+                if (c != "Enter") {
+                    setCurrentCursorPosition(cursorPosition);
+                } else {
+                    doxExec = document.execCommand('insertBrOnReturn', false, true);
+                }
 
                 //post the current state to undo/redo microservice
                 var currentState = document.getElementById("inputTextWindow").innerHTML;

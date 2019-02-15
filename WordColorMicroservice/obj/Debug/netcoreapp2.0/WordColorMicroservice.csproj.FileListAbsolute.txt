@@ -20,3 +20,4 @@ c:\Users\io\source\repos\Git\IDEOnline\WordColorMicroservice\obj\Debug\netcoreap
 c:\Users\io\source\repos\Git\IDEOnline\WordColorMicroservice\obj\Debug\netcoreapp2.0\WordColorMicroservice.dll
 c:\Users\io\source\repos\Git\IDEOnline\WordColorMicroservice\obj\Debug\netcoreapp2.0\WordColorMicroservice.pdb
 C:\Users\io\source\repos\IDEOnline\WordColorMicroservice\bin\Debug\netcoreapp2.0\hosting.json
+C:\Users\io\source\repos\IDEOnline\WordColorMicroservice\obj\Debug\netcoreapp2.0\WordColorMicroservice.csprojAssemblyReference.cache
