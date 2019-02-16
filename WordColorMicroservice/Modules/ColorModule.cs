@@ -39,8 +39,8 @@ namespace WordColorMicroservice.Modules
             string word="", ret = "";
             char delimiter;
             var regex = Resources.Delimiters.PRINTABLE;
-            string wordColor = Resources.Colors.BLACK;
-            string delimiterColor = Resources.Colors.BLACK;
+            string wordColor = Resources.Colors.BLACK,
+                   delimiterColor = Resources.Colors.BLACK;
 
             //split de composite word into word+delimiter, construct the span <word><delimiter> structure
             for (int i = 0; i < compositeWord.Length; i++)
@@ -65,7 +65,10 @@ namespace WordColorMicroservice.Modules
                     {
                         wordColor = Resources.Colors.BLUE;
                     }
-                    ret += "<span id=" + (id++) + " style=\"color:" + wordColor + "\">" + word + "</span>";
+                    if (word != "") //word is empty if the delimiter is first in the composite word
+                    {
+                        ret += "<span id=" + (id++) + " style=\"color:" + wordColor + "\">" + word + "</span>";
+                    }
                     //adding the delimiter to the span structure
                     delimiter = compositeWord[i];
                     if (Regex.Match(delimiter.ToString(), regex).Success)
