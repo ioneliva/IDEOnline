@@ -52,57 +52,66 @@ function postRequest(verb, url, body, successCallback, errorCallback) {
     */
 
 //get current cursor position
-function getCursorPosition(parentId) {
-    var selection = window.getSelection(),
-        charCount = -1,
-        node;
+//the formula I dicovered intuitively (pen and paper examples) is number of chars to the cursor plus number of interior divs, excepting the first 
+function getCursorPosition(containerId) {
+    var sel = window.getSelection(),
+        pos = -1,
+        currentNode;
 
-    if (selection.focusNode) {
-        node = selection.focusNode;
-        charCount = selection.focusOffset;
+    if (sel.focusNode) {
+        currentNode = sel.focusNode;
+        pos = sel.focusOffset;
 
-        while (node) {
-            if (node.id === parentId) {
+        while (currentNode) {
+            if (currentNode.id == containerId) {
                 break;
             }
 
-            if (node.previousSibling) {
-                node = node.previousSibling;
-                charCount += node.textContent.length;
-            } else {
-                node = node.parentNode;
-                if (node === null) {
-                    break;
+            if (currentNode.previousSibling) {
+                if (currentNode.parentNode.id == containerId && currentNode instanceof HTMLDivElement) {        //we are positioned on a div row inside the container, but not the first row
+                    pos++;
                 }
+                currentNode = currentNode.previousSibling;
+                pos += currentNode.textContent.length;
+            } else {
+                currentNode = currentNode.parentNode;
+                if (currentNode === null) {
+                    break;
+                } 
             }
         }
     }
-    return charCount;
+    return pos;
 }
 
 //get range end offset in element for wanted cursor position
-function createRange(node, chars, range) {
+//formula is the invert of the above - position wanted minus number of interior divs, except the first row
+function createRange(currentNode, pos, range) {
     if (!range) {
         range = document.createRange();
-        range.selectNode(node);
-        range.setStart(node, 0);
+        range.selectNode(currentNode);
+        range.setStart(currentNode, 0);
     }
 
-    if (chars.count === 0) {
-        range.setEnd(node, chars.count);
-    } else if (node && chars.count > 0) {
-        if (node.nodeType === Node.TEXT_NODE) {
-            if (node.textContent.length < chars.count) {
-                chars.count -= node.textContent.length;
+    if (pos.count == 0) {
+        range.setEnd(currentNode, pos.count);
+    } else if (currentNode && pos.count > 0) {
+        if (currentNode.nodeType === Node.TEXT_NODE) {
+            if (currentNode.textContent.length < pos.count) {
+                pos.count -= currentNode.textContent.length;
             } else {
-                range.setEnd(node, chars.count);
-                chars.count = 0;
+                range.setEnd(currentNode, pos.count);
+                pos.count = -1;
             }
         } else {
-            for (var lp = 0; lp < node.childNodes.length; lp++) {
-                range = createRange(node.childNodes[lp], chars, range);
+            for (var i = 0; i < currentNode.childNodes.length; i++) {
+                if (currentNode.id == "inputTextWindow" && currentNode.childNodes[i] instanceof HTMLDivElement
+                        && currentNode.childNodes[i].previousSibling) {     //interior div, except the first one
+                    pos.count--;
+                }
+                range = createRange(currentNode.childNodes[i], pos, range);
 
-                if (chars.count === 0) {
+                if (pos.count == -1) {
                     break;
                 }
             }
@@ -111,37 +120,40 @@ function createRange(node, chars, range) {
     return range;
 }
 
-//set cursor position after chars characters in contentEditable window
-function setCurrentCursorPosition(chars) {
-    if (chars >= 0) {
-        var selection = window.getSelection();
+//set cursor position after pos characters in contentEditable window
+function setCursorPosition(pos) {
+    if (pos >= 0) {
+        var sel = window.getSelection();
 
-        range = createRange(document.getElementById("inputTextWindow"), { count: chars });
+        range = createRange(document.getElementById("inputTextWindow"), { count: pos });
 
         if (range) {
-            range.collapse(false);   //true -collapse to start, false-to end
-            selection.removeAllRanges();
-            selection.addRange(range);
+            range.collapse(false);      //true -collapse to start, false-to end
+            sel.removeAllRanges();
+            sel.addRange(range);
         }
     }
 }
 
+//replace text contents of node with html
 function replaceNodeWithHTML(node, html) {
     var range = document.createRange();
 
-    range.selectNode(node);   //set range to envelop node
+    range.selectNode(node);     //set range to envelop node
 
     //range.deleteContents() deletes only the contents of the element, not the tags, no matter if you wrap the range around the html element. Default broser behaviour, can't be overwritten
     //we bypass it by deleting it from the DOM
     if (node.parentNode instanceof HTMLDivElement) {
         range.deleteContents();
     }
-    else { //parent is span, we are in the node text insdide it
+    else {      //parent is span, we are in the node text insdide it
         var nodeToDelete = document.getElementById(node.parentNode.getAttribute("id"));
-        nodeToDelete.remove();
+        if (nodeToDelete) {     //sometimes it fail, causes a stuttering, but with no extra effect
+            nodeToDelete.remove();
+        }
     }
 
-    var el = document.createElement("div");                 //this div is a temporary carrier for our html
+    var el = document.createElement("div");     //this div is a temporary carrier for our html
     el.innerHTML = html;
     var frag = document.createDocumentFragment();
     var aLittleHTML;
@@ -150,5 +162,3 @@ function replaceNodeWithHTML(node, html) {
     }
     range.insertNode(frag);
 }
-
-
