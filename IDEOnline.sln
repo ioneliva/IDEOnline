@@ -24,6 +24,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "css", "css", "{91FE92FC-D76
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DoUndoMicroservice", "DoUndoMicroservice\DoUndoMicroservice.csproj", "{E0E86DDB-9EC8-4888-A74B-2C54BD2D83A9}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "imgs", "imgs", "{FB04DF0B-6534-41F1-B2DF-85E22BD3F3BC}"
+	ProjectSection(SolutionItems) = preProject
+		imgs\avatar.jpg = imgs\avatar.jpg
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +50,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{00B146DC-0B8E-420E-82B2-67C4F51430A8} = {93886DB1-C275-4FA5-ADED-21B99915F1BE}
 		{91FE92FC-D760-42AB-A867-AD07A3D8B8A7} = {93886DB1-C275-4FA5-ADED-21B99915F1BE}
+		{FB04DF0B-6534-41F1-B2DF-85E22BD3F3BC} = {93886DB1-C275-4FA5-ADED-21B99915F1BE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D521E5BE-73D7-4C0E-8A84-1E89540473A6}

@@ -41,6 +41,7 @@ function clickOnTab() {
         this.firstElementChild.appendChild(closeBtn);
         tabPageNo++;
         //create a new editor window    TODO: figure css out. Also give it an unique id, tied to the tab above. When tab is active, window comes on top of others
+        /*
         var wdw = document.createElement("div");
         wdw.contentEditable = "true";
         wdw.setAttribute("spellcheck", "false");
@@ -51,6 +52,7 @@ function clickOnTab() {
             wdw.attachEvent("keydown", inputKeyPress);
         }
         document.getElementById("content").appendChild(wdw);
+        */
 
         //add the + tab again
         var newTab = document.createElement("div");

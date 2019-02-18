@@ -1,4 +1,9 @@
-#wrapper{
+/*Bit of info I always forget:
+    margin -space outside the box
+    padding - space inside the box
+    order is clockwise -top, right, bot, left
+*/
+#wrapper {
     padding: 100px;
 	width: 80%;
 	margin: auto;
@@ -26,7 +31,7 @@
     border-radius: 4px;
     border: 1px solid;
     overflow: hidden;
-    margin: 0 10px 0;
+    margin: 0 10px 0 10px;
 }
 
 .tab.activeTab {
@@ -43,13 +48,90 @@
     border: none;
     float:right;
 }
-#closeButton:hover{
+#closeButton:hover {
     color:#ff0000;
 }
 
 .inner-tab p {
     float: left;
     width: 79%;
+}
+
+.loginBox {
+    width: 320px;
+    height: 420px;
+    background: #000;
+    color: #fff;
+    top: 35%;
+    left: 35%;
+    position: absolute;
+    padding: 70px 30px 70px 30px;
+    box-sizing: border-box; /*when calculating 320 width, include padding and borders*/
+    z-index: 2; /*+1 higher than the layer under*/
+
+    /*display:none;*/
+}
+
+.loginBox h1 {
+    margin:0;
+    padding-bottom: 20px;
+    text-align: center;
+    font-size: 22px;
+}
+
+.loginBox label {
+    font-weight: bold;
+}
+
+.loginBox input {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.loginBox #userName, #userPasswd {
+    border: none;
+    border-bottom: 1px solid #fff;
+    background: transparent; /*kill color in the edit box, see the background*/
+    outline: none; /*An outline is a line that is drawn around elements, outside the borders, to make the element "stand out".*/
+    height: 30px;
+    color: #fff;
+    font-size: 16px;
+}
+
+.loginBox #subtmitBtn {
+    border: none;
+    outline: none;
+    height: 40px;
+    background: #808080;
+    color: #fff;
+    font-size: 18px;
+    border-radius: 20px;
+}
+
+.loginBox #subtmitBtn:hover {
+    cursor: pointer;
+    background: #ffc107;
+    color: #000;
+}
+
+.loginBox a {
+    text-decoration: none;
+    font-size: 16px;
+    line-height: 20px;
+    color: dimgrey;
+}
+
+.loginBox a:hover {
+    color: #ffc107;
+}
+
+.loginBox .avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%; /*make round corners*/
+    position: absolute;
+    top: -50px; /*with a height of 100, we move it half way above the container*/
+    left: 100px; /*and roughly in the middle of the width of container*/
 }
 
 #content {
@@ -68,7 +150,7 @@
     position: relative;
 }
 
-#solutionWindow{
+#solutionWindow {
 	width: 15%;
 	min-height: 400px;
 	top: 50px;
@@ -81,7 +163,7 @@
 	z-index: 3; 				/*higher z-index makes it cover the underlaying element with lower z*/    
 }
 
-#output{
+#output {
 	clear: both;
 	width: 90%;
 	height: 20%;
@@ -89,7 +171,7 @@
 	padding-top: 50px;
 }
 
-#footer{
+#footer {
 	clear: both;
 	height: 30px;
 	background-color: #000;
