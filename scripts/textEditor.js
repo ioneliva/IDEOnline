@@ -1,4 +1,5 @@
 var oldNode;
+var prevSeparatorKey;
 
 if (document.addEventListener) {                // For all major browsers, except IE<8
     document.getElementById("inputTextWindow").addEventListener("keydown", saveOldNode);
@@ -37,11 +38,13 @@ function handleKeyboard(e) {
     }
 
     //delimiter keys like (/*;backspace, etc.. or keys that trigger cursor movement like arrow keys or Home,End,PgUp, etc
-    if (!c.match(/^[a-zA-Z0-9\_]+$/i) || isPositionalChar(c)) {
+    //also detect if user pressed cursor movement keys repeatedly, we avoid sending requests to servers for every repetition
+    if (!c.match(/^[a-zA-Z0-9\_]+$/i) || (isPositionalChar(c) && (prevSeparatorKey != c))) {
         var cursorPosition = getCursorPosition("inputTextWindow");
         wordComposite = oldNode.nodeValue;
 
         //send data to server
+        console.log("sending some data...");
         postRequest("POST", "http://localhost:5001/", { "word_and_delimiter": wordComposite }, function (response) {
             var output = document.getElementById("output");
             output.innerText = response;
@@ -53,7 +56,7 @@ function handleKeyboard(e) {
                 //put cursor back at the correct position
                 if (c != "Enter") {
                     setCursorPosition(cursorPosition);
-                } 
+                }
                 //post the current state to undo/redo microservice
                 var currentState = document.getElementById("inputTextWindow").innerHTML;
                 postRequest("PUT", "http://localhost:5002/", { "state": currentState });
@@ -61,5 +64,7 @@ function handleKeyboard(e) {
         }, function (err) {
             // Word coloring microservice is down
         });
+
+        prevSeparatorKey = c;
     }
 }
