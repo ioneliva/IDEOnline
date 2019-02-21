@@ -1,7 +1,7 @@
 //filter
 function isPositionalChar(c) {
     ret = false;
-    if (c == "Enter" || c === "ArrowLeft" || c === "ArrowDown" || c === "ArrowRight" || c === "ArrowUp"
+    if (c == "Enter" || c=="Tab" || c === "ArrowLeft" || c === "ArrowDown" || c === "ArrowRight" || c === "ArrowUp"
         || c === "Home" || c === "End" || c === "PageUp" || c === "PageDown") {
         ret = true;
     }
@@ -93,9 +93,7 @@ function createRange(currentNode, pos, range) {
         range.setStart(currentNode, 0);
     }
 
-    if (pos.count == 0) {
-        range.setEnd(currentNode, pos.count);
-    } else if (currentNode && pos.count > 0) {
+    if (currentNode) {
         if (currentNode.nodeType === Node.TEXT_NODE) {
             if (currentNode.textContent.length < pos.count) {
                 pos.count -= currentNode.textContent.length;

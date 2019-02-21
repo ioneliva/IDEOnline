@@ -69,7 +69,7 @@
     box-sizing: border-box; /*when calculating 320 width, include padding and borders*/
     z-index: 2; /*+1 higher than the layer under*/
 
-    /*display:none;*/
+    display:none;
 }
 
 .loginBox h1 {
