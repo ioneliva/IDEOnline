@@ -12,6 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Client Files", "Client File
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{00B146DC-0B8E-420E-82B2-67C4F51430A8}"
 	ProjectSection(SolutionItems) = preProject
+		scripts\customKeys.js = scripts\customKeys.js
 		scripts\editorUtilities.js = scripts\editorUtilities.js
 		scripts\tabs.js = scripts\tabs.js
 		scripts\textEditor.js = scripts\textEditor.js
