@@ -4,47 +4,47 @@ document.getElementById("inputTextWindow").addEventListener("keyup", triggerOnUp
 //note: if the user keeps a key pressed, it triggers a multitude of "keydown" events, but only one "keyup" event
 //so keys that modify existing structure on multiple triggers, like Backspace and Del need to be handled on KeyDown
 function triggerOnDown(e) {
-    c = readMyPressedKey(e);
-    var node = window.getSelection().focusNode;
-    var cursoPozInsideElement = window.getSelection().focusOffset;
-    var globalCursor;
+    var c = readMyPressedKey(e),
+        node = window.getSelection().focusNode,
+        cursoPozInsideElement = window.getSelection().focusOffset,
+        globalCursor;
 
-    //toDo -when we deletede EVERYTHING and cursor is set to 0, doesn't work properly. Modify setCursor() function
     if (c == "Backspace") {
-        if (cursoPozInsideElement ==1 && node.textContent.length == 1
-                && node!=null && !(node instanceof HTMLDivElement)) {      // <...><c|> -> <...|>
-            e.preventDefault();
-            globalCursor = getCursorPosition("inputTextWindow");
-            var nodeToDelete = node.parentNode;
-            nodeToDelete.parentNode.removeChild(nodeToDelete);
-            setCursorPosition(globalCursor - 1);
-        }
-        if (cursoPozInsideElement == 0 && node.parentNode.previousSibling
-                && node.parentNode.previousSibling.textContent.length == 1 && !(node instanceof HTMLDivElement)) { // <...><b><|c...> -> <...|><c...>
-            e.preventDefault();
-            globalCursor = getCursorPosition("inputTextWindow");
-            var nodeToDelete = node.parentNode.previousSibling;
-            nodeToDelete.parentNode.removeChild(nodeToDelete);
-            setCursorPosition(globalCursor - 1);
+        if (node && !(node instanceof HTMLDivElement)) {
+            if (cursoPozInsideElement == 1 && node.textContent.length == 1) {      // <...><c|> -> <...|>
+                e.preventDefault();
+                globalCursor = getCursorPosition("inputTextWindow");
+                var nodeToDelete = node.parentNode;
+                nodeToDelete.parentNode.removeChild(nodeToDelete);
+                setCursorPosition(globalCursor - 1);
+            }
+            if (cursoPozInsideElement == 0 && node.parentNode.previousSibling.textContent.length == 1) { // <...><b><|c...> -> <...|><c...>
+                e.preventDefault();
+                globalCursor = getCursorPosition("inputTextWindow");
+                var nodeToDelete = node.parentNode.previousSibling;
+                nodeToDelete.parentNode.removeChild(nodeToDelete);
+                setCursorPosition(globalCursor - 1);
+            }
         }
     }
     if (c == "Delete") {
-        if (cursoPozInsideElement == 0 && node.textContent.length == 1
-                && node.parentNode.nextSibling && !(node instanceof HTMLDivElement)) {  //<|c><...> -> <|...>
-            e.preventDefault();
-            globalCursor = getCursorPosition("inputTextWindow");
-            var nodeToDelete = node.parentNode;
-            nodeToDelete.parentNode.removeChild(nodeToDelete);
-            setCursorPosition(globalCursor);
-        }
-        if (cursoPozInsideElement == node.textContent.length
-                && node.parentNode.nextSibling && node.parentNode.nextSibling.textContent.length == 1
-                && !(node instanceof HTMLDivElement)) {     //<...c|><b><a...> -> <...c|><a...>
-            e.preventDefault();
-            globalCursor = getCursorPosition("inputTextWindow");
-            var nodeToDelete = node.parentNode.nextSibling;
-            nodeToDelete.parentNode.removeChild(nodeToDelete);
-            setCursorPosition(globalCursor);
+        if (node && !(node instanceof HTMLDivElement)) {
+            if (cursoPozInsideElement == 0 && node.textContent.length == 1
+                    && node.parentNode.nextSibling) {  //<|c><...> -> <|...>
+                e.preventDefault();
+                globalCursor = getCursorPosition("inputTextWindow");
+                var nodeToDelete = node.parentNode;
+                nodeToDelete.parentNode.removeChild(nodeToDelete);
+                setCursorPosition(globalCursor);
+            }
+            if (cursoPozInsideElement == node.textContent.length
+                    && node.parentNode.nextSibling && node.parentNode.nextSibling.textContent.length == 1) {     //<...c|><b><a...> -> <...c|><a...>
+                e.preventDefault();
+                globalCursor = getCursorPosition("inputTextWindow");
+                var nodeToDelete = node.parentNode.nextSibling;
+                nodeToDelete.parentNode.removeChild(nodeToDelete);
+                setCursorPosition(globalCursor);
+            }
         }
     }
 
@@ -54,8 +54,8 @@ function triggerOnDown(e) {
 }
 
 function triggerOnUp(e) {
-    c = readMyPressedKey(e);
-    var node = window.getSelection().focusNode;
+    var c = readMyPressedKey(e),
+        node = window.getSelection().focusNode;
 
     //note to self -discovered a strange inconsistency/bug. When pressing tab sometimes the tab space is displayed smaller than it should be, despite the html behind containing a proper \t tag
     //this has nothing to do with my code, as far as I can tell, it's a strange browser or css behaviour

@@ -89,12 +89,9 @@ function getCursorPosition(containerId) {
 function createRange(currentNode, pos, range) {
     if (!range) {
         range = document.createRange();
-        if (pos == 0) {
-            range.setStart(document.getElementById("inputTextWindow"), 0);
-        } else {
-            range.selectNode(currentNode);
-            range.setStart(currentNode, 0);
-        }
+        range.selectNode(currentNode);
+        range.setStart(currentNode, 0);
+        range.setEnd(currentNode,0);
     }
 
     if (currentNode) {
@@ -108,7 +105,7 @@ function createRange(currentNode, pos, range) {
         } else {
             for (var i = 0; i < currentNode.childNodes.length; i++) {
                 if (currentNode.id == "inputTextWindow" && currentNode.childNodes[i] instanceof HTMLDivElement
-                        && currentNode.childNodes[i].previousSibling) {     //interior div, except the first one
+                    && currentNode.childNodes[i].previousSibling) {     //interior div, except the first one
                     pos.count--;
                 }
                 range = createRange(currentNode.childNodes[i], pos, range);
@@ -125,9 +122,8 @@ function createRange(currentNode, pos, range) {
 //set cursor position after pos characters in contentEditable window
 function setCursorPosition(pos) {
     if (pos >= 0) {
-        var sel = window.getSelection();
-
-        range = createRange(document.getElementById("inputTextWindow"), { count: pos });
+        var sel = window.getSelection(),
+            range = createRange(document.getElementById("inputTextWindow"), { count: pos });
 
         if (range) {
             range.collapse(false);      //true -collapse to start, false-to end
@@ -155,10 +151,11 @@ function replaceNodeWithHTML(node, html) {
         }
     }
 
-    var el = document.createElement("div");     //this div is a temporary carrier for our html
+    var el = document.createElement("div"),     //this div is a temporary carrier for our html
+        frag = document.createDocumentFragment(),
+        aLittleHTML;
     el.innerHTML = html;
-    var frag = document.createDocumentFragment();
-    var aLittleHTML;
+    
     while ((aLittleHTML = el.firstChild)) {
         frag.appendChild(aLittleHTML);
     }
