@@ -89,8 +89,12 @@ function getCursorPosition(containerId) {
 function createRange(currentNode, pos, range) {
     if (!range) {
         range = document.createRange();
-        range.selectNode(currentNode);
-        range.setStart(currentNode, 0);
+        if (pos == 0) {
+            range.setStart(document.getElementById("inputTextWindow"), 0);
+        } else {
+            range.selectNode(currentNode);
+            range.setStart(currentNode, 0);
+        }
     }
 
     if (currentNode) {

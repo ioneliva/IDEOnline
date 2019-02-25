@@ -7,14 +7,14 @@ function triggerOnDown(e) {
     c = readMyPressedKey(e);
     var node = window.getSelection().focusNode;
     var cursoPozInsideElement = window.getSelection().focusOffset;
-     //problema e aici.se incearca getcursor fara focus
-    var globalCursor = getCursorPosition("inputTextWindow");
+    var globalCursor;
 
     //toDo -when we deletede EVERYTHING and cursor is set to 0, doesn't work properly. Modify setCursor() function
     if (c == "Backspace") {
         if (cursoPozInsideElement ==1 && node.textContent.length == 1
                 && node!=null && !(node instanceof HTMLDivElement)) {      // <...><c|> -> <...|>
             e.preventDefault();
+            globalCursor = getCursorPosition("inputTextWindow");
             var nodeToDelete = node.parentNode;
             nodeToDelete.parentNode.removeChild(nodeToDelete);
             setCursorPosition(globalCursor - 1);
@@ -22,6 +22,7 @@ function triggerOnDown(e) {
         if (cursoPozInsideElement == 0 && node.parentNode.previousSibling
                 && node.parentNode.previousSibling.textContent.length == 1 && !(node instanceof HTMLDivElement)) { // <...><b><|c...> -> <...|><c...>
             e.preventDefault();
+            globalCursor = getCursorPosition("inputTextWindow");
             var nodeToDelete = node.parentNode.previousSibling;
             nodeToDelete.parentNode.removeChild(nodeToDelete);
             setCursorPosition(globalCursor - 1);
@@ -31,6 +32,7 @@ function triggerOnDown(e) {
         if (cursoPozInsideElement == 0 && node.textContent.length == 1
                 && node.parentNode.nextSibling && !(node instanceof HTMLDivElement)) {  //<|c><...> -> <|...>
             e.preventDefault();
+            globalCursor = getCursorPosition("inputTextWindow");
             var nodeToDelete = node.parentNode;
             nodeToDelete.parentNode.removeChild(nodeToDelete);
             setCursorPosition(globalCursor);
@@ -39,6 +41,7 @@ function triggerOnDown(e) {
                 && node.parentNode.nextSibling && node.parentNode.nextSibling.textContent.length == 1
                 && !(node instanceof HTMLDivElement)) {     //<...c|><b><a...> -> <...c|><a...>
             e.preventDefault();
+            globalCursor = getCursorPosition("inputTextWindow");
             var nodeToDelete = node.parentNode.nextSibling;
             nodeToDelete.parentNode.removeChild(nodeToDelete);
             setCursorPosition(globalCursor);
@@ -69,11 +72,14 @@ function triggerOnUp(e) {
         setCursorPosition(0);
     }
     if (c == "PageDown") {
-        var lines = 0;
+        var lines = 1;
         //basically we want the number of chars to the end + number of lines except the first one (same algorithm as in utilities -create range for setCursorPosition)
-        for (var i = 0; i < document.getElementById("inputTextWindow").childNodes.length; i++) {
-            lines++;
+        var inputWindow = document.getElementById("inputTextWindow");
+        for (var i = 0; i < inputWindow.childNodes.length; i++) {
+            if (inputWindow.childNodes[i] instanceof HTMLDivElement && inputWindow.childNodes[i].previousSibling) {
+                lines++;
+            }
         }
-        setCursorPosition(document.getElementById("inputTextWindow").textContent.length + lines - 1);
+        setCursorPosition(document.getElementById("inputTextWindow").textContent.length + lines-1);
     }
 }
