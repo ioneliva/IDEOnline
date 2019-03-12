@@ -5,29 +5,29 @@ VisualStudioVersion = 15.0.27004.2009
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WordColorMicroservice", "WordColorMicroservice\WordColorMicroservice.csproj", "{2A7817CC-5D8E-44D1-A6B3-6569C1F6EEC9}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Client Files", "Client Files", "{93886DB1-C275-4FA5-ADED-21B99915F1BE}"
-	ProjectSection(SolutionItems) = preProject
-		clientPage.html = clientPage.html
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{00B146DC-0B8E-420E-82B2-67C4F51430A8}"
-	ProjectSection(SolutionItems) = preProject
-		scripts\customKeys.js = scripts\customKeys.js
-		scripts\editorUtilities.js = scripts\editorUtilities.js
-		scripts\tabs.js = scripts\tabs.js
-		scripts\textEditor.js = scripts\textEditor.js
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "css", "css", "{91FE92FC-D760-42AB-A867-AD07A3D8B8A7}"
-	ProjectSection(SolutionItems) = preProject
-		css\IDEOnline.css = css\IDEOnline.css
-	EndProjectSection
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DoUndoMicroservice", "DoUndoMicroservice\DoUndoMicroservice.csproj", "{E0E86DDB-9EC8-4888-A74B-2C54BD2D83A9}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "imgs", "imgs", "{FB04DF0B-6534-41F1-B2DF-85E22BD3F3BC}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ClientFiles", "ClientFiles", "{483694DC-E289-4F78-8A1B-1B83B9260917}"
 	ProjectSection(SolutionItems) = preProject
-		imgs\avatar.jpg = imgs\avatar.jpg
+		ClientFiles\clientPage.html = ClientFiles\clientPage.html
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "css", "css", "{0FD692D9-555C-4F91-A718-F1EF05E9DBEC}"
+	ProjectSection(SolutionItems) = preProject
+		ClientFiles\css\IDEOnline.css = ClientFiles\css\IDEOnline.css
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "imgs", "imgs", "{EC3BC114-478E-4A63-AE0C-8268F8FF6ABA}"
+	ProjectSection(SolutionItems) = preProject
+		ClientFiles\imgs\avatar.jpg = ClientFiles\imgs\avatar.jpg
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{699E9998-C636-406F-BFCF-506339B1DBD4}"
+	ProjectSection(SolutionItems) = preProject
+		ClientFiles\scripts\customKeys.js = ClientFiles\scripts\customKeys.js
+		ClientFiles\scripts\editorUtilities.js = ClientFiles\scripts\editorUtilities.js
+		ClientFiles\scripts\tabs.js = ClientFiles\scripts\tabs.js
+		ClientFiles\scripts\textEditor.js = ClientFiles\scripts\textEditor.js
 	EndProjectSection
 EndProject
 Global
@@ -49,9 +49,9 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{00B146DC-0B8E-420E-82B2-67C4F51430A8} = {93886DB1-C275-4FA5-ADED-21B99915F1BE}
-		{91FE92FC-D760-42AB-A867-AD07A3D8B8A7} = {93886DB1-C275-4FA5-ADED-21B99915F1BE}
-		{FB04DF0B-6534-41F1-B2DF-85E22BD3F3BC} = {93886DB1-C275-4FA5-ADED-21B99915F1BE}
+		{0FD692D9-555C-4F91-A718-F1EF05E9DBEC} = {483694DC-E289-4F78-8A1B-1B83B9260917}
+		{EC3BC114-478E-4A63-AE0C-8268F8FF6ABA} = {483694DC-E289-4F78-8A1B-1B83B9260917}
+		{699E9998-C636-406F-BFCF-506339B1DBD4} = {483694DC-E289-4F78-8A1B-1B83B9260917}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D521E5BE-73D7-4C0E-8A84-1E89540473A6}

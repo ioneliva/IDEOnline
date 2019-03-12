@@ -9,3 +9,4 @@ C:\Users\io\source\repos\IDEOnline\DoUndoMicroservice\obj\Debug\netcoreapp2.2\Do
 C:\Users\io\source\repos\IDEOnline\DoUndoMicroservice\obj\Debug\netcoreapp2.2\DoUndoMicroservice.AssemblyInfo.cs
 C:\Users\io\source\repos\IDEOnline\DoUndoMicroservice\obj\Debug\netcoreapp2.2\DoUndoMicroservice.dll
 C:\Users\io\source\repos\IDEOnline\DoUndoMicroservice\obj\Debug\netcoreapp2.2\DoUndoMicroservice.pdb
+C:\Users\io\source\repos\IDEOnline\DoUndoMicroservice\obj\Debug\netcoreapp2.2\DoUndoMicroservice.csprojAssemblyReference.cache
