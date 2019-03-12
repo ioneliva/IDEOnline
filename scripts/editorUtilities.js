@@ -1,16 +1,30 @@
-//filter
+//filters
+function isAlphaNumeric(c) {
+	let ret = false;
+	if (c.match(/^[a-zA-Z0-9\_]+$/i)) {
+		ret = true;
+	}
+	return ret;
+}
 function isPositionalChar(c) {
-    ret = false;
-    if (c == "Enter" || c=="Tab" || c === "ArrowLeft" || c === "ArrowDown" || c === "ArrowRight" || c === "ArrowUp"
+    let ret = false;
+    if (c === "ArrowLeft" || c === "ArrowDown" || c === "ArrowRight" || c === "ArrowUp"
         || c === "Home" || c === "End" || c === "PageUp" || c === "PageDown") {
         ret = true;
     }
     return ret;
 }
+function isStructureModifying(c) {
+	let ret = false;
+	if (c === "Enter" || c === "Tab" || c==="Backspace" || c==="Delete") {
+		ret = true;
+	}
+	return ret;
+}
 
 //read key on event
 function readMyPressedKey(event) {
-    var ret = "";
+    let ret = "";
     if (event.key) {                                //the new recommneded way (won't work in Safari)
         ret = event.key;
     } else {
@@ -23,9 +37,9 @@ function readMyPressedKey(event) {
     return ret;
 }
 
-//send request to server
+//send xhr request to server (http protocol request)
 function postRequest(verb, url, body, successCallback, errorCallback) {
-    var xhr = new XMLHttpRequest();
+    let xhr = new XMLHttpRequest();
     xhr.open(verb, url);
     xhr.setRequestHeader('Content-Type', 'application/json; charset = utf - 8');
     xhr.setRequestHeader('Accept', 'application/json');
@@ -37,7 +51,7 @@ function postRequest(verb, url, body, successCallback, errorCallback) {
     });
     xhr.addEventListener("error", errorCallback);
 
-    var postJSONState = JSON.stringify(body);
+    let postJSONState = JSON.stringify(body);
     xhr.send(postJSONState);
 }
 
@@ -54,7 +68,7 @@ function postRequest(verb, url, body, successCallback, errorCallback) {
 //get current cursor position
 //the formula I dicovered intuitively (pen and paper examples) is number of chars to the cursor plus number of interior divs, excepting the first 
 function getCursorPosition(containerId) {
-    var sel = window.getSelection(),
+    let sel = window.getSelection(),
         pos = -1,
         currentNode;
 
@@ -91,7 +105,7 @@ function createRange(currentNode, pos, range) {
         range = document.createRange();
         range.selectNode(currentNode);
         range.setStart(currentNode, 0);
-        range.setEnd(currentNode,0);
+        range.setEnd(currentNode, 0);
     }
 
     if (currentNode) {
@@ -102,8 +116,9 @@ function createRange(currentNode, pos, range) {
                 range.setEnd(currentNode, pos.count);
                 pos.count = -1;
             }
-        } else {
-            for (var i = 0; i < currentNode.childNodes.length; i++) {
+		} else {
+			let i;
+            for (i = 0; i < currentNode.childNodes.length; i++) {
                 if (currentNode.id == "inputTextWindow" && currentNode.childNodes[i] instanceof HTMLDivElement
                     && currentNode.childNodes[i].previousSibling) {     //interior div, except the first one
                     pos.count--;
@@ -122,7 +137,7 @@ function createRange(currentNode, pos, range) {
 //set cursor position after pos characters in contentEditable window
 function setCursorPosition(pos) {
     if (pos >= 0) {
-        var sel = window.getSelection(),
+        let sel = window.getSelection(),
             range = createRange(document.getElementById("inputTextWindow"), { count: pos });
 
         if (range) {
@@ -133,9 +148,9 @@ function setCursorPosition(pos) {
     }
 }
 
-//replace text contents of node with html
+//replace whole node with provided html
 function replaceNodeWithHTML(node, html) {
-    var range = document.createRange();
+    let range = document.createRange();
 
     range.selectNode(node);     //set range to envelop node
 
@@ -145,13 +160,13 @@ function replaceNodeWithHTML(node, html) {
         range.deleteContents();
     }
     else {      //parent is span, we are in the node text insdide it
-        var nodeToDelete = document.getElementById(node.parentNode.getAttribute("id"));
+        let nodeToDelete = document.getElementById(node.parentNode.getAttribute("id"));
         if (nodeToDelete) {     //sometimes it fail, causes a stuttering, but with no extra effect
             nodeToDelete.remove();
         }
     }
 
-    var el = document.createElement("div"),     //this div is a temporary carrier for our html
+    let el = document.createElement("div"),     //this div is a temporary carrier for our html
         frag = document.createDocumentFragment(),
         aLittleHTML;
     el.innerHTML = html;
@@ -161,3 +176,11 @@ function replaceNodeWithHTML(node, html) {
     }
     range.insertNode(frag);
 }
+
+/*
+ * performance tests done with
+var t0 = performance.now();
+doSomething();
+var t1 = performance.now();
+console.log("Call to doSomething took " + (t1 - t0) + " milliseconds.");
+*/

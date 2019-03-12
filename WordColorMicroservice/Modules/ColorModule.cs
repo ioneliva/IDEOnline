@@ -20,6 +20,9 @@ namespace WordColorMicroservice.Modules
 
                 string responseMessage = MatchToColor(compositeWord);
 
+                //set a delay emulating heavy lag
+                //System.Threading.Thread.Sleep(2000);
+
                 if (responseMessage.Length > 0)
                 {
                     Dictionary<string, string> responsePair = new Dictionary<string, string>
