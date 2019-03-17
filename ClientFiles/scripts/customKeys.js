@@ -76,6 +76,11 @@ function handleBackspace(e) {
 			}
 			setCursorPosition(globalCursor - 1);
 		}
+		//case 3: deletion would cause line to merge with previous line
+		if (cursoPozInsideElement == 0 && !prevNode && node.parentNode.parentNode.previousSibling) {
+			node.parentNode.parentNode.previousSibling.lastChild.textContent += node.textContent;
+			thisSpanNode.parentNode.removeChild(thisSpanNode);
+		}
 	}
 }
 function handleDelete(e) {
@@ -109,6 +114,11 @@ function handleDelete(e) {
 			}
 			nextNode.parentNode.removeChild(nextNode);
 			setCursorPosition(globalCursor);
+		}
+		//case 3: deleteion would cause line to merge with next line
+		if (cursoPozInsideElement == node.textContent.length && !nextNode && node.parentNode.parentNode.nextSibling) {
+			node.parentNode.parentNode.nextSibling.firstChild.textContent = node.textContent + node.parentNode.parentNode.nextSibling.firstChild.textContent;
+			thisSpanNode.parentNode.removeChild(thisSpanNode);
 		}
 	}
 }
