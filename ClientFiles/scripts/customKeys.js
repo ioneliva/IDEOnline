@@ -126,35 +126,46 @@ function handleTab() {
 	setCursorPosition(globalCursor + 1);
 }
 function handleEnter(e) {
-	let node, cursoPozInsideElement, globalCursor, preText, postText, end;
+	let node = window.getSelection().focusNode;
+	let cursoPozInsideElement = window.getSelection().focusOffset;
+	let end = node.textContent.length;
+	let postText = node.textContent.substring(cursoPozInsideElement, end);
 
-	node = window.getSelection().focusNode,
-	globalCursor = getCursorPosition("inputTextWindow");
-	cursoPozInsideElement = window.getSelection().focusOffset;
-	end = node.textContent.length;
-	postText = node.textContent.substring(cursoPozInsideElement, end);
-
-	//the default handles the case where Enter is pressed at the end of the line corectly. We handle the case where it's anywhere else
-	if (postText != "") {
-		preText = node.textContent.substring(0, cursoPozInsideElement);
+	if (postText != "") {	//the default handles the case where Enter is pressed at the end of the line corectly. We handle the case where it's anywhere else
+		let preText = node.textContent.substring(0, cursoPozInsideElement);
+		let inputWindow = document.getElementById("inputTextWindow");
 		e.preventDefault();
-		//case 1: first row, no row divs created yet
-		if (node.parentNode.parentNode.id == "inputTextWindow" || node.parentNode.id =="inputTextWindow") {
+
+		//case 1: no row divs created yet (the very first row). Envelop row in a div, up to and including pre text. Create next div, move posttext to next div
+		if (node.parentNode.parentNode.id == "inputTextWindow") {
+			//envelope node in div
 			let el1 = document.createElement("div");
-			let el2 = document.createElement("div");
-
+			node.textContent = postText;
+			while (inputWindow.firstChild != node.parentNode && inputWindow.firstChild) {
+				el1.appendChild(inputWindow.firstChild);
+			}
 			el1.appendChild(document.createTextNode(preText));
-			el2.appendChild(document.createTextNode(postText));
+			inputWindow.insertBefore(el1, inputWindow.firstChild);
 
-			var editorWindow = document.getElementById("inputTextWindow");
-			editorWindow.insertBefore(el1, editorWindow.childNodes[0]);
-			editorWindow.insertBefore(el2, el1.nextSibling);
-
-			node.parentNode.removeChild(node);
+			let el2 = document.createElement("div");
+			el2.appendChild(el1.nextSibling);
+			while (el1.nextSibling) {
+				el2.appendChild(el1.nextSibling);
+			}
+			inputWindow.insertBefore(el2, el1.nextSibling);		//insert next div in
 		}
+		else {
+			//case 2 not first row, previous row divs exist. Create next div, remove posttext from curent div, move it to next div along with anything that comes after
+			if (node.parentNode.parentNode.parentNode.id == "inputTextWindow") {
+				let el2 = document.createElement("div");
+				node.textContent = preText;
+				el2.appendChild(document.createTextNode(postText));
+				while (node.parentNode.nextSibling) {
+					el2.appendChild(node.parentNode.nextSibling);
+				}
 
-		/*
-		node.textContent = preText + "\n" + postText;
-		setCursorPosition(globalCursor+1);*/
+				inputWindow.insertBefore(el2, node.parentNode.parentNode.nextSibling);
+			}
+		}
 	}
 }
