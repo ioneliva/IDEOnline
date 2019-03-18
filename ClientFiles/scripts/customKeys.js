@@ -52,7 +52,7 @@ function handleBackspace(e) {
 		nextNode = node.parentNode.nextSibling;
 
 	if (node && !(node instanceof HTMLDivElement)) {
-		//case 1: deletion would cause current node to remain empty		 <...><c|><...> -> <...|...>
+		//case 1: deletion would cause current node to remain empty		 <node><x|><node> -> <node|node> -> <node>
 		if (cursoPozInsideElement == 1 && node.textContent.length == 1) {
 			e.preventDefault();
 			globalCursor = getCursorPosition("inputTextWindow");
@@ -63,7 +63,7 @@ function handleBackspace(e) {
 			thisSpanNode.parentNode.removeChild(thisSpanNode);
 			setCursorPosition(globalCursor - 1);
 		}
-		//case 2: deletion would cause previous node to remain empty, but leave the current one untouched	  <...><b><|c...> -> <...|c...>
+		//case 2: deletion would cause previous node to remain empty, but leave the current one untouched	  <node><x><|node> -> <node|node> -> <node>
 		if (cursoPozInsideElement == 0 && prevNode && prevNode.textContent.length == 1) {
 			e.preventDefault();
 			globalCursor = getCursorPosition("inputTextWindow");
@@ -92,7 +92,7 @@ function handleDelete(e) {
 		nextNode = node.parentNode.nextSibling;
 
 	if (node && !(node instanceof HTMLDivElement)) {
-		//case 1: deletion would cause current node to remain empty	<...><|c><...> -> <...|...>
+		//case 1: deletion would cause current node to remain empty	<node><|x><node> -> <node|node> -> <node>
 		if (cursoPozInsideElement == 0 && node.textContent.length == 1 && thisSpanNode.nextSibling) {
 			e.preventDefault();
 			globalCursor = getCursorPosition("inputTextWindow");
@@ -104,7 +104,7 @@ function handleDelete(e) {
 			thisSpanNode.parentNode.removeChild(thisSpanNode);
 			setCursorPosition(globalCursor);
 		}
-		//case 2: deletion would cause the next node to become empty, but leave the current one intact	<...c|><b><a...> -> <...c|a...>
+		//case 2: deletion would cause the next node to become empty, but leave the current one intact	<node|><x><node> -> <node|node> -> <node>
 		if (cursoPozInsideElement == node.textContent.length && nextNode && nextNode.textContent.length == 1) {
 			e.preventDefault();
 			globalCursor = getCursorPosition("inputTextWindow");
@@ -135,47 +135,92 @@ function handleTab() {
 	node.textContent = preText + "\t" + postText;
 	setCursorPosition(globalCursor + 1);
 }
+//we force the browser to regard <node>Enter<node> as a single node, so it gets analyzed by the server in a single pass
+//normally the server would have to communicate twice for the node before and after the line break, which is slower and can cause significant problems in case of delay 
 function handleEnter(e) {
-	let node = window.getSelection().focusNode;
-	let cursoPozInsideElement = window.getSelection().focusOffset;
-	let end = node.textContent.length;
-	let postText = node.textContent.substring(cursoPozInsideElement, end);
+	let node, cursoPozInsideElement, globalCursor, preText, postText, end;
+	node = window.getSelection().focusNode;
+	cursoPozInsideElement = window.getSelection().focusOffset;
 
+	postText = node.textContent.substring(cursoPozInsideElement, end);
 	if (postText != "") {	//the default handles the case where Enter is pressed at the end of the line corectly. We handle the case where it's anywhere else
-		let preText = node.textContent.substring(0, cursoPozInsideElement);
-		let inputWindow = document.getElementById("inputTextWindow");
 		e.preventDefault();
-
-		//case 1: no row divs created yet (the very first row). Envelop row in a div, up to and including pre text. Create next div, move posttext to next div
-		if (node.parentNode.parentNode.id == "inputTextWindow") {
-			//envelope node in div
-			let el1 = document.createElement("div");
-			node.textContent = postText;
-			while (inputWindow.firstChild != node.parentNode && inputWindow.firstChild) {
+		end = node.textContent.length;
+		preText = node.textContent.substring(0, cursoPozInsideElement);
+		node.textContent = preText + "\n" + postText;
+	}
+}
+//we recreate de default Gecko(FF, Chrome) browser structure after the nodes above return from the server, decorated with color
+function formatStructure(node) {
+	console.log("am intrat!");
+	//we set it up so "node" is the text node inside de node before the delimiter /n		<|pre></n><post>
+	//in case Enter was pressed at the begining of the line, "node" will be the delimiter text "/n"		<|/n><post>
+	let preNode = node.parentNode;
+	let delimiter = node.parentNode.nextSibling;
+	let postNode = node.parentNode.nextSibling.nextSibling;
+	let inputWindow = document.getElementById("inputTextWindow");
+	let el1 = document.createElement("div");	//this div will wrap around the current line
+	let el2 = document.createElement("div");	//this div will contain next line
+	
+	//case 1: no row divs created yet (the very first row). Envelop row in a div, up to and including pre node. Create next div, move post node to next div
+	if (node.parentNode.parentNode.id == "inputTextWindow") {
+		console.log("CASE 1");
+		//1:1: Enter pressed somewhere in the middle of the line
+		if (node.textContent != "\n") {
+			console.log("1:1");
+			while (inputWindow.firstChild != preNode && inputWindow.firstChild) {
 				el1.appendChild(inputWindow.firstChild);
 			}
-			el1.appendChild(document.createTextNode(preText));
-			inputWindow.insertBefore(el1, inputWindow.firstChild);
-
-			let el2 = document.createElement("div");
-			el2.appendChild(el1.nextSibling);
-			while (el1.nextSibling) {
-				el2.appendChild(el1.nextSibling);
-			}
-			inputWindow.insertBefore(el2, el1.nextSibling);		//insert next div in
+			el1.appendChild(preNode);
+			delimiter.parentNode.removeChild(delimiter);
 		}
-		else {
-			//case 2 not first row, previous row divs exist. Create next div, remove posttext from curent div, move it to next div along with anything that comes after
-			if (node.parentNode.parentNode.parentNode.id == "inputTextWindow") {
-				let el2 = document.createElement("div");
-				node.textContent = preText;
-				el2.appendChild(document.createTextNode(postText));
-				while (node.parentNode.nextSibling) {
-					el2.appendChild(node.parentNode.nextSibling);
+		//1:2: Enter pressed at the very start of the line
+		if (node.textContent == "\n") {
+			console.log("1:2");
+			let brNode = document.createElement("BR");
+			el1.appendChild(brNode);
+			node.parentNode.parentNode.removeChild(node.parentNode);
+		}
+		//common code to both 1:1 and 1:2 cases
+		inputWindow.insertBefore(el1, inputWindow.firstChild);
+		el2.appendChild(el1.nextSibling);
+		while (el1.nextSibling) {
+			el2.appendChild(el1.nextSibling);
+		}
+		inputWindow.insertBefore(el2, el1.nextSibling);
+	} else {
+		//case 2: not first row, previous row divs exist. Create next div, remove post node from curent div, move it to the new div along with anything that comes after
+		if (node.parentNode.parentNode.parentNode.id == "inputTextWindow") {
+			console.log("CASE 2");
+			//2:1: Enter pressed somewhere in the middle of the line
+			if (node.textContent != "\n") {
+				console.log("2:1");
+				delimiter.parentNode.removeChild(delimiter);
+				el2.appendChild(postNode);
+				while (preNode.nextSibling) {
+					el2.appendChild(preNode.nextSibling);
 				}
-
-				inputWindow.insertBefore(el2, node.parentNode.parentNode.nextSibling);
+				inputWindow.insertBefore(el2, preNode.parentNode.nextSibling);
+			}
+			//2:2: Enter pressed at the very start of the line
+			if (node.textContent == "\n") {
+				console.log("2:2");
+				let brNode = document.createElement("BR");
+				el1.appendChild(brNode);
+				inputWindow.insertBefore(el1, node.parentNode.parentNode);
+				node.parentNode.parentNode.removeChild(node.parentNode);
 			}
 		}
 	}
+	//set cursor position
+	let range = document.createRange();
+	if (el2.firstChild) {
+		range.setEnd(el2.firstChild.firstChild, 0);
+
+	} else {		//one of the functions doesn't use the second div, we get another reference point for it
+		range.setEnd(el1.nextSibling.firstChild.firstChild, 0);
+	}
+	range.collapse(false);
+	window.getSelection().removeAllRanges();
+	window.getSelection().addRange(range);
 }

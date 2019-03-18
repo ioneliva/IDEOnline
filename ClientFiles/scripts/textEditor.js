@@ -49,8 +49,14 @@ function keyUp(e) {
 				if (wordColoringMS.serverResponse != "100") {
 					//decorate with color spans
 					replaceNodeWithHTML(oldNode, wordColoringMS.serverResponse);
-					//put cursor back at the correct position
-					if (c != "Enter") {
+					if (c == "Enter") {
+						if (window.getSelection().focusNode.textContent != "") { //Enter pressed anywhere except the end of the line
+							//though cursor position is set in the fixStructure function, we need to set a temporary position to get a focus node
+							setCursorPosition(cursorPosition + 1);
+							formatStructure(window.getSelection().focusNode);
+						}
+					} else {
+						//put cursor back at the correct position
 						setCursorPosition(cursorPosition);
 					}
 					//post the current state to undo/redo microservice

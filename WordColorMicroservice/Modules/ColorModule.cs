@@ -60,6 +60,7 @@ namespace WordColorMicroservice.Modules
                             wordColor = Resources.Colors.BLUE;
                         }
                         ret += "<span id=" + (id++) + " style=\"color:" + wordColor + "\">" + word + "</span>";
+                        wordColor = Resources.Colors.BLACK;
                     }
                 }
                 else{       //reached a delimiter
@@ -71,6 +72,7 @@ namespace WordColorMicroservice.Modules
                     if (word != "") //word is empty if the delimiter is first in the composite word
                     {
                         ret += "<span id=" + (id++) + " style=\"color:" + wordColor + "\">" + word + "</span>";
+                        wordColor = Resources.Colors.BLACK;
                     }
                     //adding the delimiter to the span structure
                     delimiter = compositeWord[i];
@@ -79,6 +81,7 @@ namespace WordColorMicroservice.Modules
                         delimiterColor = Resources.Colors.GREEN;
                     }
                     ret += "<span id=" + (id++) + " style=\"color:" + delimiterColor + "\">" + delimiter + "</span>";
+                    delimiterColor = Resources.Colors.BLACK;
 
                     //getting ready for the next word from the composite
                     word = "";
