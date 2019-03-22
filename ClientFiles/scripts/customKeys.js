@@ -20,7 +20,7 @@ function triggerOnDown(e) {
 	}
     if (c === "Tab" || c=== "PageUp" || c === "PageDown" || c === "F5") {
         e.preventDefault();
-    }
+	}
 }
 
 function triggerOnUp(e) {
@@ -52,10 +52,11 @@ function handleBackspace(e) {
 		nextNode = node.parentNode.nextSibling;
 
 	if (node && !(node instanceof HTMLDivElement)) {
+		globalCursor = getCursorPosition("inputTextWindow");
 		//case 1: deletion would cause current node to remain empty		 <node><x|><node> -> <node|node> -> <node>
 		if (cursoPozInsideElement == 1 && node.textContent.length == 1) {
+			console.log("case 1");
 			e.preventDefault();
-			globalCursor = getCursorPosition("inputTextWindow");
 			if (nextNode && prevNode) {
 				prevNode.textContent += nextNode.textContent;
 				nextNode.parentNode.removeChild(nextNode);
@@ -65,8 +66,8 @@ function handleBackspace(e) {
 		}
 		//case 2: deletion would cause previous node to remain empty, but leave the current one untouched	  <node><x><|node> -> <node|node> -> <node>
 		if (cursoPozInsideElement == 0 && prevNode && prevNode.textContent.length == 1) {
+			console.log("case 2");
 			e.preventDefault();
-			globalCursor = getCursorPosition("inputTextWindow");
 			if (prevNode.previousSibling) {
 				prevNode.previousSibling.textContent += node.textContent;
 				prevNode.parentNode.removeChild(prevNode);
@@ -77,9 +78,28 @@ function handleBackspace(e) {
 			setCursorPosition(globalCursor - 1);
 		}
 		//case 3: deletion would cause line to merge with previous line
-		if (cursoPozInsideElement == 0 && !prevNode && node.parentNode.parentNode.previousSibling) {
-			node.parentNode.parentNode.previousSibling.lastChild.textContent += node.textContent;
-			thisSpanNode.parentNode.removeChild(thisSpanNode);
+		if (cursoPozInsideElement == 0 && !(prevNode instanceof HTMLSpanElement) && node.parentNode.parentNode.previousSibling) {
+			console.log("case 3, backspace");
+			let lastNeighboringElement = node.parentNode.parentNode.previousSibling.lastChild;
+			if (lastNeighboringElement instanceof HTMLBRElement) {		//previous line is empty
+				console.log("case 3:1");
+				e.preventDefault()
+				lastNeighboringElement.parentNode.appendChild(thisSpanNode);
+				lastNeighboringElement.parentNode.removeChild(lastNeighboringElement);
+				node.parentNode.parentNode.nextSibling.parentNode.removeChild(node.parentNode.parentNode.nextSibling);
+			} else
+				if (node.firstChild instanceof HTMLBRElement) {		//current line is empty
+					console.log("case 3:2");
+					e.preventDefault();
+					node.parentNode.parentNode.removeChild(node.parentNode);
+				} else {	//standard case, both current and previous line contain something
+					console.log("case 3:3");
+					e.preventDefault();
+					lastNeighboringElement.textContent += node.textContent;
+					thisSpanNode.parentNode.removeChild(thisSpanNode);
+					//todo: if node remains empty, remove node
+				}
+			setCursorPosition(globalCursor - 1);
 		}
 	}
 }
@@ -152,7 +172,6 @@ function handleEnter(e) {
 }
 //we recreate de default Gecko(FF, Chrome) browser structure after the nodes above return from the server, decorated with color
 function formatStructure(node) {
-	console.log("am intrat!");
 	//we set it up so "node" is the text node inside de node before the delimiter /n		<|pre></n><post>
 	//in case Enter was pressed at the begining of the line, "node" will be the delimiter text "/n"		<|/n><post>
 	let preNode = node.parentNode;
@@ -164,7 +183,7 @@ function formatStructure(node) {
 	
 	//case 1: no row divs created yet (the very first row). Envelop row in a div, up to and including pre node. Create next div, move post node to next div
 	if (node.parentNode.parentNode.id == "inputTextWindow") {
-		console.log("CASE 1");
+		console.log(" Enter CASE 1");
 		//1:1: Enter pressed somewhere in the middle of the line
 		if (node.textContent != "\n") {
 			console.log("1:1");
@@ -191,7 +210,7 @@ function formatStructure(node) {
 	} else {
 		//case 2: not first row, previous row divs exist. Create next div, remove post node from curent div, move it to the new div along with anything that comes after
 		if (node.parentNode.parentNode.parentNode.id == "inputTextWindow") {
-			console.log("CASE 2");
+			console.log("Enter CASE 2");
 			//2:1: Enter pressed somewhere in the middle of the line
 			if (node.textContent != "\n") {
 				console.log("2:1");
