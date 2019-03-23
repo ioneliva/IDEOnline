@@ -7,16 +7,17 @@ function triggerOnDown(e) {
 	let c = readMyPressedKey(e);
 
 	if (c === "Backspace") {
-		handleBackspace(e);
+		//handleBackspace(e);
+		//note node merger works fine by default
     }
 	if (c === "Delete") {
-		handleDelete(e);
+		//handleDelete(e);
 	}
 	if (c === "Tab") {
 		handleTab();
 	}
 	if (c === "Enter") {
-		handleEnter(e);
+		//handleEnter(e);
 	}
     if (c === "Tab" || c=== "PageUp" || c === "PageDown" || c === "F5") {
         e.preventDefault();
@@ -158,17 +159,26 @@ function handleTab() {
 //we force the browser to regard <node>Enter<node> as a single node, so it gets analyzed by the server in a single pass
 //normally the server would have to communicate twice for the node before and after the line break, which is slower and can cause significant problems in case of delay 
 function handleEnter(e) {
-	let node, cursoPozInsideElement, globalCursor, preText, postText, end;
+	let node, cursoPozInsideElement, globalCursor, preText, postText, end, symbol;
 	node = window.getSelection().focusNode;
 	cursoPozInsideElement = window.getSelection().focusOffset;
 
-	postText = node.textContent.substring(cursoPozInsideElement, end);
-	if (postText != "") {	//the default handles the case where Enter is pressed at the end of the line corectly. We handle the case where it's anywhere else
-		e.preventDefault();
-		end = node.textContent.length;
-		preText = node.textContent.substring(0, cursoPozInsideElement);
-		node.textContent = preText + "\n" + postText;
-	}
+	e.preventDefault();
+	end = node.textContent.length;
+	preText = document.createTextNode(node.textContent.substring(0, cursoPozInsideElement));
+	postText = document.createTextNode(node.textContent.substring(cursoPozInsideElement, end));
+	symbol = document.createTextNode("\n");
+
+	node.parentNode.insertBefore(postText, node);
+	node.parentNode.insertBefore(symbol, postText);
+	node.parentNode.insertBefore(preText, symbol);
+	node.parentNode.removeChild(node);
+
+	let range = document.createRange();
+	range.setEndBefore(symbol);
+	range.collapse(false);
+	window.getSelection().removeAllRanges();
+	window.getSelection().addRange(range);
 }
 //we recreate de default Gecko(FF, Chrome) browser structure after the nodes above return from the server, decorated with color
 function formatStructure(node) {

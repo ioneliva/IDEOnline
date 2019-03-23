@@ -4,6 +4,7 @@ using Nancy.Extensions;
 using Nancy.IO;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json.Linq;
+using System;
 
 namespace WordColorMicroservice.Modules
 {
@@ -15,25 +16,50 @@ namespace WordColorMicroservice.Modules
         {
             Post("/", _ =>
             {
+                string plainWord, plainWordPosition, plainPreWord, plainPreWordPosition, coloredWord, coloredPreWord;
+                bool enterPressedOnClient = false, preWordEmpty=false, postWordEmpty=false;
+                Dictionary<string, string> responsePair = new Dictionary<string, string>();
+
                 JObject clientMessage = JObject.Parse(RequestStream.FromStream(Request.Body).AsString());
-                string compositeWord = clientMessage["word_and_delimiter"].ToString();
+                //normal key press values
+                plainWord = clientMessage["word_and_delimiter"].ToString();
+                plainWordPosition = clientMessage["position"].ToString();
+                if (plainWord.Length>0) {
+                    coloredWord = MatchToColor(plainWord);
+                    responsePair.Add("coloredWord", coloredWord);
+                    responsePair.Add("position", plainWordPosition);
+                }
+                else{
+                    postWordEmpty = true;
+                    responsePair.Add("coloredWord", "");
+                    responsePair.Add("position", plainWordPosition);
+                }
 
-                string responseMessage = MatchToColor(compositeWord);
-
-                //set a delay emulating heavy lag
-                //System.Threading.Thread.Sleep(2000);
-
-                if (responseMessage.Length > 0)
+                //enter pressed extra values
+                enterPressedOnClient = clientMessage.SelectToken("enterPressed").Value<bool>();
+                if (enterPressedOnClient)
                 {
-                    Dictionary<string, string> responsePair = new Dictionary<string, string>
+                    plainPreWord = clientMessage["preWord"].ToString();
+                    plainPreWordPosition = clientMessage["preWordPos"].ToString();
+                    if (plainPreWord.Length > 0){
+                        coloredPreWord = MatchToColor(plainPreWord);
+                        responsePair.Add("coloredPreWord", coloredPreWord);
+                        responsePair.Add("coloredPreWordPosition", plainPreWordPosition);
+                    }
+                    else
                     {
-                        { "serverResponse", responseMessage }
-                    };
+                        preWordEmpty = true;
+                        responsePair.Add("coloredPreWord", "");
+                        responsePair.Add("coloredPreWordPosition", plainPreWordPosition);
+                    }
+                }
+                
+                if (preWordEmpty && postWordEmpty){
+                    return HttpStatusCode.Continue;
+                }
+                else{
                     return Response.AsJson(responsePair, HttpStatusCode.OK);
                 }
-                else
-                {
-                    return HttpStatusCode.Continue;                }
             });
         }
 

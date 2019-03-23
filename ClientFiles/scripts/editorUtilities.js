@@ -98,23 +98,45 @@ function getCursorPosition(containerId) {
     return pos;
 }
 
-//get range end offset in element for wanted cursor position
-//formula is the invert of the above - position wanted minus number of interior divs, except the first row
-function createRange(currentNode, pos, range) {
+//set cursor position after pos characters in contentEditable window
+function setCursorPosition(pos) {
+	if (pos >= 0) {
+		let sel = window.getSelection(),
+			range = createRange(false, document.getElementById("inputTextWindow"), { count: pos });
+
+		if (range) {
+			range.collapse(false);      //true -collapse to start, false-to end
+			sel.removeAllRanges();
+			sel.addRange(range);
+		}
+	}
+}
+
+//if parameter forReplace is false, creates range for setting cursor position
+//if parameter forReplace is true, creates range encompasing multiple nodes
+function createRange(forReplace, currentNode, pos, range) {
     if (!range) {
         range = document.createRange();
         range.selectNode(currentNode);
         range.setStart(currentNode, 0);
         range.setEnd(currentNode, 0);
-    }
+	}
 
-    if (currentNode) {
-        if (currentNode.nodeType === Node.TEXT_NODE) {
-            if (currentNode.textContent.length < pos.count) {
-                pos.count -= currentNode.textContent.length;
-            } else {
-                range.setEnd(currentNode, pos.count);
-                pos.count = -1;
+	if (currentNode) {
+		if (currentNode.nodeType === Node.TEXT_NODE || currentNode instanceof HTMLBRElement) {
+			if (currentNode.textContent.length < pos.count) {
+				pos.count -= currentNode.textContent.length;
+			} else {
+				if (forReplace) {	//range for selecting a group of nodes
+					selectIntoRange(currentNode, range);
+				} else {			//range to get cursor position
+					if (currentNode instanceof HTMLBRElement) {
+						range.setEndBefore(currentNode);
+					} else {
+						range.setEnd(currentNode, pos.count);
+					}
+				}
+					pos.count = -1;
             }
 		} else {
 			let i;
@@ -123,7 +145,7 @@ function createRange(currentNode, pos, range) {
                     && currentNode.childNodes[i].previousSibling) {     //interior div, except the first one
                     pos.count--;
                 }
-                range = createRange(currentNode.childNodes[i], pos, range);
+				range = createRange(forReplace, currentNode.childNodes[i], pos, range);
 
                 if (pos.count == -1) {
                     break;
@@ -134,38 +156,54 @@ function createRange(currentNode, pos, range) {
     return range;
 }
 
-//set cursor position after pos characters in contentEditable window
-function setCursorPosition(pos) {
-    if (pos >= 0) {
-        let sel = window.getSelection(),
-            range = createRange(document.getElementById("inputTextWindow"), { count: pos });
-
-        if (range) {
-            range.collapse(false);      //true -collapse to start, false-to end
-            sel.removeAllRanges();
-            sel.addRange(range);
-        }
-    }
+//rules for what nodes to add into range, relative to node
+function selectIntoRange(node, range) {
+	if ((node instanceof HTMLBRElement) && !(node.parentNode instanceof HTMLSpanElement)) { //enter pressed right after the few word, before server got the chance to analyze it
+		range.setStartBefore(node.parentNode);
+		range.setEndAfter(node.parentNode);
+	} else {
+		if (node.parentNode instanceof HTMLSpanElement
+			|| (node.parentNode instanceof HTMLDivElement && node.parentNode.id != "inputTextWindow")) { //general case, not first row
+			if (node.parentNode.previousSibling) {
+				range.setStartBefore(node.parentNode.previousSibling);
+			} else {
+				range.setStartBefore(node.parentNode);
+			}
+			if (node.parentNode.nextSibling) {
+				if (node.parentNode.nextSibling.firstChild instanceof HTMLBRElement) {
+					range.setEndAfter(node.parentNode);
+				} else {
+					range.setEndAfter(node.parentNode.nextSibling);
+				}
+			} else {
+				range.setEndAfter(node.parentNode);
+			}
+		} else if (node.parentNode.id == "inputTextWindow") {	//general case, very first row, no other rows created yet
+			range.setStartBefore(node);
+			range.setEndAfter(node);
+		}
+	}
 }
 
-//replace whole node with provided html
-function replaceNodeWithHTML(node, html) {
-    let range = document.createRange();
+//select nodes around position, according to rules set earlier
+function selectNodesAround(pos) {
+	let range = createRange(true, document.getElementById("inputTextWindow"), { count: pos });
+	return range;
+}
 
-    range.selectNode(node);     //set range to envelop node
+//replace group of nodes around pos with provided html
+function insertServerHtmlAtPos(pos, html) {
+	let sel = window.getSelection(),
+		range = selectNodesAround(pos);		//what nodes to select around pos
 
-    //range.deleteContents() deletes only the contents of the element, not the tags, no matter if you wrap the range around the html element. Default broser behaviour, can't be overwritten
-    //we bypass it by deleting it from the DOM
-    if (node.parentNode instanceof HTMLDivElement) {
-        range.deleteContents();
-    }
-    else {      //parent is span, we are in the node text insdide it
-        let nodeToDelete = document.getElementById(node.parentNode.getAttribute("id"));
-        if (nodeToDelete) {     //sometimes it fail, causes a stuttering, but with no extra effect
-            nodeToDelete.remove();
-        }
-    }
+	//delete old contents
+	if (range) {
+		range.deleteContents();
+		sel.removeAllRanges();
+		sel.addRange(range);
+	}
 
+	//insert new html
     let el = document.createElement("div"),     //this div is a temporary carrier for our html
         frag = document.createDocumentFragment(),
         aLittleHTML;
