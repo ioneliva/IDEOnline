@@ -6,7 +6,7 @@ document.getElementById("inputTextWindow").addEventListener("keyup", keyUp);
 window.addEventListener('load', function () {
 	postRequest("POST", "http://localhost:5001/", {
 		"word_and_delimiter": "", "position": "",
-		"enterPressed": "", "preWord": "", "preWordPos": ""
+		"enterPressed": "", "preWord": "", "preWordPos": "", "token": ""
 	}, function (response) { }
 	)});
 
@@ -37,7 +37,7 @@ function keyUp(e) {
 	//also detect if user spams cursor movement keys repeatedly, we avoid sending requests to servers for every repetition
 	if (!isAlphaNumeric(c) || isStructureModifying(c) || (isPositionalChar(c) && (!isPositionalChar(prevKey)))) {
 		let cursorPosition = getCursorPosition("inputTextWindow");
-		let wordComposite;
+		let wordComposite, token;
 
 		let enterPressed = false, preWord, preWordPos;
 		if (c == "Enter") {
@@ -46,21 +46,24 @@ function keyUp(e) {
 			preWord = selectNodesAround(preWordPos).toString();
 		}
 		wordComposite = selectNodesAround(cursorPosition).toString();
+		token = getToken(cursorPosition);
 		//send data to server
 		postRequest("POST", "http://localhost:5001/", {
 			"word_and_delimiter": wordComposite, "position": cursorPosition,
-			"enterPressed": enterPressed, "preWord": preWord, "preWordPos": preWordPos
+			"enterPressed": enterPressed, "preWord": preWord, "preWordPos": preWordPos, "token": token
 		}, function (response) {
 			let output = document.getElementById("output");
 			output.innerText = response;
 			//parse response from Json
 			let wordColoringMS = JSON.parse(response);
-			//decorate with color spans
-			if (wordColoringMS.coloredWord.length > 0) {
-				insertServerHtmlAtPos(wordColoringMS.position, wordColoringMS.coloredWord);
-			}
-			if (c == "Enter" && wordColoringMS.coloredPreWord.length > 0) {
-				insertServerHtmlAtPos(wordColoringMS.coloredPreWordPosition, wordColoringMS.coloredPreWord);
+			//decorate with color spans, if server did not lag. TODO: implement a recovery method for lag?
+			if (!serverLagged(getToken(cursorPosition), wordColoringMS.serverToken)) {
+				if (wordColoringMS.coloredWord.length > 0) {
+					insertServerHtmlAtPos(wordColoringMS.position, wordColoringMS.coloredWord);
+				}
+				if (c == "Enter" && wordColoringMS.coloredPreWord.length > 0) {
+					insertServerHtmlAtPos(wordColoringMS.coloredPreWordPosition, wordColoringMS.coloredPreWord);
+				}
 			}
 			//set cursor
 			let serverPosition = wordColoringMS.position;

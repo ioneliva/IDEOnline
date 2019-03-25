@@ -55,16 +55,6 @@ function postRequest(verb, url, body, successCallback, errorCallback) {
     xhr.send(postJSONState);
 }
 
-/*
- * A bit of research for the next functions -source MDN and w3schools.
- * var selection = window.getSelection();              //range of text and objects selected with mouse drag or Shift+dirrectional keys
- * var anchor = selection.anchorNode;                  //Returns the Node in which the selection begins.
- * var focusNode = selection.focusNode;                //Returns the Node in which the selection ends.
- * var type = selection.type;                          //returns "Caret" for click or "Range" for drag
- * var singlePoint = selection.isCollapsed;            //Returns a Boolean indicating whether the selection's start and end points are at the same position.
- * var rangeX = selection.getRangeAt(index);           //method returns a range object representing one of the ranges currently selected.
-    */
-
 //get current cursor position
 //the formula I dicovered intuitively (pen and paper examples) is number of chars to the cursor plus number of interior divs, excepting the first 
 function getCursorPosition(containerId) {
@@ -102,7 +92,7 @@ function getCursorPosition(containerId) {
 function setCursorPosition(pos) {
 	if (pos >= 0) {
 		let sel = window.getSelection(),
-			range = createRange(false, document.getElementById("inputTextWindow"), { count: pos });
+			range = createRange("for_cursor_position", document.getElementById("inputTextWindow"), { count: pos });
 
 		if (range) {
 			range.collapse(false);      //true -collapse to start, false-to end
@@ -112,9 +102,8 @@ function setCursorPosition(pos) {
 	}
 }
 
-//if parameter forReplace is false, creates range for setting cursor position
-//if parameter forReplace is true, creates range encompasing multiple nodes
-function createRange(forReplace, currentNode, pos, range) {
+//create range, depending on context
+function createRange(purpose, currentNode, pos, range) {
 	if (currentNode) {
 		if (!range) {
 			range = document.createRange();
@@ -127,16 +116,22 @@ function createRange(forReplace, currentNode, pos, range) {
 			if (currentNode.textContent.length < pos.count) {
 				pos.count -= currentNode.textContent.length;
 			} else {
-				if (forReplace) {	//range for selecting a group of nodes
-					selectIntoRange(currentNode, range);
-				} else {			//range to get cursor position
-					if (currentNode instanceof HTMLBRElement) {
-						range.setEndBefore(currentNode);
-					} else {
-						range.setEnd(currentNode, pos.count);
-					}
+				switch (purpose) {
+					case "for_cursor_position":
+						if (currentNode instanceof HTMLBRElement) {
+							range.setEndBefore(currentNode);
+						} else {
+							range.setEnd(currentNode, pos.count);
+						}
+						break;
+					case "for_replace":
+						selectIntoRange(currentNode, range, "for_replace");
+						break;
+					case "for_token":
+						selectIntoRange(currentNode, range, "for_token");
+						break;
 				}
-				pos.count = -1;
+				pos.count = -1; //signal for loop we found the end node, it's safe to exit early
 			}
 		} else {
 			let i;
@@ -145,7 +140,7 @@ function createRange(forReplace, currentNode, pos, range) {
 					&& currentNode.childNodes[i].previousSibling) {     //interior div, except the first one
 					pos.count--;
 				}
-				range = createRange(forReplace, currentNode.childNodes[i], pos, range);
+				range = createRange(purpose, currentNode.childNodes[i], pos, range);
 
 				if (pos.count == -1) {
 					break;
@@ -157,40 +152,55 @@ function createRange(forReplace, currentNode, pos, range) {
 }
 
 //rules for what nodes to add into range, relative to node
-function selectIntoRange(node, range) {
-	if ((node instanceof HTMLBRElement) && !(node.parentNode instanceof HTMLSpanElement)) { //enter pressed right after the few word, before server got the chance to analyze it
-		range.setStartBefore(node.parentNode);
-		range.setEndAfter(node.parentNode);
-	} else {
-		if (node.parentNode instanceof HTMLSpanElement
-			|| (node.parentNode instanceof HTMLDivElement && node.parentNode.id != "inputTextWindow")) { //general case, not first row
-			if (node.parentNode.previousSibling) {
-				range.setStartBefore(node.parentNode.previousSibling);
-			} else {
+function selectIntoRange(node, range, purpose) {
+	switch (purpose) {
+		case "for_replace": {
+			if ((node instanceof HTMLBRElement) && !(node.parentNode instanceof HTMLSpanElement)) { //enter pressed right after the few word, before server got the chance to analyze it
 				range.setStartBefore(node.parentNode);
-			}
-			if (node.parentNode.nextSibling) {
-				if (node.parentNode.nextSibling.firstChild instanceof HTMLBRElement) {
-					range.setEndAfter(node.parentNode);
-				} else {
-					range.setEndAfter(node.parentNode.nextSibling);
-				}
-			} else {
 				range.setEndAfter(node.parentNode);
+			} else {
+				if (node.parentNode instanceof HTMLSpanElement
+					|| (node.parentNode instanceof HTMLDivElement && node.parentNode.id != "inputTextWindow")) { //general case, not first row
+					if (node.parentNode.previousSibling) {
+						range.setStartBefore(node.parentNode.previousSibling);
+					} else {
+						range.setStartBefore(node.parentNode);
+					}
+					if (node.parentNode.nextSibling) {
+						if (node.parentNode.nextSibling.firstChild instanceof HTMLBRElement) {
+							range.setEndAfter(node.parentNode);
+						} else {
+							range.setEndAfter(node.parentNode.nextSibling);
+						}
+					} else {
+						range.setEndAfter(node.parentNode);
+					}
+				} else if (node.parentNode.id == "inputTextWindow") {	//general case, very first row, no other rows created yet
+					range.setStartBefore(node);
+					range.setEndAfter(node);
+				}
 			}
-		} else if (node.parentNode.id == "inputTextWindow") {	//general case, very first row, no other rows created yet
+		}
+			break;
+		case "for_token": {
 			range.setStartBefore(node);
 			range.setEndAfter(node);
 		}
+			break;
 	}
 }
 
 //select nodes around position, according to rules set earlier
 function selectNodesAround(pos) {
-	let range = createRange(true, document.getElementById("inputTextWindow"), { count: pos });
+	let range = createRange("for_replace", document.getElementById("inputTextWindow"), { count: pos });
 	return range;
 }
 
+//get the exact single word at pos
+function getToken(pos) {
+	let range = createRange("for_token", document.getElementById("inputTextWindow"), { count: pos });
+	return range.toString();
+}
 //replace group of nodes around pos with provided html
 function insertServerHtmlAtPos(pos, html) {
 	let sel = window.getSelection(),
@@ -213,6 +223,15 @@ function insertServerHtmlAtPos(pos, html) {
         frag.appendChild(aLittleHTML);
     }
     range.insertNode(frag);
+}
+
+//check for server lag
+function serverLagged(originalToken, serverToken) {
+	let ret = true;
+	if (originalToken == serverToken) {
+		ret = false;
+	}
+	return ret;
 }
 
 /*

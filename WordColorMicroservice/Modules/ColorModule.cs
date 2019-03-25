@@ -16,11 +16,17 @@ namespace WordColorMicroservice.Modules
         {
             Post("/", _ =>
             {
-                string plainWord, plainWordPosition, plainPreWord, plainPreWordPosition, coloredWord, coloredPreWord;
+                string plainWord, plainWordPosition, plainPreWord, plainPreWordPosition, coloredWord, coloredPreWord, token;
                 bool enterPressedOnClient = false, preWordEmpty=false, postWordEmpty=false;
                 Dictionary<string, string> responsePair = new Dictionary<string, string>();
-
                 JObject clientMessage = JObject.Parse(RequestStream.FromStream(Request.Body).AsString());
+
+                //server warm-up from client, ignore values
+                if (clientMessage.SelectToken("enterPressed").ToString()=="")
+                {
+                    return HttpStatusCode.Continue;
+                }
+
                 //normal key press values
                 plainWord = clientMessage["word_and_delimiter"].ToString();
                 plainWordPosition = clientMessage["position"].ToString();
@@ -34,7 +40,6 @@ namespace WordColorMicroservice.Modules
                     responsePair.Add("coloredWord", "");
                     responsePair.Add("position", plainWordPosition);
                 }
-
                 //enter pressed extra values
                 enterPressedOnClient = clientMessage.SelectToken("enterPressed").Value<bool>();
                 if (enterPressedOnClient)
@@ -53,6 +58,9 @@ namespace WordColorMicroservice.Modules
                         responsePair.Add("coloredPreWordPosition", plainPreWordPosition);
                     }
                 }
+                //server token used to verify if lag was present
+                token = clientMessage["token"].ToString();
+                responsePair.Add("serverToken", token);
                 
                 if (preWordEmpty && postWordEmpty){
                     return HttpStatusCode.Continue;
