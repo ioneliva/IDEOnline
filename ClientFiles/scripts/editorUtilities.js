@@ -115,14 +115,14 @@ function setCursorPosition(pos) {
 //if parameter forReplace is false, creates range for setting cursor position
 //if parameter forReplace is true, creates range encompasing multiple nodes
 function createRange(forReplace, currentNode, pos, range) {
-    if (!range) {
-        range = document.createRange();
-        range.selectNode(currentNode);
-        range.setStart(currentNode, 0);
-        range.setEnd(currentNode, 0);
-	}
-
 	if (currentNode) {
+		if (!range) {
+			range = document.createRange();
+			range.selectNode(currentNode);
+			range.setStart(currentNode, 0);
+			range.setEnd(currentNode, 0);
+		}
+
 		if (currentNode.nodeType === Node.TEXT_NODE || currentNode instanceof HTMLBRElement) {
 			if (currentNode.textContent.length < pos.count) {
 				pos.count -= currentNode.textContent.length;
@@ -136,22 +136,22 @@ function createRange(forReplace, currentNode, pos, range) {
 						range.setEnd(currentNode, pos.count);
 					}
 				}
-					pos.count = -1;
-            }
+				pos.count = -1;
+			}
 		} else {
 			let i;
-            for (i = 0; i < currentNode.childNodes.length; i++) {
-                if (currentNode.id == "inputTextWindow" && currentNode.childNodes[i] instanceof HTMLDivElement
-                    && currentNode.childNodes[i].previousSibling) {     //interior div, except the first one
-                    pos.count--;
-                }
+			for (i = 0; i < currentNode.childNodes.length; i++) {
+				if (currentNode.id == "inputTextWindow" && currentNode.childNodes[i] instanceof HTMLDivElement
+					&& currentNode.childNodes[i].previousSibling) {     //interior div, except the first one
+					pos.count--;
+				}
 				range = createRange(forReplace, currentNode.childNodes[i], pos, range);
 
-                if (pos.count == -1) {
-                    break;
-                }
-            }
-        }
+				if (pos.count == -1) {
+					break;
+				}
+			}
+		}
     }
     return range;
 }

@@ -7,18 +7,15 @@ function triggerOnDown(e) {
 	let c = readMyPressedKey(e);
 
 	if (c === "Backspace") {
-		//handleBackspace(e);
-		//note node merger works fine by default
+		handleBackspace(e);
     }
 	if (c === "Delete") {
-		//handleDelete(e);
+		handleDelete(e);
 	}
 	if (c === "Tab") {
 		handleTab();
 	}
-	if (c === "Enter") {
-		//handleEnter(e);
-	}
+
     if (c === "Tab" || c=== "PageUp" || c === "PageDown" || c === "F5") {
         e.preventDefault();
 	}
@@ -44,6 +41,7 @@ function triggerOnUp(e) {
 }
 
 //if a node would be left empty, we delete it and merge the neighboring nodes (if any)
+//default for both backspace and delete leaves empty span containers behind, we fix that
 function handleBackspace(e) {
 	let node = window.getSelection().focusNode,
 		cursoPozInsideElement = window.getSelection().focusOffset,
@@ -55,10 +53,9 @@ function handleBackspace(e) {
 	if (node && !(node instanceof HTMLDivElement)) {
 		globalCursor = getCursorPosition("inputTextWindow");
 		//case 1: deletion would cause current node to remain empty		 <node><x|><node> -> <node|node> -> <node>
-		if (cursoPozInsideElement == 1 && node.textContent.length == 1) {
-			console.log("case 1");
+		if (cursoPozInsideElement == 1 && node.textContent.length == 1 && prevNode && (thisSpanNode instanceof HTMLSpanElement)) {
 			e.preventDefault();
-			if (nextNode && prevNode) {
+			if (nextNode) {
 				prevNode.textContent += nextNode.textContent;
 				nextNode.parentNode.removeChild(nextNode);
 			}
@@ -67,7 +64,6 @@ function handleBackspace(e) {
 		}
 		//case 2: deletion would cause previous node to remain empty, but leave the current one untouched	  <node><x><|node> -> <node|node> -> <node>
 		if (cursoPozInsideElement == 0 && prevNode && prevNode.textContent.length == 1) {
-			console.log("case 2");
 			e.preventDefault();
 			if (prevNode.previousSibling) {
 				prevNode.previousSibling.textContent += node.textContent;
@@ -78,32 +74,9 @@ function handleBackspace(e) {
 			}
 			setCursorPosition(globalCursor - 1);
 		}
-		//case 3: deletion would cause line to merge with previous line
-		if (cursoPozInsideElement == 0 && !(prevNode instanceof HTMLSpanElement) && node.parentNode.parentNode.previousSibling) {
-			console.log("case 3, backspace");
-			let lastNeighboringElement = node.parentNode.parentNode.previousSibling.lastChild;
-			if (lastNeighboringElement instanceof HTMLBRElement) {		//previous line is empty
-				console.log("case 3:1");
-				e.preventDefault()
-				lastNeighboringElement.parentNode.appendChild(thisSpanNode);
-				lastNeighboringElement.parentNode.removeChild(lastNeighboringElement);
-				node.parentNode.parentNode.nextSibling.parentNode.removeChild(node.parentNode.parentNode.nextSibling);
-			} else
-				if (node.firstChild instanceof HTMLBRElement) {		//current line is empty
-					console.log("case 3:2");
-					e.preventDefault();
-					node.parentNode.parentNode.removeChild(node.parentNode);
-				} else {	//standard case, both current and previous line contain something
-					console.log("case 3:3");
-					e.preventDefault();
-					lastNeighboringElement.textContent += node.textContent;
-					thisSpanNode.parentNode.removeChild(thisSpanNode);
-					//todo: if node remains empty, remove node
-				}
-			setCursorPosition(globalCursor - 1);
-		}
 	}
 }
+
 function handleDelete(e) {
 	let node = window.getSelection().focusNode,
 		cursoPozInsideElement = window.getSelection().focusOffset,
@@ -136,13 +109,10 @@ function handleDelete(e) {
 			nextNode.parentNode.removeChild(nextNode);
 			setCursorPosition(globalCursor);
 		}
-		//case 3: deleteion would cause line to merge with next line
-		if (cursoPozInsideElement == node.textContent.length && !nextNode && node.parentNode.parentNode.nextSibling) {
-			node.parentNode.parentNode.nextSibling.firstChild.textContent = node.textContent + node.parentNode.parentNode.nextSibling.firstChild.textContent;
-			thisSpanNode.parentNode.removeChild(thisSpanNode);
-		}
 	}
 }
+
+//default tab scrolls through page elements, we fix it to act like a tex Tab
 function handleTab() {
 	let node, cursoPozInsideElement, globalCursor, preText, postText, end;
 
@@ -155,101 +125,4 @@ function handleTab() {
 	postText = node.textContent.substring(cursoPozInsideElement, end);
 	node.textContent = preText + "\t" + postText;
 	setCursorPosition(globalCursor + 1);
-}
-//we force the browser to regard <node>Enter<node> as a single node, so it gets analyzed by the server in a single pass
-//normally the server would have to communicate twice for the node before and after the line break, which is slower and can cause significant problems in case of delay 
-function handleEnter(e) {
-	let node, cursoPozInsideElement, globalCursor, preText, postText, end, symbol;
-	node = window.getSelection().focusNode;
-	cursoPozInsideElement = window.getSelection().focusOffset;
-
-	e.preventDefault();
-	end = node.textContent.length;
-	preText = document.createTextNode(node.textContent.substring(0, cursoPozInsideElement));
-	postText = document.createTextNode(node.textContent.substring(cursoPozInsideElement, end));
-	symbol = document.createTextNode("\n");
-
-	node.parentNode.insertBefore(postText, node);
-	node.parentNode.insertBefore(symbol, postText);
-	node.parentNode.insertBefore(preText, symbol);
-	node.parentNode.removeChild(node);
-
-	let range = document.createRange();
-	range.setEndBefore(symbol);
-	range.collapse(false);
-	window.getSelection().removeAllRanges();
-	window.getSelection().addRange(range);
-}
-//we recreate de default Gecko(FF, Chrome) browser structure after the nodes above return from the server, decorated with color
-function formatStructure(node) {
-	//we set it up so "node" is the text node inside de node before the delimiter /n		<|pre></n><post>
-	//in case Enter was pressed at the begining of the line, "node" will be the delimiter text "/n"		<|/n><post>
-	let preNode = node.parentNode;
-	let delimiter = node.parentNode.nextSibling;
-	let postNode = node.parentNode.nextSibling.nextSibling;
-	let inputWindow = document.getElementById("inputTextWindow");
-	let el1 = document.createElement("div");	//this div will wrap around the current line
-	let el2 = document.createElement("div");	//this div will contain next line
-	
-	//case 1: no row divs created yet (the very first row). Envelop row in a div, up to and including pre node. Create next div, move post node to next div
-	if (node.parentNode.parentNode.id == "inputTextWindow") {
-		console.log(" Enter CASE 1");
-		//1:1: Enter pressed somewhere in the middle of the line
-		if (node.textContent != "\n") {
-			console.log("1:1");
-			while (inputWindow.firstChild != preNode && inputWindow.firstChild) {
-				el1.appendChild(inputWindow.firstChild);
-			}
-			el1.appendChild(preNode);
-			delimiter.parentNode.removeChild(delimiter);
-		}
-		//1:2: Enter pressed at the very start of the line
-		if (node.textContent == "\n") {
-			console.log("1:2");
-			let brNode = document.createElement("BR");
-			el1.appendChild(brNode);
-			node.parentNode.parentNode.removeChild(node.parentNode);
-		}
-		//common code to both 1:1 and 1:2 cases
-		inputWindow.insertBefore(el1, inputWindow.firstChild);
-		el2.appendChild(el1.nextSibling);
-		while (el1.nextSibling) {
-			el2.appendChild(el1.nextSibling);
-		}
-		inputWindow.insertBefore(el2, el1.nextSibling);
-	} else {
-		//case 2: not first row, previous row divs exist. Create next div, remove post node from curent div, move it to the new div along with anything that comes after
-		if (node.parentNode.parentNode.parentNode.id == "inputTextWindow") {
-			console.log("Enter CASE 2");
-			//2:1: Enter pressed somewhere in the middle of the line
-			if (node.textContent != "\n") {
-				console.log("2:1");
-				delimiter.parentNode.removeChild(delimiter);
-				el2.appendChild(postNode);
-				while (preNode.nextSibling) {
-					el2.appendChild(preNode.nextSibling);
-				}
-				inputWindow.insertBefore(el2, preNode.parentNode.nextSibling);
-			}
-			//2:2: Enter pressed at the very start of the line
-			if (node.textContent == "\n") {
-				console.log("2:2");
-				let brNode = document.createElement("BR");
-				el1.appendChild(brNode);
-				inputWindow.insertBefore(el1, node.parentNode.parentNode);
-				node.parentNode.parentNode.removeChild(node.parentNode);
-			}
-		}
-	}
-	//set cursor position
-	let range = document.createRange();
-	if (el2.firstChild) {
-		range.setEnd(el2.firstChild.firstChild, 0);
-
-	} else {		//one of the functions doesn't use the second div, we get another reference point for it
-		range.setEnd(el1.nextSibling.firstChild.firstChild, 0);
-	}
-	range.collapse(false);
-	window.getSelection().removeAllRanges();
-	window.getSelection().addRange(range);
 }

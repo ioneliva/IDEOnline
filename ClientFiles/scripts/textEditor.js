@@ -1,7 +1,5 @@
-var oldNode;
 var prevKey;
 
-document.getElementById("inputTextWindow").addEventListener("keydown", keydown);
 document.getElementById("inputTextWindow").addEventListener("keyup", keyUp);
 
 //warm up function for xhr-XMLHttpRequest to server. First request took too long to execute, this solves it.
@@ -11,11 +9,6 @@ window.addEventListener('load', function () {
 		"enterPressed": "", "preWord": "", "preWordPos": ""
 	}, function (response) { }
 	)});
-
-//on key down
-function keydown() {
-    oldNode = window.getSelection().focusNode;  //used to remember source node when keys make the cursor jump on keyup
-}
 
 //on key up
 function keyUp(e) {
