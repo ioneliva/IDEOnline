@@ -35,7 +35,7 @@ function keyUp(e) {
 
 	//delimiter keys like (/*;backspace, etc.. or keys that trigger cursor movement like arrow keys or Home,End,PgUp, etc
 	//also detect if user spams cursor movement keys repeatedly, we avoid sending requests to servers for every repetition
-	if (!isAlphaNumeric(c) || isStructureModifying(c) || (isPositionalChar(c) && (!isPositionalChar(prevKey)))) {
+	if (!isAlphaNumeric(c) || isPositionModifying(c) || (isArrowKey(c) && (!isArrowKey(prevKey)))) {
 		let cursorPosition = getCursorPosition("inputTextWindow");
 		let wordComposite, token;
 
@@ -64,13 +64,16 @@ function keyUp(e) {
 				if (c == "Enter" && wordColoringMS.coloredPreWord.length > 0) {
 					insertServerHtmlAtPos(wordColoringMS.coloredPreWordPosition, wordColoringMS.coloredPreWord);
 				}
+				//set cursor
+				if (isSpecialChar(c)) {	//Home, End, PageUp, PageDown
+					setCursorPosition(c);
+				} else {
+					setCursorPosition(parseInt(wordColoringMS.position));
+				}
 			}
-			//set cursor
-			let serverPosition = wordColoringMS.position;
-			setCursorPosition(serverPosition);
 			//post the current state to undo/redo microservice
 			let currentState = document.getElementById("inputTextWindow").innerHTML;
-			postRequest("PUT", "http://localhost:5002/", { "state": currentState });
+			postRequest("PUT", "http://localhost:5002/", { "state": currentState, "position": getCursorPosition("inputTextWindow")});
 		}, function (err) {
 			// Word coloring microservice is down
 		});

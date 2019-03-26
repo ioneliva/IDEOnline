@@ -1,5 +1,4 @@
 document.getElementById("inputTextWindow").addEventListener("keydown", triggerOnDown);
-document.getElementById("inputTextWindow").addEventListener("keyup", triggerOnUp);
 
 //note: if the user keeps a key pressed, it triggers a multitude of "keydown" events, but only one "keyup" event
 //so keys that modify existing structure on multiple triggers, like Backspace and Del need to be handled on KeyDown
@@ -16,27 +15,8 @@ function triggerOnDown(e) {
 		handleTab();
 	}
 
-    if (c === "Tab" || c=== "PageUp" || c === "PageDown" || c === "F5") {
+    if (c === "Tab" || c=== "PageUp" || c === "PageDown" || c==="Home" || c==="End" || c === "F5") {
         e.preventDefault();
-	}
-}
-
-function triggerOnUp(e) {
-	let c = readMyPressedKey(e);
-
-    if (c === "PageUp") {
-        setCursorPosition(0);
-    }
-    if (c === "PageDown") {
-        let lines = 1;
-        //basically we want the number of chars to the end + number of lines except the first one (same algorithm as in utilities -create range for setCursorPosition)
-        let inputWindow = document.getElementById("inputTextWindow");
-        for (let i = 0; i < inputWindow.childNodes.length; i++) {
-            if (inputWindow.childNodes[i] instanceof HTMLDivElement && inputWindow.childNodes[i].previousSibling) {
-                lines++;
-            }
-        }
-        setCursorPosition(document.getElementById("inputTextWindow").textContent.length + lines-1);
 	}
 }
 

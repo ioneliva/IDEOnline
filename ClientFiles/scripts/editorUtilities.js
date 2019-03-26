@@ -6,17 +6,23 @@ function isAlphaNumeric(c) {
 	}
 	return ret;
 }
-function isPositionalChar(c) {
+function isArrowKey(c) {
     let ret = false;
-    if (c === "ArrowLeft" || c === "ArrowDown" || c === "ArrowRight" || c === "ArrowUp"
-        || c === "Home" || c === "End" || c === "PageUp" || c === "PageDown") {
+    if (c === "ArrowLeft" || c === "ArrowDown" || c === "ArrowRight" || c === "ArrowUp") {
         ret = true;
     }
     return ret;
 }
-function isStructureModifying(c) {
+function isPositionModifying(c) {
 	let ret = false;
-	if (c === "Enter" || c === "Tab" || c==="Backspace" || c==="Delete") {
+	if (c === "Enter" || c === "Tab" || c==="Backspace" || c==="Delete" || c=="PageUp" || c=="PageDown" || c=="Home" || c=="End") {
+		ret = true;
+	}
+	return ret;
+}
+function isSpecialChar(c) {
+	let ret = false;
+	if (c == "PageUp" || c == "PageDown" || c == "Home" || c == "End") {
 		ret = true;
 	}
 	return ret;
@@ -88,17 +94,54 @@ function getCursorPosition(containerId) {
     return pos;
 }
 
-//set cursor position after pos characters in contentEditable window
+//set cursor position after pos characters in contentEditable window 
+//or set cursor for some special keys with overwritten functionality
 function setCursorPosition(pos) {
-	if (pos >= 0) {
-		let sel = window.getSelection(),
-			range = createRange("for_cursor_position", document.getElementById("inputTextWindow"), { count: pos });
-
-		if (range) {
-			range.collapse(false);      //true -collapse to start, false-to end
-			sel.removeAllRanges();
-			sel.addRange(range);
+	let sel = window.getSelection();
+	let range;
+	if (Number.isInteger(pos) && pos >= 0) {
+		range = createRange("for_cursor_position", document.getElementById("inputTextWindow"), { count: pos });
+	} else {
+		let editor = document.getElementById("inputTextWindow"), node;
+		range = document.createRange();
+		switch (pos) {
+			case "PageUp": 
+				node = editor;
+				while (node && (node.nodeType != Node.TEXT_NODE)) {
+					node = node.firstChild;
+				}
+				range.setEnd(node, 0);
+				break;
+			case "PageDown": {
+				node = editor;
+				while (node && (node.nodeType != Node.TEXT_NODE)) {
+					node = node.lastChild;
+				}
+				range.setEnd(node, node.textContent.length);
+			}
+				break;
+			case "Home": {
+				node = sel.focusNode;
+				while (!(node instanceof HTMLDivElement) && (node.parentNode.id != "inputTextWindow")) {
+					node = node.parentNode;
+				}
+				range.setEnd(node.firstChild,0);
+			}
+				break;
+			case "End": {
+				node = sel.focusNode;
+				while (!(node instanceof HTMLDivElement) && (node.parentNode.id != "inputTextWindow")) {
+					node = node.parentNode;
+				}
+				range.setEnd(node.lastChild.lastChild, node.lastChild.lastChild.textContent.length);
+			}
+				break;
 		}
+	}
+	if (range) {
+		range.collapse(false);      //true -collapse to start, false-to end
+		sel.removeAllRanges();
+		sel.addRange(range);
 	}
 }
 
