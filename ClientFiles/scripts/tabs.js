@@ -4,10 +4,6 @@ if (document.addEventListener) {                // For all major browsers, excep
     document.getElementById("activeTab").addEventListener("click", clickOnTab); //init, this is the default tab
     document.getElementById("newTab").addEventListener("click", clickOnTab);
     document.getElementById("closeButton").addEventListener("click", closeTab);
-} else if (document.attachEvent) {              // For IE<8
-    document.getElementById("activeTab").attachEvent("click", clickOnTab); //init, this is the default tab
-    document.getElementById("newTab").attachEvent("click", clickOnTab);
-    document.getElementById("closeButton").attachEvent("click", closeTab);
 }
 
 function clickOnTab() {

@@ -13,7 +13,10 @@ function triggerOnDown(e) {
 	}
 	if (c === "Tab") {
 		handleTab();
-	}
+    }
+    if (c === "Enter") {
+        handleEnter();
+    }
 
     if (c === "Tab" || c=== "PageUp" || c === "PageDown" || c==="Home" || c==="End" || c === "F5") {
         e.preventDefault();
@@ -28,12 +31,21 @@ function handleBackspace(e) {
 		globalCursor,
 		thisSpanNode = node.parentNode,
 		prevNode = node.parentNode.previousSibling,
-		nextNode = node.parentNode.nextSibling;
+        nextNode = node.parentNode.nextSibling;
+
+    //deleted a line, need to update line count element
+    if (node.firstChild instanceof HTMLBRElement) {
+        let lineNumbering = document.getElementById("lineNumbering");
+        if (lineNumbering.lastChild) {
+            lineNumbering.lastChild.parentNode.removeChild(lineNumbering.lastChild);    //remove number
+            lineNumbering.lastChild.parentNode.removeChild(lineNumbering.lastChild);    //remove <br> tag
+        }
+    }
 
 	if (node && !(node instanceof HTMLDivElement)) {
 		globalCursor = getCursorPosition("inputTextWindow");
 		//case 1: deletion would cause current node to remain empty		 <node><x|><node> -> <node|node> -> <node>
-		if (cursoPozInsideElement == 1 && node.textContent.length == 1 && prevNode && (thisSpanNode instanceof HTMLSpanElement)) {
+        if (cursoPozInsideElement == 1 && node.textContent.length == 1 && prevNode && (thisSpanNode instanceof HTMLSpanElement)) {
 			e.preventDefault();
 			if (nextNode) {
 				prevNode.textContent += nextNode.textContent;
@@ -42,8 +54,8 @@ function handleBackspace(e) {
 			thisSpanNode.parentNode.removeChild(thisSpanNode);
 			setCursorPosition(globalCursor - 1);
 		}
-		//case 2: deletion would cause previous node to remain empty, but leave the current one untouched	  <node><x><|node> -> <node|node> -> <node>
-		if (cursoPozInsideElement == 0 && prevNode && prevNode.textContent.length == 1) {
+        //case 2: deletion would cause previous node to remain empty, but leave the current one untouched	  <node><x><|node> -> <node|node> -> <node>
+        if (cursoPozInsideElement == 0 && prevNode && prevNode.textContent.length == 1 && !(node.firstChild instanceof HTMLBRElement)) {
 			e.preventDefault();
 			if (prevNode.previousSibling) {
 				prevNode.previousSibling.textContent += node.textContent;
@@ -105,4 +117,23 @@ function handleTab() {
 	postText = node.textContent.substring(cursoPozInsideElement, end);
 	node.textContent = preText + "\t" + postText;
 	setCursorPosition(globalCursor + 1);
+}
+
+//on Enter we need to update line count element
+function handleEnter() {
+    let lineNumbering = document.getElementById("lineNumbering"),
+        brElement = document.createElement("BR"),
+        obj = document.createTextNode("2");
+
+    if (!lineNumbering.firstChild) {
+        lineNumbering.appendChild(document.createTextNode("1"));
+        lineNumbering.appendChild(document.createElement("BR"));
+    }
+    else {
+        let i = parseInt(lineNumbering.lastChild.previousSibling.textContent);
+        obj = document.createTextNode(parseInt(i) + 1);
+    }
+    lineNumbering.appendChild(obj);
+    lineNumbering.appendChild(brElement);
+
 }

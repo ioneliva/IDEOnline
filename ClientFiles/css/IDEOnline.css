@@ -135,32 +135,51 @@
 }
 
 #content {
+    position: relative;
     z-index: 1;
 }
 
 #inputTextWindow {
     width: 100%;
     min-height: 500px;
+    line-height: normal;
     font-size: 18px;
     white-space: pre-wrap; /*white spaces at the end of the div were getting ignored by default, this apparently fixes it*/
-    white-space: -moz-pre-wrap;
     word-wrap: break-word; /*long words now get split at the div border*/
     border: 1px solid;
-    padding-bottom: 5px 0 20px 0;
+    padding: 5px 0 20px 10px;
+    z-index: 1;
     position: relative;
 }
 
+#lineNumbering {
+    width:4%;
+    top:0;
+    left:-4%;
+    border: 1px solid;
+    margin-top: 5px;
+    background-color: white;
+    border: none;
+    border-color: dimgrey;
+    border-right: dotted;
+    line-height: normal;
+    font-size: 18px;
+    text-align: right;
+    color: dimgray;
+    position: absolute;
+}
+
 #solutionWindow {
-	width: 15%;
-	min-height: 400px;
-	top: 50px;
-	right: 2px;
-	border: 1px solid;
-	background-color: white;
-	text-align: center;
-	font-weight: bold;
-	position: absolute;
-	z-index: 3; 				/*higher z-index makes it cover the underlaying element with lower z*/    
+    width: 15%;
+    min-height: 400px;
+    top: 50px;
+    right: 2px;
+    border: 1px solid;
+    background-color: white;
+    text-align: center;
+    font-weight: bold;
+    position: absolute;
+    z-index: 3; /*higher z-index makes it cover the underlaying element with lower z*/
 }
 
 #output {
