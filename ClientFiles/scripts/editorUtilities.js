@@ -197,32 +197,28 @@ function createRange(purpose, currentNode, pos, range) {
 //rules for what nodes to add into range, relative to node
 function selectIntoRange(node, range, purpose) {
 	switch (purpose) {
-		case "for_replace": {
-			if ((node instanceof HTMLBRElement) && !(node.parentNode instanceof HTMLSpanElement)) { //enter pressed right after the few word, before server got the chance to analyze it
-				range.setStartBefore(node.parentNode);
+        case "for_replace": {
+			if ((node instanceof HTMLBRElement) && !(node.parentNode instanceof HTMLSpanElement)) { //Enter right after the first word, before server got the chance to analyze it
+                range.setStartBefore(node.parentNode);
 				range.setEndAfter(node.parentNode);
 			} else {
-				if (node.parentNode instanceof HTMLSpanElement
-					|| (node.parentNode instanceof HTMLDivElement && node.parentNode.id != "inputTextWindow")) { //general case, not first row
-					if (node.parentNode.previousSibling) {
-						range.setStartBefore(node.parentNode.previousSibling);
-					} else {
+				if (node.parentNode instanceof HTMLSpanElement) { //word previously analyzed by server
+                    if (node.parentNode.previousSibling && !(node.parentNode.previousSibling.firstChild instanceof HTMLBRElement)) {
+                        range.setStartBefore(node.parentNode.previousSibling);
+                    } else {
 						range.setStartBefore(node.parentNode);
-					}
-					if (node.parentNode.nextSibling) {
-						if (node.parentNode.nextSibling.firstChild instanceof HTMLBRElement) {
-							range.setEndAfter(node.parentNode);
-						} else {
-							range.setEndAfter(node.parentNode.nextSibling);
-						}
-					} else {
-						range.setEndAfter(node.parentNode);
-					}
-				} else if (node.parentNode.id == "inputTextWindow") {	//general case, very first row, no other rows created yet
-					range.setStartBefore(node);
+                    }
+                    if (node.parentNode.nextSibling && !(node.parentNode.nextSibling.firstChild instanceof HTMLBRElement)) {
+                        range.setEndAfter(node.parentNode.nextSibling);
+                    }
+                    else {
+                        range.setEndAfter(node.parentNode);
+                    }
+                } else if (node.parentNode instanceof HTMLDivElement) {	//word not analyzed by server yet
+                    range.setStartBefore(node);
 					range.setEndAfter(node);
 				}
-			}
+            }
 		}
 			break;
 		case "for_token": {
