@@ -25,16 +25,18 @@ function triggerOnDown(e) {
 
 //if a node would be left empty, we delete it and merge the neighboring nodes (if any)
 //default for both backspace and delete leaves empty span containers behind, we fix that
+//note this is the event BEFORE the deletion, so "node" would be node before deletion action happened
 function handleBackspace(e) {
 	let node = window.getSelection().focusNode,
 		cursoPozInsideElement = window.getSelection().focusOffset,
 		globalCursor,
 		thisSpanNode = node.parentNode,
 		prevNode = node.parentNode.previousSibling,
-        nextNode = node.parentNode.nextSibling;
-
+		nextNode = node.parentNode.nextSibling;
+	
     //deleted a line, need to update line count element
-    if (node.firstChild instanceof HTMLBRElement) {
+	if (node.firstChild instanceof HTMLBRElement
+			|| (node.parentNode instanceof HTMLSpanElement && !node.parentNode.previousSibling && cursoPozInsideElement == 0)) {
         let lineNumbering = document.getElementById("lineNumbering");
         if (lineNumbering.lastChild) {
             lineNumbering.lastChild.parentNode.removeChild(lineNumbering.lastChild);    //remove number
@@ -76,6 +78,17 @@ function handleDelete(e) {
 		thisSpanNode = node.parentNode,
 		prevNode = node.parentNode.previousSibling,
 		nextNode = node.parentNode.nextSibling;
+
+	//deleted a line, need to update line count element
+	if (cursoPozInsideElement == node.textContent.length
+		&& ((node.parentNode instanceof HTMLSpanElement && !node.parentNode.nextElementSibling && node.parentNode.parentNode.nextSibling)
+			|| (node.parentNode instanceof HTMLDivElement && !node.nextSibling && node.parentNode.nextSibling) || (node instanceof HTMLDivElement))) {
+		let lineNumbering = document.getElementById("lineNumbering");
+		if (lineNumbering.lastChild) {
+			lineNumbering.lastChild.parentNode.removeChild(lineNumbering.lastChild);    //remove number
+			lineNumbering.lastChild.parentNode.removeChild(lineNumbering.lastChild);    //remove <br> tag
+		}
+	}
 
 	if (node && !(node instanceof HTMLDivElement)) {
 		//case 1: deletion would cause current node to remain empty	<node><|x><node> -> <node|node> -> <node>
