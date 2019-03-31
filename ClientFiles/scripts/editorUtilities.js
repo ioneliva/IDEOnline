@@ -44,7 +44,7 @@ function readMyPressedKey(event) {
 }
 
 //send xhr request to server (http protocol request)
-function postRequest(verb, url, body, successCallback, errorCallback) {
+function sendRequest(verb, url, body, successCallback, errorCallback) {
     let xhr = new XMLHttpRequest();
     xhr.open(verb, url);
     xhr.setRequestHeader('Content-Type', 'application/json; charset = utf - 8');

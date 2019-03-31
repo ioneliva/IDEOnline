@@ -24,6 +24,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "imgs", "imgs", "{EC3BC114-4
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{699E9998-C636-406F-BFCF-506339B1DBD4}"
 	ProjectSection(SolutionItems) = preProject
+		ClientFiles\scripts\customKeyCombos.js = ClientFiles\scripts\customKeyCombos.js
 		ClientFiles\scripts\customKeys.js = ClientFiles\scripts\customKeys.js
 		ClientFiles\scripts\editorUtilities.js = ClientFiles\scripts\editorUtilities.js
 		ClientFiles\scripts\tabs.js = ClientFiles\scripts\tabs.js

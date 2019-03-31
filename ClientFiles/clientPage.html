@@ -9,55 +9,56 @@
 	<link href="css/IDEOnline.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
-    <div id="wrapper">
+	<div id="wrapper">
 
-        <div id="header">
-            <!--tab tab ... activeTab newTab-->
-            <div id="tabs" class="tabs">
-                <div id="activeTab" class="tab activeTab">
-                    <div class="inner-tab">
-                        <p>file0.css</p>
-                        <button id="closeButton" class="closeButton">x</button>
-                    </div>
-                </div>
-                <div id="newTab" class="tab newTab">
-                    <div class="inner-tab">
-                        <p>+</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+		<div id="header">
+			<!--tab tab ... activeTab newTab-->
+			<div id="tabs" class="tabs">
+				<div id="activeTab" class="tab activeTab">
+					<div class="inner-tab">
+						<p>file0.css</p>
+						<button id="closeButton" class="closeButton">x</button>
+					</div>
+				</div>
+				<div id="newTab" class="tab newTab">
+					<div class="inner-tab">
+						<p>+</p>
+					</div>
+				</div>
+			</div>
+		</div>
 
-        <div id="login_Box" class="loginBox">
-            <img src="imgs/avatar.jpg" class="avatar">
-            <h1>Welcome</h1>
-            <form id="login">
-                <label>User</label>
-                <input id="userName" type="text" name="" placeholder="Username">
-                <label>Password</label>
-                <input id="userPasswd" type="password" name="" placeholder="Password">
-                <input id="subtmitBtn" type="submit" name="" value="Login">
-                <a href="#">Register</a> <!--href=# means the link is pointing to nothing atm-->
-            </form>
-        </div>
+		<div id="login_Box" class="loginBox">
+			<img src="imgs/avatar.jpg" class="avatar">
+			<h1>Welcome</h1>
+			<form id="login">
+				<label>User</label>
+				<input id="userName" type="text" name="" placeholder="Username">
+				<label>Password</label>
+				<input id="userPasswd" type="password" name="" placeholder="Password">
+				<input id="subtmitBtn" type="submit" name="" value="Login">
+				<a href="#">Register</a> <!--href=# means the link is pointing to nothing atm-->
+			</form>
+		</div>
 
-        <div id="content">
-            <!-- Any CSS text-related property will affect the whole text within a textarea/input.That's why we will try to use a contenteditable div to style each element inside -->
-            <div id="inputTextWindow" contenteditable="true" spellcheck="false" type="text"></div>
-            <div id="lineNumbering"></div>
-            <div id="solutionWindow">a solution tree will go here</div>
-            <span id="output">Response from microservice: </span>
-        </div>
+		<div id="content">
+			<!-- Any CSS text-related property will affect the whole text within a textarea/input.That's why we will try to use a contenteditable div to style each element inside -->
+			<div id="inputTextWindow" contenteditable="true" spellcheck="false" type="text"></div>
+			<div id="lineNumbering"></div>
+			<div id="solutionWindow">a solution tree will go here</div>
+			<span id="output">Response from microservice: </span>
+		</div>
 
-        <div id="footer">
-            Copyright &copy; 2017, Licenta, eu
-        </div>
-    </div>
+		<div id="footer">
+			Copyright &copy; 2017, Licenta, eu
+		</div>
+	</div>
 
-    <!--scripts go after the elements they are applied to. If we try to reference an element we haven't created yet we get null reference error-->
-    <script type="text/javascript" src="scripts/tabs.js"></script>
-    <script type="text/javascript" src="scripts/editorUtilities.js"></script>
-    <script type="text/javascript" src="scripts/customKeys.js"></script>
-    <script type="text/javascript" src="scripts/textEditor.js"></script>
+	<!--scripts go after the elements they are applied to. If we try to reference an element we haven't created yet we get null reference error-->
+	<script type="text/javascript" src="scripts/tabs.js"></script>
+	<script type="text/javascript" src="scripts/editorUtilities.js"></script>
+	<script type="text/javascript" src="scripts/customKeys.js"></script>
+	<script type="text/javascript" src="scripts/customKeyCombos.js"></script>
+	<script type="text/javascript" src="scripts/textEditor.js"></script>
 </body>
 </html>
