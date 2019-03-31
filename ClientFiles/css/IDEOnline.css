@@ -144,8 +144,8 @@
     min-height: 500px;
     line-height: normal;
     font-size: 18px;
-    white-space: pre-wrap; /*white spaces at the end of the div were getting ignored by default, this apparently fixes it*/
-    word-wrap: break-word; /*long words now get split at the div border*/
+    white-space: pre; /*set line to continue in one line instead of breaking*/
+    /*overflow: auto;*/ /*this would make our content scroll horizontally, but it breaks out little trick with the buttons above*/
     border: 1px solid;
     padding: 5px 0 20px 10px;
     z-index: 1;
