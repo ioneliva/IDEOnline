@@ -7,9 +7,14 @@
 				{
 					"Host": "localhost",
 					"Port": 5001
+				},
+				{
+					"Host": "localhost",
+					"Port": 5003
 				}
 			],
 			"UpstreamPathTemplate": "/coloring",
+			"LoadBalancerOptions": { "Type": "RoundRobin" },
 			"UpstreamHttpMethod": [ "Post" ]
 		},
 		{
@@ -37,7 +42,7 @@
 			"UpstreamHttpMethod": [ "Get", "Post" ]
 		}
 	],
-	"GlobalConfiguration": {
-		"BaseUrl": "http://localhost:5100/"
-	}
-}
+			"GlobalConfiguration": {
+				"BaseUrl": "http://localhost:5100/"
+			}
+		}
