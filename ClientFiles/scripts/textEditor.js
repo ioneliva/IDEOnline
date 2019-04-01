@@ -1,9 +1,10 @@
+var apiGateway = "http://localhost:5100";
 var prevKey;
 
 document.getElementById("inputTextWindow").addEventListener("keyup", keyUp);
 //warm up function for xhr-XMLHttpRequest to server. First request took too long to execute, this solves it.
 window.addEventListener('load', function () {
-	sendRequest("POST", "http://localhost:5001/", {
+	sendRequest("POST", apiGateway+"/coloring", {
 		"word_and_delimiter": "", "position": "",
 		"enterPressed": "", "preWord": "", "preWordPos": "", "token": ""
 	}, function (response) { }
@@ -28,8 +29,7 @@ function keyUp(e) {
 		wordComposite = selectNodesAround(cursorPosition).toString();
 		token = getToken(cursorPosition);
 		//send data to server
-		console.log("sending word=|" + wordComposite + "| pos=" + cursorPosition);
-		sendRequest("POST", "http://localhost:5001/", {
+		sendRequest("POST", apiGateway + "/coloring", {
 			"word_and_delimiter": wordComposite, "position": cursorPosition,
 			"enterPressed": enterPressed, "preWord": preWord, "preWordPos": preWordPos, "token": token
 		}, function (response) {
@@ -54,7 +54,7 @@ function keyUp(e) {
 			}
 			//post the current state to undo/redo microservice
 			let currentState = document.getElementById("inputTextWindow").innerHTML;
-			sendRequest("PUT", "http://localhost:5002/", { "state": currentState, "position": getCursorPosition("inputTextWindow")});
+			sendRequest("PUT", apiGateway +"/doUndo", { "state": currentState, "position": getCursorPosition("inputTextWindow")});
 		}, function (err) {
 			// Word coloring microservice is down
 		});

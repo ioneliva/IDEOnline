@@ -4,7 +4,6 @@ C:\Users\io\source\repos\IDEOnline\WordColorMicroservice\bin\Debug\netcoreapp2.2
 C:\Users\io\source\repos\IDEOnline\WordColorMicroservice\bin\Debug\netcoreapp2.2\WordColorMicroservice.runtimeconfig.dev.json
 C:\Users\io\source\repos\IDEOnline\WordColorMicroservice\bin\Debug\netcoreapp2.2\WordColorMicroservice.dll
 C:\Users\io\source\repos\IDEOnline\WordColorMicroservice\bin\Debug\netcoreapp2.2\WordColorMicroservice.pdb
-C:\Users\io\source\repos\IDEOnline\WordColorMicroservice\obj\Debug\netcoreapp2.2\WordColorMicroservice.csprojAssemblyReference.cache
 C:\Users\io\source\repos\IDEOnline\WordColorMicroservice\obj\Debug\netcoreapp2.2\WordColorMicroservice.csproj.CoreCompileInputs.cache
 C:\Users\io\source\repos\IDEOnline\WordColorMicroservice\obj\Debug\netcoreapp2.2\WordColorMicroservice.AssemblyInfoInputs.cache
 C:\Users\io\source\repos\IDEOnline\WordColorMicroservice\obj\Debug\netcoreapp2.2\WordColorMicroservice.AssemblyInfo.cs

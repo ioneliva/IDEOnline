@@ -20,7 +20,7 @@ function triggerOnDownCombos(e) {
 }
 
 function handleUndo() {
-	sendRequest("GET", "http://localhost:5002/undo", null, function (response) {
+	sendRequest("GET", apiGateway+"/doUndo/undo", null, function (response) {
 		document.getElementById("inputTextWindow").innerHTML = response;
 	}, function (err) {
 		// Do/Undo microservice is down
@@ -28,7 +28,7 @@ function handleUndo() {
 }
 
 function handleRedo() {
-	sendRequest("GET", "http://localhost:5002/redo", null, function (response) {
+	sendRequest("GET", apiGateway + "/doUndo/redo", null, function (response) {
 		document.getElementById("inputTextWindow").innerHTML = response;
 	}, function (err) {
 		// Do/Undo microservice is down

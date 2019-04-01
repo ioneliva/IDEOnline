@@ -1,0 +1,43 @@
+{
+	"ReRoutes": [
+		{
+			"DownstreamPathTemplate": "/wordColorMicroservice",
+			"DownstreamScheme": "http",
+			"DownstreamHostAndPorts": [
+				{
+					"Host": "localhost",
+					"Port": 5001
+				}
+			],
+			"UpstreamPathTemplate": "/coloring",
+			"UpstreamHttpMethod": [ "Post" ]
+		},
+		{
+			"DownstreamPathTemplate": "/",
+			"DownstreamScheme": "http",
+			"DownstreamHostAndPorts": [
+				{
+					"Host": "localhost",
+					"Port": 5002
+				}
+			],
+			"UpstreamPathTemplate": "/doUndo",
+			"UpstreamHttpMethod": [ "Put" ]
+		},
+		{
+			"DownstreamPathTemplate": "/{url}",
+			"DownstreamScheme": "http",
+			"DownstreamHostAndPorts": [
+				{
+					"Host": "localhost",
+					"Port": 5002
+				}
+			],
+			"UpstreamPathTemplate": "/doUndo/{url}",
+			"UpstreamHttpMethod": [ "Get", "Post" ]
+		}
+	],
+	"GlobalConfiguration": {
+		"BaseUrl": "http://localhost:5100/"
+	}
+}

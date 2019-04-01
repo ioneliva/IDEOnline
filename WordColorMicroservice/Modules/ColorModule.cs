@@ -14,7 +14,7 @@ namespace WordColorMicroservice.Modules
 
         public ColorModule()
         {
-            Post("/", _ =>
+            Post("/wordColorMicroservice", _ =>
             {
                 string plainWord, plainWordPosition, plainPreWord, plainPreWordPosition, coloredWord, coloredPreWord, token;
                 bool enterPressedOnClient = false, preWordEmpty=false, postWordEmpty=false;
