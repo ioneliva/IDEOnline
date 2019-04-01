@@ -22,8 +22,16 @@ namespace WordColorMicroservice
                     .AllowAnyMethod()
                     .AllowCredentials()
            );
-           
-            app.UseOwin(x => x.UseNancy(opt => opt.Bootstrapper = new CustomBootstrapper()));
+
+            app.UseOwin(x => {
+                x(next => env =>
+                {
+                    System.Console.WriteLine("Got a request");
+                    return next(env);
+                });
+                x.UseNancy(opt => opt.Bootstrapper = new CustomBootstrapper());
+            });
+
         }
     }
 }

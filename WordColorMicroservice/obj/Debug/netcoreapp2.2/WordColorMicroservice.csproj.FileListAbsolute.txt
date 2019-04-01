@@ -9,3 +9,4 @@ C:\Users\io\source\repos\IDEOnline\WordColorMicroservice\obj\Debug\netcoreapp2.2
 C:\Users\io\source\repos\IDEOnline\WordColorMicroservice\obj\Debug\netcoreapp2.2\WordColorMicroservice.AssemblyInfo.cs
 C:\Users\io\source\repos\IDEOnline\WordColorMicroservice\obj\Debug\netcoreapp2.2\WordColorMicroservice.dll
 C:\Users\io\source\repos\IDEOnline\WordColorMicroservice\obj\Debug\netcoreapp2.2\WordColorMicroservice.pdb
+C:\Users\io\source\repos\IDEOnline\WordColorMicroservice\obj\Debug\netcoreapp2.2\WordColorMicroservice.csprojAssemblyReference.cache
