@@ -273,6 +273,67 @@ function serverLagged(originalToken, serverToken) {
 	return ret;
 }
 
+//get number of user input lines in the editor window
+function getNumberOfLines() {
+	let window = document.getElementById("inputTextWindow");
+	let node = window.firstChild;
+	let count = 1;
+
+	if ((node instanceof HTMLSpanElement) || (node.nodeType === Node.TEXT_NODE)) { //no divs created, window has only 1 row
+		return count;
+	}
+	else if (node instanceof HTMLDivElement) { //rows created
+		while (node.nextSibling) {
+			count++;
+			node = node.nextSibling;
+		}
+	}
+	return count;
+}
+
+//update lines numbering element to reflect dynamic changes in the editor
+function updateLineNumbering(count) { //count is an optional parameter
+	let lineNumbering = document.getElementById("lineNumbering");
+
+	if (count) {	//parameter passed
+		if (count > 0) {		//add count lines
+			let brElement = document.createElement("BR"),
+				obj = document.createTextNode("2");
+
+			if (!lineNumbering.firstChild) {
+				lineNumbering.appendChild(document.createTextNode("1"));
+				lineNumbering.appendChild(document.createElement("BR"));
+			}
+			else {
+				let i = parseInt(lineNumbering.lastChild.previousSibling.textContent);
+				obj = document.createTextNode(parseInt(i) + 1);
+			}
+			lineNumbering.appendChild(obj);
+			lineNumbering.appendChild(brElement);
+		}
+		if (count < 0 && lineNumbering.lastChild) {		//remove count lines
+			let i;
+			for (i = count; i < 0 && lineNumbering.lastChild; i++) {
+				lineNumbering.lastChild.parentNode.removeChild(lineNumbering.lastChild);    //remove number
+				lineNumbering.lastChild.parentNode.removeChild(lineNumbering.lastChild);    //remove <br> tag
+			}
+		}
+	}
+	else {	//parameter not passed
+		count = getNumberOfLines();
+		while (lineNumbering.lastChild && parseInt(lineNumbering.lastChild.previousSibling.textContent) > count) {
+			lineNumbering.lastChild.parentNode.removeChild(lineNumbering.lastChild);
+			lineNumbering.lastChild.parentNode.removeChild(lineNumbering.lastChild);
+		}
+		while (lineNumbering.lastChild && parseInt(lineNumbering.lastChild.previousSibling.textContent) < count) {
+			let i = parseInt(lineNumbering.lastChild.previousSibling.textContent);
+			let obj = document.createTextNode(parseInt(i) + 1);
+			lineNumbering.appendChild(obj);
+			lineNumbering.appendChild(document.createElement("BR"));
+		}
+	}
+}
+
 /*
  * performance tests done with
 var t0 = performance.now();

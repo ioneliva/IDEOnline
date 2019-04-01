@@ -33,16 +33,21 @@ function handleBackspace(e) {
 		thisSpanNode = node.parentNode,
 		prevNode = node.parentNode.previousSibling,
 		nextNode = node.parentNode.nextSibling;
-	
-    //deleted a line, need to update line count element
+
+	//user made a selection(with mouse or keyboard shift+arrow key) and pressed Backspace on it. Need to update line count
+	if (!window.getSelection().isCollapsed) {
+		let linesBeforeDeletion = getNumberOfLines();
+		setTimeout(function () {	//set a small delay to access the variable states after the Backspace fired
+			let linesAfterDeletion = getNumberOfLines();
+			updateLineNumbering("-" + (linesBeforeDeletion - linesAfterDeletion));
+			return;	//exit here, this is a special case and it is slower than the rest, we want it executing as fast as possible
+		}, 1);
+	}
+    //deleted a line, need to update line count. Selection is point selection.(this is faster than updating the whole document, so it's preferable to the handler above)
 	if (node.firstChild instanceof HTMLBRElement
 			|| (node.parentNode instanceof HTMLSpanElement && !node.parentNode.previousSibling && cursoPozInsideElement == 0)) {
-        let lineNumbering = document.getElementById("lineNumbering");
-        if (lineNumbering.lastChild) {
-            lineNumbering.lastChild.parentNode.removeChild(lineNumbering.lastChild);    //remove number
-            lineNumbering.lastChild.parentNode.removeChild(lineNumbering.lastChild);    //remove <br> tag
-        }
-    }
+		updateLineNumbering(-1);
+	}
 
 	if (node && !(node instanceof HTMLDivElement)) {
 		globalCursor = getCursorPosition("inputTextWindow");
@@ -79,15 +84,20 @@ function handleDelete(e) {
 		prevNode = node.parentNode.previousSibling,
 		nextNode = node.parentNode.nextSibling;
 
-	//deleted a line, need to update line count element
+	//user made a selection(with mouse or keyboard shift+arrow key) and pressed Delete on it. Need to update line count
+	if (!window.getSelection().isCollapsed) {
+		let linesBeforeDeletion = getNumberOfLines();
+		setTimeout(function () {
+			let linesAfterDeletion = getNumberOfLines();
+			updateLineNumbering("-" + (linesBeforeDeletion - linesAfterDeletion));
+			return;	//as in case of Backspace, we exit early and prevent the analysis of the rest of the conditions below, to speed up execution
+		}, 1);
+	}
+	//deleted a line, need to update line count element. Selection is point selection
 	if (cursoPozInsideElement == node.textContent.length
 		&& ((node.parentNode instanceof HTMLSpanElement && !node.parentNode.nextElementSibling && node.parentNode.parentNode.nextSibling)
 			|| (node.parentNode instanceof HTMLDivElement && !node.nextSibling && node.parentNode.nextSibling) || (node instanceof HTMLDivElement))) {
-		let lineNumbering = document.getElementById("lineNumbering");
-		if (lineNumbering.lastChild) {
-			lineNumbering.lastChild.parentNode.removeChild(lineNumbering.lastChild);    //remove number
-			lineNumbering.lastChild.parentNode.removeChild(lineNumbering.lastChild);    //remove <br> tag
-		}
+		updateLineNumbering(-1);
 	}
 
 	if (node && !(node instanceof HTMLDivElement)) {
@@ -134,19 +144,5 @@ function handleTab() {
 
 //on Enter we need to update line count element
 function handleEnter() {
-    let lineNumbering = document.getElementById("lineNumbering"),
-        brElement = document.createElement("BR"),
-        obj = document.createTextNode("2");
-
-    if (!lineNumbering.firstChild) {
-        lineNumbering.appendChild(document.createTextNode("1"));
-        lineNumbering.appendChild(document.createElement("BR"));
-    }
-    else {
-        let i = parseInt(lineNumbering.lastChild.previousSibling.textContent);
-        obj = document.createTextNode(parseInt(i) + 1);
-    }
-    lineNumbering.appendChild(obj);
-    lineNumbering.appendChild(brElement);
-
+	updateLineNumbering(+1);
 }

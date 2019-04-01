@@ -28,6 +28,7 @@ function keyUp(e) {
 		wordComposite = selectNodesAround(cursorPosition).toString();
 		token = getToken(cursorPosition);
 		//send data to server
+		console.log("sending word=|" + wordComposite + "| pos=" + cursorPosition);
 		sendRequest("POST", "http://localhost:5001/", {
 			"word_and_delimiter": wordComposite, "position": cursorPosition,
 			"enterPressed": enterPressed, "preWord": preWord, "preWordPos": preWordPos, "token": token
