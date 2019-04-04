@@ -40,6 +40,18 @@
 			],
 			"UpstreamPathTemplate": "/doUndo/{url}",
 			"UpstreamHttpMethod": [ "Get", "Post" ]
+		},
+		{
+			"DownstreamPathTemplate": "/{url}",
+			"DownstreamScheme": "http",
+			"DownstreamHostAndPorts": [
+				{
+					"Host": "localhost",
+					"Port": 5200
+				}
+			],
+			"UpstreamPathTemplate": "/{url}",
+			"UpstreamHttpMethod": [ "Get", "Post" ]
 		}
 	],
 			"GlobalConfiguration": {

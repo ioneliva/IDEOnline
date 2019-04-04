@@ -3,7 +3,6 @@ C:\Users\io\source\repos\IDEOnline\APIGateway\bin\Debug\netcoreapp2.2\APIGateway
 C:\Users\io\source\repos\IDEOnline\APIGateway\bin\Debug\netcoreapp2.2\APIGateway.runtimeconfig.dev.json
 C:\Users\io\source\repos\IDEOnline\APIGateway\bin\Debug\netcoreapp2.2\APIGateway.dll
 C:\Users\io\source\repos\IDEOnline\APIGateway\bin\Debug\netcoreapp2.2\APIGateway.pdb
-C:\Users\io\source\repos\IDEOnline\APIGateway\obj\Debug\netcoreapp2.2\APIGateway.csprojAssemblyReference.cache
 C:\Users\io\source\repos\IDEOnline\APIGateway\obj\Debug\netcoreapp2.2\APIGateway.csproj.CoreCompileInputs.cache
 C:\Users\io\source\repos\IDEOnline\APIGateway\obj\Debug\netcoreapp2.2\APIGateway.AssemblyInfoInputs.cache
 C:\Users\io\source\repos\IDEOnline\APIGateway\obj\Debug\netcoreapp2.2\APIGateway.AssemblyInfo.cs
@@ -11,3 +10,4 @@ C:\Users\io\source\repos\IDEOnline\APIGateway\obj\Debug\netcoreapp2.2\APIGateway
 C:\Users\io\source\repos\IDEOnline\APIGateway\obj\Debug\netcoreapp2.2\APIGateway.dll
 C:\Users\io\source\repos\IDEOnline\APIGateway\obj\Debug\netcoreapp2.2\APIGateway.pdb
 C:\Users\io\source\repos\IDEOnline\APIGateway\bin\Debug\netcoreapp2.2\hosting.json
+C:\Users\io\source\repos\IDEOnline\APIGateway\obj\Debug\netcoreapp2.2\APIGateway.csprojAssemblyReference.cache
