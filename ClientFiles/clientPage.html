@@ -2,7 +2,6 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>  -->
     <title>Main Page</title>
 	<meta name="keywords" content="" />
 	<meta name="description" content="" />
@@ -45,7 +44,34 @@
 			<!-- Any CSS text-related property will affect the whole text within a textarea/input.That's why we will try to use a contenteditable div to style each element inside -->
 			<div id="inputTextWindow" contenteditable="true" spellcheck="false" type="text"></div>
 			<div id="lineNumbering"></div>
-			<div id="solutionWindow">a solution tree will go here</div>
+			<div id="solutionWindow">
+				<div id="solutionWindowHeader">Solution Explorer</div>
+				<ul id="myUL">
+					<li>
+						<span class="expand">..root..</span>
+						<ul class="nested">
+							<li>| File1</li>
+							<li>| File2</li>
+							<li>
+								<span class="expand">Directory</span>
+								<ul class="nested">
+									<li>| File4</li>
+									<li>| File5</li>
+									<li>
+										<span class="expand">Directory</span>
+										<ul class="nested">
+											<li>| File6</li>
+											<li>| File7</li>
+											<li>| File8</li>
+											<li>| File9</li>
+										</ul>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</li>
+				</ul>
+			</div>
 			<span id="output">Response from microservice: </span>
 		</div>
 
@@ -56,6 +82,7 @@
 
 	<!--scripts go after the elements they are applied to. If we try to reference an element we haven't created yet we get null reference error-->
 	<script type="text/javascript" src="scripts/tabs.js"></script>
+	<script type="text/javascript" src="scripts/solutionExplorer.js"></script>
 	<script type="text/javascript" src="scripts/editorUtilities.js"></script>
 	<script type="text/javascript" src="scripts/customKeys.js"></script>
 	<script type="text/javascript" src="scripts/customKeyCombos.js"></script>

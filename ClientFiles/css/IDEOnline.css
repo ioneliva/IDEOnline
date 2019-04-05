@@ -71,68 +71,59 @@
 
     display:none;
 }
-
-.loginBox h1 {
-    margin:0;
-    padding-bottom: 20px;
-    text-align: center;
-    font-size: 22px;
-}
-
-.loginBox label {
-    font-weight: bold;
-}
-
-.loginBox input {
-    width: 100%;
-    margin-bottom: 20px;
-}
-
-.loginBox #userName, #userPasswd {
-    border: none;
-    border-bottom: 1px solid #fff;
-    background: transparent; /*kill color in the edit box, see the background*/
-    outline: none; /*An outline is a line that is drawn around elements, outside the borders, to make the element "stand out".*/
-    height: 30px;
-    color: #fff;
-    font-size: 16px;
-}
-
-.loginBox #subtmitBtn {
-    border: none;
-    outline: none;
-    height: 40px;
-    background: #808080;
-    color: #fff;
-    font-size: 18px;
-    border-radius: 20px;
-}
-
-.loginBox #subtmitBtn:hover {
-    cursor: pointer;
-    background: #ffc107;
-    color: #000;
-}
-
-.loginBox a {
-    text-decoration: none;
-    font-size: 16px;
-    line-height: 20px;
-    color: dimgrey;
-}
-
-.loginBox a:hover {
-    color: #ffc107;
-}
-
-.loginBox .avatar {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%; /*make round corners*/
-    position: absolute;
-    top: -50px; /*with a height of 100, we move it half way above the container*/
-    left: 100px; /*and roughly in the middle of the width of container*/
-}
+    .loginBox h1 {
+        margin:0;
+        padding-bottom: 20px;
+        text-align: center;
+        font-size: 22px;
+    }
+    .loginBox label {
+        font-weight: bold;
+    }
+    .loginBox input {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+    .loginBox #userName, #userPasswd {
+        border: none;
+        border-bottom: 1px solid #fff;
+        background: transparent; /*kill color in the edit box, see the background*/
+        outline: none; /*An outline is a line that is drawn around elements, outside the borders, to make the element "stand out".*/
+        height: 30px;
+        color: #fff;
+        font-size: 16px;
+    }
+    .loginBox #subtmitBtn {
+        border: none;
+        outline: none;
+        height: 40px;
+        background: #808080;
+        color: #fff;
+        font-size: 18px;
+        border-radius: 20px;
+    }
+    .loginBox #subtmitBtn:hover {
+        cursor: pointer;
+        background: #ffc107;
+        color: #000;
+    }
+    .loginBox a {
+        text-decoration: none;
+        font-size: 16px;
+        line-height: 20px;
+        color: dimgrey;
+    }
+    .loginBox a:hover {
+        color: #ffc107;
+    }
+    .loginBox .avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%; /*make round corners*/
+        position: absolute;
+        top: -50px; /*with a height of 100, we move it half way above the container*/
+        left: 100px; /*and roughly in the middle of the width of container*/
+    }
 
 #content {
     position: relative;
@@ -171,16 +162,52 @@
 
 #solutionWindow {
     width: 15%;
-    min-height: 400px;
+    height:50%;
     top: 50px;
     right: 2px;
     border: 1px solid;
     background-color: white;
-    text-align: center;
+    text-align: left;
     font-weight: bold;
+    user-select: none; /*prevent user from selecting, or more importantly, copying the text*/
+    -moz-user-select: none;
+    resize:both;
+    overflow: auto;
     position: absolute;
     z-index: 3; /*higher z-index makes it cover the underlaying element with lower z*/
 }
+    #solutionWindow #solutionWindowHeader {
+        padding: 1%;
+        cursor: move;
+        z-index: 3;
+        background-color: #808080;
+        color: #fff;
+    }
+    #solutionWindow ul, #myUL {
+        list-style-type: none;
+    }
+    #solutionWindow #myUL {
+        margin: 0;
+        padding: 0;
+    }
+    #solutionWindow .expand {
+        cursor: pointer;
+    }
+    #solutionWindow .expand::before {
+        content: "\25B6";
+        color: black;
+        display: inline-block;
+        margin-right: 6px;
+    }
+    #solutionWindow .expand-down::before {
+        transform: rotate(90deg);
+    }
+    #solutionWindow .nested {
+        display: none;
+    }
+    #solutionWindow .active {
+        display: block;
+    }
 
 #output {
 	clear: both;

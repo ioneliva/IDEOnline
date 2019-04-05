@@ -1,10 +1,8 @@
 var tabPageNo = 1;
 
-if (document.addEventListener) {                // For all major browsers, except IE<8
-    document.getElementById("activeTab").addEventListener("click", clickOnTab); //init, this is the default tab
-    document.getElementById("newTab").addEventListener("click", clickOnTab);
-    document.getElementById("closeButton").addEventListener("click", closeTab);
-}
+document.getElementById("activeTab").addEventListener("click", clickOnTab);
+document.getElementById("newTab").addEventListener("click", clickOnTab);
+document.getElementById("closeButton").addEventListener("click", closeTab);
 
 function clickOnTab() {
     if (this.className == "tab newTab") { //user clicked on the + tab
