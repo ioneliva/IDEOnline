@@ -11,6 +11,8 @@ namespace LoginMicroservice.Controllers
     public class AuthController : Controller
     {
         [HttpGet]
+        //tested with Postman: Get request at http://localhost:5200/auth , query params name=aaa, pswd=123
+        //access token obtained can be tested at jwt.io
         public IActionResult Get(string name, string pswd)
         {
             if (name == "aaa" && pswd == "123") //hard coded for now
