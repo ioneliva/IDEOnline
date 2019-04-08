@@ -10,8 +10,8 @@ namespace SaveLoadMicroservice.Models
             UserFiles = new HashSet<UserFiles>();
         }
         [Key]
-        public int UserId { get; set; }
-        public string UserName { get; set; }
+        public long Id { get; set; }
+        public string Name { get; set; }
 
         public virtual ICollection<UserFiles> UserFiles { get; set; }
     }

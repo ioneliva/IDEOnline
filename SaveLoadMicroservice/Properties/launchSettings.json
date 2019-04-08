@@ -1,30 +1,29 @@
 {
   "iisSettings": {
     "windowsAuthentication": false,
-    "anonymousAuthentication": false,
-    "iis": {
-      "applicationUrl": "http://localhost/SaveLoadMicroservice",
-      "sslPort": 0
-    },
+    "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:62092",
+      "applicationUrl": "http://localhost:15243",
       "sslPort": 0
     }
   },
+  "$schema": "http://json.schemastore.org/launchsettings.json",
   "profiles": {
     "IIS Express": {
       "commandName": "Project",
+      "launchUrl": "api/values",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "http://localhost:5010"
+      "applicationUrl": ""
     },
     "SaveLoadMicroservice": {
       "commandName": "Project",
+      "launchUrl": "api/values",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "http://localhost:5010"
+      "applicationUrl": "http://localhost:5000"
     }
   }
 }

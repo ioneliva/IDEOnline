@@ -1,22 +1,28 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using SaveLoadMicroservice.Models;
 
 namespace SaveLoadMicroservice
 {
     public class Startup
     {
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
+
+        public IConfiguration Configuration { get; }
+
         // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            //hard coded connection string. Need to replace it with dynamic one?
-            var conString= "Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\Users\\io\\source\\repos\\IDEOnline\\SaveLoadMicroservice\\Database\\UserFiles.mdf;Integrated Security=True";
-            services.AddDbContext<SaveLoadContext>(options => options.UseSqlServer(conString));
+            services.AddDbContext<Models.dbContext>(options =>
+                 options.UseSqlite(Configuration.GetConnectionString("SaveLoadDb")));
 
-            services.AddMvc();
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
