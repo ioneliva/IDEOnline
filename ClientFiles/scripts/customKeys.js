@@ -1,4 +1,4 @@
-document.getElementById("inputTextWindow").addEventListener("keydown", triggerOnDown);
+getEditor().addEventListener("keydown", triggerOnDown);
 
 //note: if the user keeps a key pressed, it triggers a multitude of "keydown" events, but only one "keyup" event
 //so keys that modify existing structure on multiple triggers, like Backspace and Del need to be handled on KeyDown
@@ -50,7 +50,7 @@ function handleBackspace(e) {
 	}
 
 	if (node && !(node instanceof HTMLDivElement)) {
-		globalCursor = getCursorPosition("inputTextWindow");
+		globalCursor = getCursorPosition(getEditor().id);
 		//case 1: deletion would cause current node to remain empty		 <node><x|><node> -> <node|node> -> <node>
         if (cursoPozInsideElement == 1 && node.textContent.length == 1 && prevNode && (thisSpanNode instanceof HTMLSpanElement)) {
 			e.preventDefault();
@@ -104,7 +104,7 @@ function handleDelete(e) {
 		//case 1: deletion would cause current node to remain empty	<node><|x><node> -> <node|node> -> <node>
 		if (cursoPozInsideElement == 0 && node.textContent.length == 1 && thisSpanNode.nextSibling) {
 			e.preventDefault();
-			globalCursor = getCursorPosition("inputTextWindow");
+			globalCursor = getCursorPosition(getEditor().id);
 			if (prevNode) {
 				prevNode.textContent += nextNode.textContent;
 				nextNode.parentNode.removeChild(nextNode);
@@ -116,7 +116,7 @@ function handleDelete(e) {
 		//case 2: deletion would cause the next node to become empty, but leave the current one intact	<node|><x><node> -> <node|node> -> <node>
 		if (cursoPozInsideElement == node.textContent.length && nextNode && nextNode.textContent.length == 1) {
 			e.preventDefault();
-			globalCursor = getCursorPosition("inputTextWindow");
+			globalCursor = getCursorPosition(getEditor().id);
 			if (nextNode.nextSibling) {
 				node.textContent += nextNode.nextSibling.textContent;
 				nextNode.nextSibling.parentNode.removeChild(nextNode.nextSibling);
@@ -132,7 +132,7 @@ function handleTab() {
 	let node, cursoPozInsideElement, globalCursor, preText, postText, end;
 
 	node = window.getSelection().focusNode;
-	globalCursor = getCursorPosition("inputTextWindow");
+	globalCursor = getCursorPosition(getEditor().id);
 	cursoPozInsideElement = window.getSelection().focusOffset;
 
 	end = node.textContent.length;

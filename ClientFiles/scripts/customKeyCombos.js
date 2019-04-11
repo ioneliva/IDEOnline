@@ -1,6 +1,6 @@
-document.getElementById("inputTextWindow").addEventListener("keydown", triggerOnDownCombos);
-document.getElementById("inputTextWindow").addEventListener("cut", handleCut);
-document.getElementById("inputTextWindow").addEventListener("paste", handlePaste);
+getEditor().addEventListener("keydown", triggerOnDownCombos);
+getEditor().addEventListener("cut", handleCut);
+getEditor().addEventListener("paste", handlePaste);
 
 function triggerOnDownCombos(e) {
 	let c = readMyPressedKey(e);
@@ -21,7 +21,7 @@ function triggerOnDownCombos(e) {
 
 function handleUndo() {
 	sendRequest("GET", apiGateway+"/doUndo/undo", null, function (response) {
-		document.getElementById("inputTextWindow").innerHTML = response;
+		getEditor().innerHTML = response;
 	}, function (err) {
 		// Do/Undo microservice is down
 	});
@@ -29,7 +29,7 @@ function handleUndo() {
 
 function handleRedo() {
 	sendRequest("GET", apiGateway + "/doUndo/redo", null, function (response) {
-		document.getElementById("inputTextWindow").innerHTML = response;
+		getEditor().innerHTML = response;
 	}, function (err) {
 		// Do/Undo microservice is down
 	});
@@ -40,16 +40,16 @@ function handleCut(e) {
 	let sel = window.getSelection(),
 		selCollapsed = sel.isCollapsed,
 		node = sel.focusNode,
-		editorWindowId = "inputTextWindow";
+		editor = getEditor();
 	//set a delay(1 ms seems fine) so we get the data after the oncut event happenened, default handler captures values before the event triggered (similar to a onkeydown event)
 	setTimeout(function () {
 		let node = window.getSelection().focusNode,
 			next;
 		//cut was called on a selection, allowing the default action, but
 		//make sure the remaining nodes respect our defined structure <focusNode|><node> -> <focusNode|node>
-		if (node.parentNode.id != "inputTextWindow" && !selCollapsed) {
+		if (node.parentNode.id != editor.id && !selCollapsed) {
 			if (node.parentNode.nextSibling && node.parentNode.nextSibling.nodeType == node.parentNode.nodeType && node.textContent != "") {
-				let cursorPosition = getCursorPosition("inputTextWindow");
+				let cursorPosition = getCursorPosition(editor.id);
 				next = node.parentNode.nextSibling;
 				node.textContent += next.textContent;
 				next.parentNode.removeChild(next);
@@ -61,9 +61,9 @@ function handleCut(e) {
 		}
 	}, 1);
 	//cut was called on a single point
-	if (sel && selCollapsed && node && node.id != editorWindowId) {
+	if (sel && selCollapsed && node && node.id != editor.id) {
 		e.preventDefault();
-		while (node.parentNode && node.parentNode.id != editorWindowId) {
+		while (node.parentNode && node.parentNode.id != editor.id) {
 			node = node.parentNode;
 		}
 		if (node instanceof HTMLDivElement) {	//normal case, multiple lines already created
@@ -95,10 +95,9 @@ function handleCut(e) {
 			}
 		} //first line of text, no other rows created yet
 		else {
-			let editorWindow = document.getElementById(editorWindowId);
-			while (editorWindow.firstChild && editorWindow.firstChild.textContent != "") {
-				e.clipboardData.setData('text', editorWindow.firstChild.toString());
-				editorWindow.removeChild(editorWindow.firstChild);
+			while (editor.firstChild && editor.firstChild.textContent != "") {
+				e.clipboardData.setData('text', editor.firstChild.toString());
+				editor.removeChild(editor.firstChild);
 			}
 			setCursorPosition(0);
 		}

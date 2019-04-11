@@ -62,7 +62,6 @@ function sendRequest(verb, url, body, successCallback, errorCallback) {
 }
 
 //get current cursor position
-//the formula I dicovered intuitively (pen and paper examples) is number of chars to the cursor plus number of interior divs, excepting the first 
 function getCursorPosition(containerId) {
     let sel = window.getSelection(),
         pos = -1,
@@ -97,12 +96,13 @@ function getCursorPosition(containerId) {
 //set cursor position after pos characters in contentEditable window 
 //or set cursor for some special keys with overwritten functionality
 function setCursorPosition(pos) {
-	let sel = window.getSelection();
-	let range;
+	let sel = window.getSelection(),
+		editor = getEditor(),
+		range;
 	if (Number.isInteger(pos) && pos >= 0) {
-		range = createRange("for_cursor_position", document.getElementById("inputTextWindow"), { count: pos });
+		range = createRange("for_cursor_position", editor, { count: pos });
 	} else {
-		let editor = document.getElementById("inputTextWindow"), node;
+		let node;
 		range = document.createRange();
 		switch (pos) {
 			case "PageUp": 
@@ -122,7 +122,7 @@ function setCursorPosition(pos) {
 				break;
 			case "Home": {
 				node = sel.focusNode;
-				while (!(node instanceof HTMLDivElement) && (node.parentNode.id != "inputTextWindow")) {
+				while (!(node instanceof HTMLDivElement) && (node.parentNode.id != editor.id)) {
 					node = node.parentNode;
 				}
 				range.setEnd(node.firstChild,0);
@@ -130,7 +130,7 @@ function setCursorPosition(pos) {
 				break;
 			case "End": {
 				node = sel.focusNode;
-				while (!(node instanceof HTMLDivElement) && (node.parentNode.id != "inputTextWindow")) {
+				while (!(node instanceof HTMLDivElement) && (node.parentNode.id != editor.id)) {
 					node = node.parentNode;
 				}
 				range.setEnd(node.lastChild.lastChild, node.lastChild.lastChild.textContent.length);
@@ -179,7 +179,7 @@ function createRange(purpose, currentNode, pos, range) {
 		} else {
 			let i;
 			for (i = 0; i < currentNode.childNodes.length; i++) {
-				if (currentNode.id == "inputTextWindow" && currentNode.childNodes[i] instanceof HTMLDivElement
+				if (currentNode.id == getEditor().id && currentNode.childNodes[i] instanceof HTMLDivElement
 					&& currentNode.childNodes[i].previousSibling) {     //interior div, except the first one
 					pos.count--;
 				}
@@ -231,13 +231,13 @@ function selectIntoRange(node, range, purpose) {
 
 //select nodes around position, according to rules set earlier
 function selectNodesAround(pos) {
-	let range = createRange("for_replace", document.getElementById("inputTextWindow"), { count: pos });
+	let range = createRange("for_replace", getEditor(), { count: pos });
 	return range;
 }
 
 //get the exact single word at pos
 function getToken(pos) {
-	let range = createRange("for_token", document.getElementById("inputTextWindow"), { count: pos });
+	let range = createRange("for_token", getEditor(), { count: pos });
 	return range.toString();
 }
 //replace group of nodes around pos with provided html
@@ -251,7 +251,6 @@ function insertServerHtmlAtPos(pos, html) {
 		sel.removeAllRanges();
 		sel.addRange(range);
 	}
-
 	//insert new html
     let el = document.createElement("div"),     //this div is a temporary carrier for our html
         frag = document.createDocumentFragment(),
@@ -275,10 +274,12 @@ function serverLagged(originalToken, serverToken) {
 
 //get number of user input lines in the editor window
 function getNumberOfLines() {
-	let window = document.getElementById("inputTextWindow");
-	let node = window.firstChild;
+	let node = getEditor().firstChild;
 	let count = 1;
 
+	if (!node) {
+		return 0;	//new file editor window, no content
+	}
 	if ((node instanceof HTMLSpanElement) || (node.nodeType === Node.TEXT_NODE)) { //no divs created, window has only 1 row
 		return count;
 	}
@@ -295,7 +296,7 @@ function getNumberOfLines() {
 function updateLineNumbering(count) { //count is an optional parameter
 	let lineNumbering = document.getElementById("lineNumbering");
 
-	if (count) {	//parameter passed
+	if (count) {	//parameter passed, representing addition or substraction of lines
 		if (count > 0) {		//add count lines
 			let brElement = document.createElement("BR"),
 				obj = document.createTextNode("2");
@@ -319,25 +320,23 @@ function updateLineNumbering(count) { //count is an optional parameter
 			}
 		}
 	}
-	else {	//parameter not passed
+	else {	//parameter not passed, do a full re-check of lines
 		count = getNumberOfLines();
+
 		while (lineNumbering.lastChild && parseInt(lineNumbering.lastChild.previousSibling.textContent) > count) {
 			lineNumbering.lastChild.parentNode.removeChild(lineNumbering.lastChild);
 			lineNumbering.lastChild.parentNode.removeChild(lineNumbering.lastChild);
 		}
-		while (lineNumbering.lastChild && parseInt(lineNumbering.lastChild.previousSibling.textContent) < count) {
-			let i = parseInt(lineNumbering.lastChild.previousSibling.textContent);
-			let obj = document.createTextNode(parseInt(i) + 1);
+		let i = 0;
+		while ((lineNumbering.lastChild && parseInt(lineNumbering.lastChild.previousSibling.textContent) < count)
+			|| (!lineNumbering.lastChild) && (i < count)) {
+			if (lineNumbering.lastChild) {
+				i = parseInt(lineNumbering.lastChild.previousSibling.textContent);
+			}
+			i++;
+			let obj = document.createTextNode(parseInt(i));
 			lineNumbering.appendChild(obj);
 			lineNumbering.appendChild(document.createElement("BR"));
 		}
 	}
 }
-
-/*
- * performance tests done with
-var t0 = performance.now();
-doSomething();
-var t1 = performance.now();
-console.log("Call to doSomething took " + (t1 - t0) + " milliseconds.");
-*/

@@ -15,7 +15,8 @@
 			<div id="tabs" class="tabs">
 				<div id="activeTab" class="tab activeTab">
 					<div class="inner-tab">
-						<p>file0.css</p>
+						<!--hard coded initial file, will fix later-->
+						<p>initialFile.cs</p>
 						<button id="closeButton" class="closeButton">x</button>
 					</div>
 				</div>
@@ -40,48 +41,49 @@
 			</form>
 		</div>
 
-		<div id="content">
-			<!-- Any CSS text-related property will affect the whole text within a textarea/input.That's why we will try to use a contenteditable div to style each element inside -->
-			<div id="inputTextWindow" contenteditable="true" spellcheck="false" type="text"></div>
-			<div id="lineNumbering"></div>
-			<div id="solutionWindow">
-				<div id="solutionWindowHeader">Solution Explorer</div>
-				<ul id="myUL">
-					<li>
-						<span class="expand">..root..</span>
-						<ul class="nested">
-							<li>| File1</li>
-							<li>| File2</li>
-							<li>
-								<span class="expand">Directory</span>
-								<ul class="nested">
-									<li>| File4</li>
-									<li>| File5</li>
-									<li>
-										<span class="expand">Directory</span>
-										<ul class="nested">
-											<li>| File6</li>
-											<li>| File7</li>
-											<li>| File8</li>
-											<li>| File9</li>
-										</ul>
-									</li>
-								</ul>
-							</li>
-						</ul>
-					</li>
-				</ul>
-			</div>
-			<span id="output">Response from microservice: </span>
+		<div id="solutionWindow">
+			<div id="solutionWindowHeader">Solution Explorer</div>
+			<ul id="myUL">
+				<li>
+					<span class="expand">..root..</span>
+					<ul class="nested">
+						<li>| File1</li>
+						<li>| File2</li>
+						<li>
+							<span class="expand">Directory</span>
+							<ul class="nested">
+								<li>| File4</li>
+								<li>| File5</li>
+								<li>
+									<span class="expand">Directory</span>
+									<ul class="nested">
+										<li>| File6</li>
+										<li>| File7</li>
+										<li>| File8</li>
+										<li>| File9</li>
+									</ul>
+								</li>
+							</ul>
+						</li>
+					</ul>
+				</li>
+			</ul>
 		</div>
 
+		<div id="content">
+			<!--initial file is hardcoded, will add a dialogue and let the client choose a name-->
+			<div id="initialFile.cs" class="activeEditorWindow" contenteditable="true" spellcheck="false" type="text"></div>
+			<div id="lineNumbering"></div>
+
+			<span id="output">Response from microservice: </span>
+		</div>
 		<div id="footer">
 			Copyright &copy; 2017, Licenta, eu
 		</div>
 	</div>
 
 	<!--scripts go after the elements they are applied to. If we try to reference an element we haven't created yet we get null reference error-->
-	<script type="text/javascript" src="scripts/tabs.js"></script>
+	<script type="text/javascript" src="scripts/tabsAndWindows.js"></script>
 	<script type="text/javascript" src="scripts/solutionExplorer.js"></script>
 	<script type="text/javascript" src="scripts/editorUtilities.js"></script>
 	<script type="text/javascript" src="scripts/customKeys.js"></script>

@@ -28,7 +28,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{699E
 		ClientFiles\scripts\customKeys.js = ClientFiles\scripts\customKeys.js
 		ClientFiles\scripts\editorUtilities.js = ClientFiles\scripts\editorUtilities.js
 		ClientFiles\scripts\solutionExplorer.js = ClientFiles\scripts\solutionExplorer.js
-		ClientFiles\scripts\tabs.js = ClientFiles\scripts\tabs.js
+		ClientFiles\scripts\tabsAndWindows.js = ClientFiles\scripts\tabsAndWindows.js
 		ClientFiles\scripts\textEditor.js = ClientFiles\scripts\textEditor.js
 	EndProjectSection
 EndProject
@@ -43,7 +43,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.gitignore = .gitignore
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaveLoadMicroservice", "SaveLoadMicroservice\SaveLoadMicroservice.csproj", "{F5F59283-F7A8-4ACF-8CAB-FDB0BC0911EB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SaveLoadMicroservice", "SaveLoadMicroservice\SaveLoadMicroservice.csproj", "{F5F59283-F7A8-4ACF-8CAB-FDB0BC0911EB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

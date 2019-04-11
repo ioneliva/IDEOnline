@@ -1,7 +1,7 @@
 var apiGateway = "http://localhost:5100";
 var prevKey;
 
-document.getElementById("inputTextWindow").addEventListener("keyup", keyUp);
+getEditor().addEventListener("keyup", keyUp);
 //warm up function for xhr-XMLHttpRequest to server. First request took too long to execute, this solves it.
 window.addEventListener('load', function () {
 	sendRequest("POST", apiGateway+"/coloring", {
@@ -12,12 +12,13 @@ window.addEventListener('load', function () {
 
 //on key up
 function keyUp(e) {
-	let c = readMyPressedKey(e);
+	let editor = getEditor(),
+		c = readMyPressedKey(e);
 
 	//delimiter keys like (/*;backspace, etc.. or keys that trigger cursor movement like arrow keys or Home,End,PgUp, etc
 	//also detect if user spams cursor movement keys repeatedly, we avoid sending requests to servers for every repetition
 	if (!isAlphaNumeric(c) || isPositionModifying(c) || (isArrowKey(c) && (!isArrowKey(prevKey)))) {
-		let cursorPosition = getCursorPosition("inputTextWindow");
+		let cursorPosition = getCursorPosition(editor.id);
 		let wordComposite, token;
 
 		let enterPressed = false, preWord, preWordPos;
@@ -37,7 +38,7 @@ function keyUp(e) {
 			output.innerText = response;
 			//parse response from Json
 			let wordColoringMS = JSON.parse(response);
-			//decorate with color spans, if server did not lag. TODO: implement a recovery method for lag?
+			//decorate with color spans, if server did not lag
 			if (!serverLagged(getToken(cursorPosition), wordColoringMS.serverToken)) {
 				if (wordColoringMS.coloredWord.length > 0) {
 					insertServerHtmlAtPos(wordColoringMS.position, wordColoringMS.coloredWord);
@@ -53,8 +54,8 @@ function keyUp(e) {
 				}
 			}
 			//post the current state to undo/redo microservice
-			let currentState = document.getElementById("inputTextWindow").innerHTML;
-			sendRequest("PUT", apiGateway +"/doUndo", { "state": currentState, "position": getCursorPosition("inputTextWindow")});
+			let currentState = editor.innerHTML;
+			sendRequest("PUT", apiGateway + "/doUndo", { "state": currentState, "position": getCursorPosition(editor.id) });
 		}, function (err) {
 			// Word coloring microservice is down
 		});
