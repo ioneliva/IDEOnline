@@ -1,4 +1,4 @@
-//expand expandable nodes inside the div on click (basically change from display:none to display:block on click)
+//expand element in Solution Window
 let expandableElement = document.getElementsByClassName("expand");
 let i;
 for (i = 0; i < expandableElement.length; i++) {
@@ -8,11 +8,80 @@ for (i = 0; i < expandableElement.length; i++) {
 	});
 }
 
-// Make the element draggable, inspired from w3schools https://www.w3schools.com/howto/howto_js_draggable.asp
-dragElement(document.getElementById("solutionWindow"));
+//add event listeners for right click for elements I considered to be interactive in the solution window
+let interactiveElements = document.getElementsByClassName("interactive");
+for (i = 0; i < interactiveElements.length; i++) {
+	interactiveElements[i].addEventListener("contextmenu", showMenu);
+}
 
+//events for right clicking in Solution Window
+document.getElementById("solutionWindow").oncontextmenu = function () {
+	//highlight the element that was right clicked
+	let clickedElement = event.target,
+		range = document.createRange(),
+		sel = window.getSelection();
+
+	range.setStartBefore(clickedElement);
+	range.setEndAfter(clickedElement);
+	sel.removeAllRanges();
+	sel.addRange(range);
+	//disable default browser menu for Solution Window container
+	return false
+};
+
+//show custom menu replacing the default (on right click)
+function showMenu(e) {
+	let menu = document.getElementById("solutionMenu"),
+		clickedElement = event.target,
+		options = document.getElementsByClassName("options"),
+		i;
+	for (i = 0; i < options.length; i++) {
+		options[i].style.display = "none";
+	}
+	//customize menu, depending on what element was right clicked in Solution Window
+	if (clickedElement.classList.contains("project")) {
+		document.getElementById("closeProject").style.display = "block";
+		document.getElementById("saveProject").style.display = "block";
+		document.getElementById("loadProject").style.display = "block";
+		document.getElementById("run").style.display = "block";
+		document.getElementById("addFile").style.display = "block";
+		document.getElementById("adddir").style.display = "block";
+	} else {
+		if (clickedElement.classList.contains("file")) {
+			document.getElementById("openInTab").style.display = "block";
+			document.getElementById("rename").style.display = "block";
+			document.getElementById("delete").style.display = "block";
+		} else {
+			if (clickedElement.classList.contains("directory")) {
+				document.getElementById("rename").style.display = "block";
+				document.getElementById("addFile").style.display = "block";
+				document.getElementById("adddir").style.display = "block";
+				document.getElementById("delete").style.display = "block";
+			}
+		}
+	}
+	//make it visible, bring it at mouse coords
+	menu.style.display = "block";
+	menu.style.left = e.pageX + "px";
+	menu.style.top = e.pageY + "px";
+}
+
+//hiding menu when user clicks away or presses Esc
+window.addEventListener("mousedown", hideMenu);
+window.addEventListener("keydown", checkForEscape);
+function hideMenu() {
+	document.getElementById("solutionMenu").style.display = "none";
+}
+function checkForEscape(e) {
+	if (readMyPressedKey(e) == "Escape") {
+		hideMenu();
+	}
+}
+
+// Make the solution Window draggable, inspired from w3schools https://www.w3schools.com/howto/howto_js_draggable.asp
+dragElement(document.getElementById("solutionWindow"));
 function dragElement(elmnt) {
-	var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+	let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
 	if (document.getElementById(elmnt.id + "Header")) {
 		// if present, the header is where you move the DIV from:
 		document.getElementById(elmnt.id + "Header").onmousedown = dragMouseDown;

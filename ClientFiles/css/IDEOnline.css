@@ -173,8 +173,6 @@
     background-color: white;
     text-align: left;
     font-weight: bold;
-    user-select: none; /*prevent user from selecting, or more importantly, copying the text*/
-    -moz-user-select: none;
     resize:both;
     overflow: auto;
     position: absolute;
@@ -186,6 +184,8 @@
         z-index: 3;
         background-color: #808080;
         color: #fff;
+        user-select: none;
+        -moz-user-select: none;
     }
     #solutionWindow ul, #myUL {
         list-style-type: none;
@@ -194,16 +194,19 @@
         margin: 0;
         padding: 0;
     }
-    #solutionWindow .expand {
-        cursor: pointer;
+    #solutionWindow .decoration {
+        user-select: none;
+        -moz-user-select: none;
     }
-    #solutionWindow .expand::before {
-        content: "\25B6";
+    #solutionWindow .expand {
         color: black;
         display: inline-block;
         margin-right: 6px;
+        cursor: pointer;
+        user-select: none;
+        -moz-user-select: none;
     }
-    #solutionWindow .expand-down::before {
+    #solutionWindow .expand-down {
         transform: rotate(90deg);
     }
     #solutionWindow .nested {
@@ -211,6 +214,42 @@
     }
     #solutionWindow .active {
         display: block;
+    }
+
+.solutionMenu {
+    margin: 0;
+    padding: 0;
+    min-width: 150px;
+    height: auto;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    border: 1px solid;
+    border-color: #808080;
+    background-color: #ccc;
+    position: absolute;
+    z-index: 100;
+    display: none; /*hidden until called on right click*/
+}
+    .solutionMenu .separatorLine {
+        height: 1px;
+        background-color: #808080;
+        margin: 2px 0 2px 0;
+        user-select: none;
+        -moz-user-select: none;
+    }
+    .solutionMenu ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+    .solutionMenu .options {
+        padding: 10px 5px 10px 5px;
+        border-left: 4px solid transparent;
+        cursor: pointer;
+    }
+    .solutionMenu .options:hover {
+        background: #eee;
+        border-left: 4px solid #666;
     }
 
 #output {

@@ -37,7 +37,7 @@
 				<label>Password</label>
 				<input id="userPasswd" type="password" name="" placeholder="Password">
 				<input id="subtmitBtn" type="submit" name="" value="Login">
-				<a href="#">Register</a> <!--href=# means the link is pointing to nothing atm-->
+				<a href="#">Register</a>
 			</form>
 		</div>
 
@@ -45,28 +45,25 @@
 			<div id="solutionWindowHeader">Solution Explorer</div>
 			<ul id="myUL">
 				<li>
-					<span class="expand">..root..</span>
+					<span class="expand">&#9658</span><span class="interactive project" id="root">..root..</span>
 					<ul class="nested">
-						<li>| File1</li>
-						<li>| File2</li>
-						<li>
-							<span class="expand">Directory</span>
-							<ul class="nested">
-								<li>| File4</li>
-								<li>| File5</li>
-								<li>
-									<span class="expand">Directory</span>
-									<ul class="nested">
-										<li>| File6</li>
-										<li>| File7</li>
-										<li>| File8</li>
-										<li>| File9</li>
-									</ul>
-								</li>
-							</ul>
-						</li>
+						<li><span class="decoration">|</span> <span class="interactive file" id="file1">File1</span></li>
 					</ul>
 				</li>
+			</ul>
+		</div>
+		<div class="solutionMenu" id="solutionMenu">
+			<ul>
+				<li class="options" id="openInTab">Open in tab</li>
+				<li class="options" id="run">Run Project</li>
+				<li class="options" id="closeProject">Close project and all files</li>
+				<li class="options" id="saveProject">Save this project</li>
+				<li class="options" id="loadProject">Load another project</li>
+				<li class="options" id="rename">Rename</li>
+				<li class="separatorLine"></li>
+				<li class="options" id="addFile">Add new file</li>
+				<li class="options" id="adddir">Add new directory</li>
+				<li class="options" id="delete">Delete</li>
 			</ul>
 		</div>
 
