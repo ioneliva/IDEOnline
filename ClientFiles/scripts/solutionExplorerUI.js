@@ -14,6 +14,8 @@ for (i = 0; i < interactiveElements.length; i++) {
 	interactiveElements[i].addEventListener("contextmenu", showMenu);
 }
 
+//remember item right clicked on solution window for future reference
+var clickedItem;
 //events for right clicking in Solution Window
 document.getElementById("solutionWindow").oncontextmenu = function () {
 	//highlight the element that was right clicked
@@ -21,6 +23,7 @@ document.getElementById("solutionWindow").oncontextmenu = function () {
 		range = document.createRange(),
 		sel = window.getSelection();
 
+	clickedItem = clickedElement;
 	range.setStartBefore(clickedElement);
 	range.setEndAfter(clickedElement);
 	sel.removeAllRanges();

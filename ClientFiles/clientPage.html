@@ -13,16 +13,11 @@
 		<div id="header">
 			<!--tab tab ... activeTab newTab-->
 			<div id="tabs" class="tabs">
-				<div id="activeTab" class="tab activeTab">
+				<div id="initialFile.cs_tab" class="tab activeTab">
 					<div class="inner-tab">
 						<!--hard coded initial file, will fix later-->
 						<p>initialFile.cs</p>
 						<button id="closeButton" class="closeButton">x</button>
-					</div>
-				</div>
-				<div id="newTab" class="tab newTab">
-					<div class="inner-tab">
-						<p>+</p>
 					</div>
 				</div>
 			</div>
@@ -69,7 +64,7 @@
 
 		<div id="content">
 			<!--initial file is hardcoded, will add a dialogue and let the client choose a name-->
-			<div id="initialFile.cs" class="activeEditorWindow" contenteditable="true" spellcheck="false" type="text"></div>
+			<div id="initialFile.cs_editor" class="activeEditorWindow" contenteditable="true" spellcheck="false" type="text"></div>
 			<div id="lineNumbering"></div>
 
 			<span id="output">Response from microservice: </span>
@@ -81,7 +76,8 @@
 
 	<!--scripts go after the elements they are applied to. If we try to reference an element we haven't created yet we get null reference error-->
 	<script type="text/javascript" src="scripts/tabsAndWindows.js"></script>
-	<script type="text/javascript" src="scripts/solutionExplorer.js"></script>
+	<script type="text/javascript" src="scripts/solutionExplorerUI.js"></script>
+	<script type="text/javascript" src="scripts/solutionExplorerFunctionality.js"></script>
 	<script type="text/javascript" src="scripts/editorUtilities.js"></script>
 	<script type="text/javascript" src="scripts/customKeys.js"></script>
 	<script type="text/javascript" src="scripts/customKeyCombos.js"></script>
