@@ -112,19 +112,18 @@ function closeTab() {
 		//TODO: Later, when I decide on a background for "no interface present"
 	}
     //if user is trying to close the active tab, make previous tab the active one. If there is no previous, next tab becomes active
+	let editorToBecomeActive;
 	if (tab.className == "tab activeTab") {
 		if (tab.previousElementSibling != null) {
 			tab.previousElementSibling.className = "tab activeTab";
-			//make editor window linked to the previous tab the active one
-			let editorToBecomeActive = document.getElementById(formatForEditorId(tab.previousElementSibling.firstElementChild.firstElementChild.innerHTML));
-			editorToBecomeActive.className = "activeEditorWindow";
+			editorToBecomeActive = document.getElementById(formatForEditorId(tab.previousElementSibling.firstElementChild.firstElementChild.innerHTML));
 		} else {
 			if (tab.previousElementSibling == null && tab.nextElementSibling) {
 				tab.nextElementSibling.className = "tab activeTab";
-				let editorToBecomeActive = document.getElementById(formatForEditorId(tab.nextElementSibling.firstElementChild.firstElementChild.innerHTML));
-				editorToBecomeActive.className = "activeEditorWindow";
+				editorToBecomeActive = document.getElementById(formatForEditorId(tab.nextElementSibling.firstElementChild.firstElementChild.innerHTML));
             }
-        }
+		}
+		setActiveEditor(editorToBecomeActive);
 	}
 	//remove editor window attached to tab
 	let editor = document.getElementById(formatForEditorId(tab.firstElementChild.firstElementChild.innerHTML));

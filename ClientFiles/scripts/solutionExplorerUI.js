@@ -1,33 +1,65 @@
-//expand element in Solution Window
-let expandableElement = document.getElementsByClassName("expand");
-let i;
-for (i = 0; i < expandableElement.length; i++) {
-	expandableElement[i].addEventListener("click", function () {
-		this.parentElement.querySelector(".nested").classList.toggle("active");
-		this.classList.toggle("expand-down");
-	});
-}
-
-//add event listeners for right click for elements I considered to be interactive in the solution window
-let interactiveElements = document.getElementsByClassName("interactive");
-for (i = 0; i < interactiveElements.length; i++) {
-	interactiveElements[i].addEventListener("contextmenu", showMenu);
-}
-
 //remember item right clicked on solution window for future reference
 var clickedItem;
+
+//listeners
+let expandableElement = document.getElementsByClassName("expand");
+let interactiveElements = document.getElementsByClassName("interactive");
+let i;
+for (i = 0; i < expandableElement.length; i++) {
+	expandableElement[i].addEventListener("click", expandElementByArrow);
+}
+for (i = 0; i < interactiveElements.length; i++) {
+	interactiveElements[i].addEventListener("contextmenu", showMenu);
+	interactiveElements[i].addEventListener("click", selectWithOneClick);
+	interactiveElements[i].addEventListener("dblclick", openElement);
+}
+window.addEventListener("mousedown", hideMenu);
+window.addEventListener("keydown", checkForEscape);
+
+//expand/collapse expandable element by clicking the arrow symbol
+function expandElementByArrow() {
+	event.target.nextElementSibling.nextElementSibling.classList.toggle("active");
+	event.target.classList.toggle("expand-down");
+}
+
+//expand/collapse expandable element by double clicking it with the mouse
+function expandElementByDbClick() {
+	clickedItem.nextElementSibling.classList.toggle("active");
+	clickedItem.previousElementSibling.classList.toggle("expand-down");
+}
+
+//open file in tab on double click
+function openElement() {
+	if (clickedItem.classList.contains("file")) {
+		openInTab();
+	}
+	if (clickedItem.classList.contains("project") || clickedItem.classList.contains("directory")) {
+		expandElementByDbClick();
+	}
+}
+
+//select item in solution window (similar to a selection with the mouse or holdig Shift key)
+function selectItem(item) {
+	let range = document.createRange(),
+		sel = window.getSelection();
+
+	clickedItem = event.target;
+	range.setStartBefore(item);
+	range.setEndAfter(item);
+	sel.removeAllRanges();
+	sel.addRange(range);
+}
+
+//highlight item on single left click
+function selectWithOneClick() {
+	let item = event.target;
+	selectItem(item);
+}
+
 //events for right clicking in Solution Window
 document.getElementById("solutionWindow").oncontextmenu = function () {
 	//highlight the element that was right clicked
-	let clickedElement = event.target,
-		range = document.createRange(),
-		sel = window.getSelection();
-
-	clickedItem = clickedElement;
-	range.setStartBefore(clickedElement);
-	range.setEndAfter(clickedElement);
-	sel.removeAllRanges();
-	sel.addRange(range);
+	selectItem(clickedItem);
 	//disable default browser menu for Solution Window container
 	return false
 };
@@ -35,46 +67,59 @@ document.getElementById("solutionWindow").oncontextmenu = function () {
 //show custom menu replacing the default (on right click)
 function showMenu(e) {
 	let menu = document.getElementById("solutionMenu"),
-		clickedElement = event.target,
 		options = document.getElementsByClassName("options"),
 		i;
+
+	clickedItem = event.target;
 	for (i = 0; i < options.length; i++) {
 		options[i].style.display = "none";
 	}
 	//customize menu, depending on what element was right clicked in Solution Window
-	if (clickedElement.classList.contains("project")) {
-		document.getElementById("closeProject").style.display = "block";
-		document.getElementById("saveProject").style.display = "block";
-		document.getElementById("loadProject").style.display = "block";
-		document.getElementById("run").style.display = "block";
-		document.getElementById("addFile").style.display = "block";
-		document.getElementById("adddir").style.display = "block";
+	if (clickedItem.classList.contains("project")) {
+		setMenuForProject();
 	} else {
-		if (clickedElement.classList.contains("file")) {
-			document.getElementById("openInTab").style.display = "block";
-			document.getElementById("rename").style.display = "block";
-			document.getElementById("delete").style.display = "block";
+		if (clickedItem.classList.contains("file")) {
+			setMenuForFile();
 		} else {
-			if (clickedElement.classList.contains("directory")) {
-				document.getElementById("rename").style.display = "block";
-				document.getElementById("addFile").style.display = "block";
-				document.getElementById("adddir").style.display = "block";
-				document.getElementById("delete").style.display = "block";
+			if (clickedItem.classList.contains("directory")) {
+				setMenuForDir();
 			}
 		}
 	}
-	//make it visible, bring it at mouse coords
+	//make menu visible, bring it at mouse coords
 	menu.style.display = "block";
 	menu.style.left = e.pageX + "px";
 	menu.style.top = e.pageY + "px";
 }
 
-//hiding menu when user clicks away or presses Esc
-window.addEventListener("mousedown", hideMenu);
-window.addEventListener("keydown", checkForEscape);
+//menu items for projects
+function setMenuForProject() {
+	document.getElementById("closeProject").style.display = "block";
+	document.getElementById("saveProject").style.display = "block";
+	document.getElementById("loadProject").style.display = "block";
+	document.getElementById("run").style.display = "block";
+	document.getElementById("addFile").style.display = "block";
+	document.getElementById("addDir").style.display = "block";
+}
+//menu items for files
+function setMenuForFile() {
+	document.getElementById("openInTab").style.display = "block";
+	document.getElementById("rename").style.display = "block";
+	document.getElementById("delete").style.display = "block";
+}
+//menu items for directories
+function setMenuForDir() {
+	document.getElementById("rename").style.display = "block";
+	document.getElementById("addFile").style.display = "block";
+	document.getElementById("addDir").style.display = "block";
+	document.getElementById("delete").style.display = "block";
+}
+
+//hide menu when user clicks away
 function hideMenu() {
 	document.getElementById("solutionMenu").style.display = "none";
 }
+//hide menu when user presses Esc
 function checkForEscape(e) {
 	if (readMyPressedKey(e) == "Escape") {
 		hideMenu();
