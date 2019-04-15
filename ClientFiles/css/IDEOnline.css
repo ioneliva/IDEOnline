@@ -6,7 +6,7 @@
 #wrapper {
     padding: 100px;
 	width: 80%;
-	margin: auto;
+    position: relative;
 }
 
 .tabs {
@@ -128,18 +128,22 @@
     }
 
 #content {
+    border-top: 1px solid;
     position: relative;
     z-index: 1;
 }
 
 .activeEditorWindow {
-    width: 100%;
+    min-width: 99%;
     min-height: 500px;
     line-height: normal;
     font-size: 18px;
     white-space: pre; /*set line to continue in one line instead of breaking*/
-    /*overflow: auto;*/ /*this would make our content scroll horizontally, but it breaks out little trick with the buttons above*/
-    border: 1px solid;
+    overflow: auto;
+    border-top: none;
+    border-right: 1px solid;
+    border-bottom: 1px solid;
+    border-left: 1px solid;
     padding: 5px 0 20px 10px;
     z-index: 1;
     position: relative;
@@ -170,14 +174,14 @@
     width: 15%;
     height:50%;
     top: 50px;
-    right: 2px;
+    right: 30px;
     border: 1px solid;
     background-color: white;
     text-align: left;
     font-weight: bold;
     resize:both;
     overflow: auto;
-    position: absolute;
+    position: fixed; /*not dependant on page flow, we want it always there*/
     z-index: 3; /*higher z-index makes it cover the underlaying element with lower z*/
 }
     #solutionWindow #solutionWindowHeader {
@@ -189,13 +193,28 @@
         user-select: none;
         -moz-user-select: none;
     }
-    #solutionWindow ul, #myUL {
+    #solutionWindow ul, #solExplorerUL {
         list-style-type: none;
     }
-    #solutionWindow #myUL {
+    #solutionWindow #solExplorerUL {
         margin: 0;
         padding: 0;
     }
+    #solutionWindow .solutionExplorerIcon {
+        width: 18px;
+        height: 18px;
+        position: relative;
+    }
+    #solExplorerUL .slEIcon {
+        width: 18px;
+        height: 18px;
+        position: relative;
+        border: none;
+        padding: 0;
+        margin: 0;
+        user-select: none;
+        -moz-user-select: none;
+}
     #solutionWindow .decoration {
         user-select: none;
         -moz-user-select: none;
@@ -262,13 +281,38 @@
 	padding-top: 50px;
 }
 
+.modal-simple {
+    position: absolute;
+    z-index: 10;
+    overflow: auto;
+    display: none;
+}
+#modalText {
+    background-color: #808080;
+    color: #fff;
+    user-select: none;
+    -moz-user-select: none;
+}
+
+.modalCloseBtn {
+    background: #fff;
+    float: right;
+    font-size: 18px;
+    font-weight: bold;
+}
+.modalCloseBtn:hover,
+.modalCloseBtn:focus {
+    color:#ff0000;
+    cursor: pointer;
+}
+
 #footer {
-	clear: both;
-	height: 30px;
-	background-color: #000;
-	color: #fff;
-	text-align: center;
-	padding-top: 10px;
+    clear: both;
+    height: 30px;
+    background-color: #000;
+    color: #fff;
+    text-align: center;
+    padding-top: 10px;
 }
 
 

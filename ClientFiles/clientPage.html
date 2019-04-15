@@ -1,10 +1,11 @@
 ﻿<!DOCTYPE html>
-<html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Main Page</title>
-	<meta name="keywords" content="" />
-	<meta name="description" content="" />
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>Main Page</title>
+	<meta name="keywords" content="HTML,CSS,JavaScript,IDE,Interactive,Microservices" />
+	<meta name="description" content="IDE online using microservices" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link href="css/IDEOnline.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -38,12 +39,11 @@
 
 		<div id="solutionWindow">
 			<div id="solutionWindowHeader">Solution Explorer</div>
-			<ul id="myUL">
+			<ul id="solExplorerUL">
 				<li>
-					<span class="expand">&#9658</span><span class="interactive project" id="root">..root..</span>
-					<ul class="nested">
-						<li><span class="decoration">&#124</span> <span class="interactive file" id="file1">File1</span></li>
-					</ul>
+					<span class="expand">&#9658</span>
+					<span class="interactive project" id="root"><img class="slEIcon" src="imgs/root.png">..root..</span>
+					<ul class="nested"></ul>
 				</li>
 			</ul>
 		</div>
@@ -72,6 +72,14 @@
 		<div id="footer">
 			Copyright &copy; 2017, Licenta, eu
 		</div>
+
+		<div id="userDiag" class="modal-simple">
+				<span class="modalCloseBtn">&times;</span>
+				<span id="modalText">ask user to</span><br>
+				<input id="userInput" type="text" autocomplete="off">
+				<button id="UserOkBtn" type="button">Ok</button>
+		</div>
+
 	</div>
 
 	<!--scripts go after the elements they are applied to. If we try to reference an element we haven't created yet we get null reference error-->

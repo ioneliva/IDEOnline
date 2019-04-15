@@ -1,5 +1,5 @@
 //remember item right clicked on solution window for future reference
-var clickedItem;
+var clickedItem, menuOriginX, menuOriginY;
 
 //listeners
 let expandableElement = document.getElementsByClassName("expand");
@@ -13,13 +13,15 @@ for (i = 0; i < interactiveElements.length; i++) {
 	interactiveElements[i].addEventListener("click", selectWithOneClick);
 	interactiveElements[i].addEventListener("dblclick", openElement);
 }
+window.addEventListener("resize", hideMenu);
 window.addEventListener("mousedown", hideMenu);
-window.addEventListener("keydown", checkForEscape);
+window.addEventListener("keydown", hideMenuOnEscape);
 
 //expand/collapse expandable element by clicking the arrow symbol
-function expandElementByArrow() {
-	event.target.nextElementSibling.nextElementSibling.classList.toggle("active");
-	event.target.classList.toggle("expand-down");
+function expandElementByArrow(e) {
+	let target = e.target || e.srcElement;
+	target.nextElementSibling.nextElementSibling.classList.toggle("active");
+	target.classList.toggle("expand-down");
 }
 
 //expand/collapse expandable element by double clicking it with the mouse
@@ -43,7 +45,7 @@ function selectItem(item) {
 	let range = document.createRange(),
 		sel = window.getSelection();
 
-	clickedItem = event.target;
+	clickedItem = event.target || e.target;
 	range.setStartBefore(item);
 	range.setEndAfter(item);
 	sel.removeAllRanges();
@@ -90,6 +92,9 @@ function showMenu(e) {
 	menu.style.display = "block";
 	menu.style.left = e.pageX + "px";
 	menu.style.top = e.pageY + "px";
+	//remember where the menu originated from (useful for small modal pop-ups we want in the same spot later)
+	menuOriginX = e.pageX + "px";
+	menuOriginY = e.pageY + "px";
 }
 
 //menu items for projects
@@ -120,7 +125,7 @@ function hideMenu() {
 	document.getElementById("solutionMenu").style.display = "none";
 }
 //hide menu when user presses Esc
-function checkForEscape(e) {
+function hideMenuOnEscape(e) {
 	if (readMyPressedKey(e) == "Escape") {
 		hideMenu();
 	}

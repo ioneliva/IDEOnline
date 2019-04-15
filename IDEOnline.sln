@@ -20,6 +20,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "imgs", "imgs", "{EC3BC114-478E-4A63-AE0C-8268F8FF6ABA}"
 	ProjectSection(SolutionItems) = preProject
 		ClientFiles\imgs\avatar.jpg = ClientFiles\imgs\avatar.jpg
+		ClientFiles\imgs\file.png = ClientFiles\imgs\file.png
+		ClientFiles\imgs\file1.png = ClientFiles\imgs\file1.png
+		ClientFiles\imgs\folder.png = ClientFiles\imgs\folder.png
+		ClientFiles\imgs\root.png = ClientFiles\imgs\root.png
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{699E9998-C636-406F-BFCF-506339B1DBD4}"
