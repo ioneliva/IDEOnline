@@ -22,7 +22,7 @@ function handleKeyboardForRename(e) {
 }
 //hide modal when user clicks outside the dialogue (or on the modalCloseBtn)
 function hideModal(e) {
-	let tg = event.target || e.target;
+	let tg = event.target || e.target || window.event.target;
 	if (tg != document.getElementById("userDiag") && tg != document.getElementById("modalText") && tg != document.getElementById("UserOkBtn")
 			&& tg != document.getElementById("userInput") && tg != document.getElementsByClassName("modal")[0]) {
 		document.getElementById("userDiag").style.display = "none";

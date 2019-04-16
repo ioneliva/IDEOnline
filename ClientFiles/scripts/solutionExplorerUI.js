@@ -19,7 +19,7 @@ window.addEventListener("keydown", hideMenuOnEscape);
 
 //expand/collapse expandable element by clicking the arrow symbol
 function expandElementByArrow(e) {
-	let target = e.target || e.srcElement;
+	let target = event.target || event.srcElement || e.target || window.event.target;
 	target.nextElementSibling.nextElementSibling.classList.toggle("active");
 	target.classList.toggle("expand-down");
 }
@@ -45,7 +45,7 @@ function selectItem(item) {
 	let range = document.createRange(),
 		sel = window.getSelection();
 
-	clickedItem = event.target || e.target;
+	clickedItem = event.target || e.target || window.event.target;
 	range.setStartBefore(item);
 	range.setEndAfter(item);
 	sel.removeAllRanges();
@@ -54,7 +54,7 @@ function selectItem(item) {
 
 //highlight item on single left click
 function selectWithOneClick() {
-	let item = event.target;
+	let item = event.target || window.event.target;
 	selectItem(item);
 }
 
@@ -72,7 +72,7 @@ function showMenu(e) {
 		options = document.getElementsByClassName("options"),
 		i;
 
-	clickedItem = event.target;
+	clickedItem = event.target || window.event.target || e.target;
 	for (i = 0; i < options.length; i++) {
 		options[i].style.display = "none";
 	}
