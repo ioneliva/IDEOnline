@@ -1,5 +1,4 @@
-//remember item right clicked on solution window for future reference
-var clickedItem, menuOriginX, menuOriginY;
+var clickedItem, mouseOriginalX, mouseOriginalY;
 
 //listeners
 let expandableElement = document.getElementsByClassName("expand");
@@ -24,19 +23,31 @@ function expandElementByArrow(e) {
 	target.classList.toggle("expand-down");
 }
 
+//get item clicked (save it for later use)
+function getClickedItem(e) {
+	clickedItem = event.target || e.target || window.event.target || event.srcElement;
+	//user tried to iteract with a decorative element, like the icon
+	if (clickedItem.classList.contains("slEIcon")) {
+		clickedItem = clickedItem.parentElement;
+	}
+	return clickedItem;
+}
+
 //expand/collapse expandable element by double clicking it with the mouse
 function expandElementByDbClick() {
 	clickedItem.nextElementSibling.classList.toggle("active");
 	clickedItem.previousElementSibling.classList.toggle("expand-down");
 }
 
-//open file in tab on double click
-function openElement() {
+//open file in tab on double click (or expand directory tree)
+function openElement(e) {
+	clickedItem = getClickedItem(e);
 	if (clickedItem.classList.contains("file")) {
-		openInTab();
-	}
-	if (clickedItem.classList.contains("project") || clickedItem.classList.contains("directory")) {
-		expandElementByDbClick();
+		openInTab(clickedItem);
+	} else {
+		if (clickedItem.classList.contains("project") || clickedItem.classList.contains("directory")) {
+			expandElementByDbClick();
+		}
 	}
 }
 
@@ -45,17 +56,18 @@ function selectItem(item) {
 	let range = document.createRange(),
 		sel = window.getSelection();
 
-	clickedItem = event.target || e.target || window.event.target;
-	range.setStartBefore(item);
-	range.setEndAfter(item);
-	sel.removeAllRanges();
-	sel.addRange(range);
+	if (item && (item instanceof HTMLSpanElement)) {
+		range.setStartBefore(item);
+		range.setEndAfter(item);
+		sel.removeAllRanges();
+		sel.addRange(range);
+	}
 }
 
 //highlight item on single left click
-function selectWithOneClick() {
-	let item = event.target || window.event.target;
-	selectItem(item);
+function selectWithOneClick(e) {
+	clickedItem = getClickedItem(e);
+	selectItem(clickedItem);
 }
 
 //events for right clicking in Solution Window
@@ -72,7 +84,7 @@ function showMenu(e) {
 		options = document.getElementsByClassName("options"),
 		i;
 
-	clickedItem = event.target || window.event.target || e.target;
+	clickedItem = getClickedItem(e);
 	for (i = 0; i < options.length; i++) {
 		options[i].style.display = "none";
 	}
@@ -88,13 +100,45 @@ function showMenu(e) {
 			}
 		}
 	}
+	//remember original click location, to display modal windows in the same spot
+	mouseOriginalX = e.pageX,
+	mouseOriginalY = e.pageY;
 	//make menu visible, bring it at mouse coords
 	menu.style.display = "block";
-	menu.style.left = e.pageX + "px";
-	menu.style.top = e.pageY + "px";
-	//remember where the menu originated from (useful for small modal pop-ups we want in the same spot later)
-	menuOriginX = e.pageX + "px";
-	menuOriginY = e.pageY + "px";
+	setElementPosition(menu, mouseOriginalX, mouseOriginalY);
+}
+
+//bring element at mouse coords, relative to boundries of window
+function setElementPosition(element, mouseCoordX, mouseCoordY) {
+	let elementWidth = element.offsetWidth,
+		elementHeight = element.offsetHeight;
+
+	if ((mouseCoordX + elementWidth) > window.innerWidth) {	//menu would break out of bounds to the right
+		//for modal dialogue windows, cluster the containing elements to the right
+		if (element.classList.contains("modal-simple")) {
+			document.getElementById("modalText").style.float = "right";
+			document.getElementById("UserOkBtn").style.float = "right";
+			document.getElementById("UserCancelBtn").style.float = "right";
+			document.getElementsByClassName("modalCloseBtn")[0].style.float = "right";
+		}
+		element.style.left = (mouseCoordX - elementWidth) + "px";
+	}
+	else {
+		//similar to above, but we float them left
+		if (element.classList.contains("modal-simple")) {
+			document.getElementById("modalText").style.float = "left";
+			document.getElementById("UserOkBtn").style.float = "left";
+			document.getElementById("UserCancelBtn").style.float = "left";
+			document.getElementsByClassName("modalCloseBtn")[0].style.float = "left";
+		}
+		element.style.left = mouseCoordX + "px";
+	}
+	if ((mouseCoordY + elementHeight) > window.innerHeight) {	//menu would break out of bonds to the bottom
+		element.style.top = (mouseCoordY - elementHeight) + "px";
+	}
+	else {
+		element.style.top = mouseCoordY + "px";
+	}
 }
 
 //menu items for projects
@@ -102,6 +146,7 @@ function setMenuForProject() {
 	document.getElementById("closeProject").style.display = "block";
 	document.getElementById("saveProject").style.display = "block";
 	document.getElementById("loadProject").style.display = "block";
+	document.getElementById("rename").style.display = "block";
 	document.getElementById("run").style.display = "block";
 	document.getElementById("addFile").style.display = "block";
 	document.getElementById("addDir").style.display = "block";

@@ -14,7 +14,7 @@
 		<div id="header">
 			<!--tab tab ... activeTab newTab-->
 			<div id="tabs" class="tabs">
-				<div id="initialFile.cs_tab" class="tab activeTab">
+				<div id="initialFile.cs_placeholder_tab" class="tab activeTab">
 					<div class="inner-tab">
 						<!--hard coded initial file, will fix later-->
 						<p>initialFile.cs</p>
@@ -42,7 +42,7 @@
 			<ul id="solExplorerUL">
 				<li>
 					<span class="expand">&#9658</span>
-					<span class="interactive project" id="root"><img class="slEIcon" src="imgs/root.png">..root..</span>
+					<span class="interactive project" id="root"><img class="slEIcon" src="imgs/root.png">root</span>
 					<ul class="nested"></ul>
 				</li>
 			</ul>
@@ -64,7 +64,7 @@
 
 		<div id="content">
 			<!--initial file is hardcoded, will add a dialogue and let the client choose a name-->
-			<div id="initialFile.cs_editor" class="activeEditorWindow" contenteditable="true" spellcheck="false" type="text"></div>
+			<div id="initialFile.cs_placeholder_editor" class="activeEditorWindow" contenteditable="true" spellcheck="false" type="text"></div>
 			<div id="lineNumbering"></div>
 
 			<span id="output">Response from microservice: </span>
@@ -74,10 +74,11 @@
 		</div>
 
 		<div id="userDiag" class="modal-simple">
-				<span class="modalCloseBtn">&times;</span>
-				<span id="modalText">ask user to</span><br>
-				<input id="userInput" type="text" autocomplete="off">
-				<button id="UserOkBtn" type="button">Ok</button>
+			<span id="modalText">ask user to</span>
+			<span class="modalCloseBtn">&times;</span><br>
+			<input id="userInput" type="text" autocomplete="off">
+			<button id="UserOkBtn" type="button">Ok</button>
+			<button id="UserCancelBtn" type="button">Cancel</button>
 		</div>
 
 	</div>
@@ -85,6 +86,7 @@
 	<!--scripts go after the elements they are applied to. If we try to reference an element we haven't created yet we get null reference error-->
 	<script type="text/javascript" src="scripts/tabsAndWindows.js"></script>
 	<script type="text/javascript" src="scripts/solutionExplorerUI.js"></script>
+	<script type="text/javascript" src="scripts/solutionExplorerUserDiagModals.js"></script>
 	<script type="text/javascript" src="scripts/solutionExplorerFunctionality.js"></script>
 	<script type="text/javascript" src="scripts/editorUtilities.js"></script>
 	<script type="text/javascript" src="scripts/customKeys.js"></script>

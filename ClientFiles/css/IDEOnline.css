@@ -291,9 +291,24 @@
     background-color: #808080;
     color: #fff;
     user-select: none;
+    float: left;
     -moz-user-select: none;
 }
-
+.modal-simple #UserOkBtn,#UserCancelBtn {
+    float: left;
+}
+.modal-simple #UserCancelBtn {
+    float: left;
+}
+.error {
+    background-color: #808080;
+    color: #000;
+    user-select: none;
+    -moz-user-select: none;
+    animation: blinker 1s linear infinite;
+    float: left;
+    display: none;
+}
 .modalCloseBtn {
     background: #fff;
     float: right;
@@ -322,4 +337,9 @@
   .text {
 	  font-size: 11px
 	  }
+}
+@keyframes blinker {
+    50% {
+        opacity: 0.5;
+    }
 }
