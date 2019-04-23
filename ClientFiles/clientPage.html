@@ -24,17 +24,15 @@
 			</div>
 		</div>
 
-		<div id="login_Box" class="loginBox">
-			<img src="imgs/avatar.jpg" class="avatar">
-			<h1>Welcome</h1>
-			<form id="login">
-				<label>User</label>
-				<input id="userName" type="text" name="" placeholder="Username">
-				<label>Password</label>
-				<input id="userPasswd" type="password" name="" placeholder="Password">
-				<input id="subtmitBtn" type="submit" name="" value="Login">
-				<a href="#">Register</a>
-			</form>
+		<div id="content">
+			<!--initial file is hardcoded, will add a dialogue and let the client choose a name-->
+			<div id="initialFile.cs_placeholder_editor" class="activeEditorWindow" contenteditable="true" spellcheck="false" type="text"></div>
+			<div id="lineNumbering"></div>
+
+			<span id="output">Response from microservice: </span>
+		</div>
+		<div id="footer">
+			Copyright &copy; 2019, Licenta, eu
 		</div>
 
 		<div id="solutionWindow">
@@ -62,15 +60,45 @@
 			</ul>
 		</div>
 
-		<div id="content">
-			<!--initial file is hardcoded, will add a dialogue and let the client choose a name-->
-			<div id="initialFile.cs_placeholder_editor" class="activeEditorWindow" contenteditable="true" spellcheck="false" type="text"></div>
-			<div id="lineNumbering"></div>
-
-			<span id="output">Response from microservice: </span>
+		<div class="modalStretchBackground welcome">
+			<div id="welcomeDiag" class="modal-complex">
+				<h1>Hello!</h1>
+				<h2>Please make your choice</h2>
+				<button id="newProjectBtn" class="welcomeDiagBtn">New project</button>
+				<button id="loadProjectBtn" class="welcomeDiagBtn">Load project</button><br>
+				<button id="showLoginBtn" class="welcomeDiagBtn">Login</button>
+				<label id="small-label">*Note you will not be able to save your work if you do not login</label>
+			</div>
 		</div>
-		<div id="footer">
-			Copyright &copy; 2017, Licenta, eu
+
+		<div class="modalStretchBackground newProject">
+			<div id="newProjectDiag" class="modal-complex">
+				<span class="backToWelcomeDiag">&#8634; Back</span>
+				<h2>Please pick a name and type for your project:</h2>
+				<label>Name: </label>
+				<input type="text" autocomplete="off">
+				<label>, Type:</label>
+				<select class="selectProject">
+					<option>C/C++ </option>
+					<option>Java</option>
+					<option>C#</option>
+					<option>HTML</option>
+					<option>Javascript</option>
+				</select>
+			</div>
+		</div>
+
+		<div id="login_Box" class="loginBox">
+			<img src="imgs/avatar.jpg" class="avatar">
+			<h1>Welcome</h1>
+			<form id="login">
+				<label>User</label>
+				<input id="userName" type="text" name="" placeholder="Username">
+				<label>Password</label>
+				<input id="userPasswd" type="password" name="" placeholder="Password">
+				<input id="subtmitBtn" type="submit" name="" value="Login">
+				<a href="#">Register</a>
+			</form>
 		</div>
 
 		<div id="userDiag" class="modal-simple">

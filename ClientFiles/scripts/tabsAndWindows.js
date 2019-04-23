@@ -94,8 +94,10 @@ function setActiveTab(tab) {
 
 //set editor as active editor window
 function setActiveEditor(editor) {
-	let activeWindow = document.getElementsByClassName("activeEditorWindow")[0];
-	activeWindow.className = "hiddenEditorWindow";
+	let activeEditor = document.getElementsByClassName("activeEditorWindow")[0];
+	if (activeEditor) {
+		activeEditor.className = "hiddenEditorWindow";
+	}
 	editor.className = "activeEditorWindow";
 	//recalculate line numbering for the new active editor
 	updateLineNumbering();
@@ -130,22 +132,23 @@ function closeTab(tab) {
 	}
 	//if the user closes the last tab present on the page, show an empty editor window that can't pe edited
 	if (!tab.previousElementSibling && !tab.nextElementSibling) {
-		console.log("closed last tab");
-		//TODO: Later, when I decide on a background for "no interface present"
+		//TODO: place an empty, non editable editor window to hold the content body open
 	}
-    //if user is trying to close the active tab, make previous tab the active one. If there is no previous, next tab becomes active
-	let editorToBecomeActive;
-	if (tab.className == "tab activeTab") {
-		if (tab.previousElementSibling != null) {
-			tab.previousElementSibling.className = "tab activeTab";
-			editorToBecomeActive = document.getElementById(formatForEditorId(tab.previousElementSibling.id));
-		} else {
-			if (tab.previousElementSibling == null && tab.nextElementSibling) {
-				tab.nextElementSibling.className = "tab activeTab";
-				editorToBecomeActive = document.getElementById(formatForEditorId(tab.nextElementSibling.id));
-            }
+	else {
+		//if user is trying to close the active tab, make previous tab the active one. If there is no previous, next tab becomes active
+		let editorToBecomeActive;
+		if (tab.className == "tab activeTab") {
+			if (tab.previousElementSibling != null) {
+				tab.previousElementSibling.className = "tab activeTab";
+				editorToBecomeActive = document.getElementById(formatForEditorId(tab.previousElementSibling.id));
+			} else {
+				if (tab.previousElementSibling == null && tab.nextElementSibling) {
+					tab.nextElementSibling.className = "tab activeTab";
+					editorToBecomeActive = document.getElementById(formatForEditorId(tab.nextElementSibling.id));
+				}
+			}
+			setActiveEditor(editorToBecomeActive);
 		}
-		setActiveEditor(editorToBecomeActive);
 	}
 	//remove editor window attached to tab
 	let editor = document.getElementById(formatForEditorId(tab.id));
@@ -164,7 +167,7 @@ function closeTab(tab) {
 	//get file name from tab id  ex:filename.extension_parent_tab, we need filename.extension
 	let _char = tab.id.indexOf("_"),
 		fileNameInSolutionExplorer = tab.id.slice(0, _char);
-	document.getElementById(fileNameInSolutionExplorer).classList.remove("inTab");
+	//document.getElementById(fileNameInSolutionExplorer).classList.remove("inTab");
     //remove parent tab
 	allTabs.removeChild(tab);
 }

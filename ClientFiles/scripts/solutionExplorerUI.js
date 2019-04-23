@@ -13,19 +13,19 @@ for (i = 0; i < interactiveElements.length; i++) {
 	interactiveElements[i].addEventListener("dblclick", openElement);
 }
 window.addEventListener("resize", hideMenu);
-window.addEventListener("mousedown", hideMenu);
-window.addEventListener("keydown", hideMenuOnEscape);
+document.addEventListener("mousedown", hideMenu);
+document.addEventListener("keydown", hideMenuOnEscape);
 
 //expand/collapse expandable element by clicking the arrow symbol
 function expandElementByArrow(e) {
-	let target = event.target || event.srcElement || e.target || window.event.target;
+	let target = e.target || e.srcElement;
 	target.nextElementSibling.nextElementSibling.classList.toggle("active");
 	target.classList.toggle("expand-down");
 }
 
 //get item clicked (save it for later use)
 function getClickedItem(e) {
-	clickedItem = event.target || e.target || window.event.target || event.srcElement;
+	clickedItem = e.target || e.srcElement;
 	//user tried to iteract with a decorative element, like the icon
 	if (clickedItem.classList.contains("slEIcon")) {
 		clickedItem = clickedItem.parentElement;
@@ -51,7 +51,7 @@ function openElement(e) {
 	}
 }
 
-//select item in solution window (similar to a selection with the mouse or holdig Shift key)
+//select item in solution explorer (similar to a selection with the mouse or holdig Shift key)
 function selectItem(item) {
 	let range = document.createRange(),
 		sel = window.getSelection();
@@ -70,11 +70,11 @@ function selectWithOneClick(e) {
 	selectItem(clickedItem);
 }
 
-//events for right clicking in Solution Window
+//events for right clicking in Solution explorer
 document.getElementById("solutionWindow").oncontextmenu = function () {
 	//highlight the element that was right clicked
 	selectItem(clickedItem);
-	//disable default browser menu for Solution Window container
+	//disable default browser menu for Solution explorer container
 	return false
 };
 
@@ -88,7 +88,7 @@ function showMenu(e) {
 	for (i = 0; i < options.length; i++) {
 		options[i].style.display = "none";
 	}
-	//customize menu, depending on what element was right clicked in Solution Window
+	//customize menu, depending on what element was right clicked in Solution explorer
 	if (clickedItem.classList.contains("project")) {
 		setMenuForProject();
 	} else {

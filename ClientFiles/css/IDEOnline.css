@@ -59,6 +59,76 @@
     width: 79%;
 }
 
+/*Modals for Welcome and New Project screens*/
+.modal-complex {
+    font-size: 18px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bolder;
+    text-align: center;
+    box-sizing: border-box;
+    user-select: none;
+    -moz-user-select: none;
+    position: absolute;
+    top: 20%;
+    left: 30%;
+    z-index: 100;
+}
+.modalStretchBackground {
+    background: rgba(193, 193, 193, 0.7);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 100;
+}
+.modal-complex h1, .modal-complex h2, .modal-complex label:not(#small-label) {
+    color: #222;
+    text-shadow: 0 1px 1px #555; /*params: horizontal-shadow, vertical-shadow, blur, color*/
+}
+.modal-complex #small-label {
+    font-size: 10px;
+    font-weight: normal;
+    text-decoration: underline;
+}
+/*welcome diag*/
+#welcomeDiag { /*there's less text in the header here, need to center it more to the right*/
+    left: 35%;
+}
+.welcomeDiagBtn {
+    text-align: center;
+    font-size: 25px;
+    color: #171717;
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 30px;
+}
+.welcomeDiagBtn:hover{
+    color: #0b175c;
+}
+.selectProject, .modal-complex input, .modal-complex .welcomeDiagBtn {
+    border: 1px solid #000;
+    border-radius: 10px;
+    padding: 5px;
+    font-weight: bold;
+}
+.selectProject:hover, .modal-complex input:hover, .modal-complex .welcomeDiagBtn:hover {
+    border-color: #000;
+    box-shadow: 3px 8px 8px #888888;
+}
+.backToWelcomeDiag {
+    color: #0e4215;
+}
+.backToWelcomeDiag:hover {
+    color: #0026ff;
+    text-shadow: 0 4px 4px #555;
+}
+.welcome {
+    display: none;
+}
+.newProject {
+    display: none;
+}
+
 .loginBox {
     width: 320px;
     height: 420px;
@@ -182,12 +252,12 @@
     resize:both;
     overflow: auto;
     position: fixed; /*not dependant on page flow, we want it always there*/
-    z-index: 3; /*higher z-index makes it cover the underlaying element with lower z*/
+    z-index: 50; /*higher z-index makes it cover the underlaying element with lower z*/
 }
     #solutionWindow #solutionWindowHeader {
         padding: 1%;
         cursor: move;
-        z-index: 3;
+        z-index: 50;
         background-color: #808080;
         color: #fff;
         user-select: none;
@@ -248,7 +318,7 @@
     border-color: #808080;
     background-color: #ccc;
     position: absolute;
-    z-index: 100;
+    z-index: 70;
     display: none; /*hidden until called on right click*/
 }
     .solutionMenu .separatorLine {
@@ -283,7 +353,7 @@
 
 .modal-simple {
     position: absolute;
-    z-index: 10;
+    z-index: 80;
     overflow: auto;
     display: none;
 }

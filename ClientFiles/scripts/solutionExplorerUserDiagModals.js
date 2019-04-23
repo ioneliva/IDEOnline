@@ -1,4 +1,4 @@
-window.addEventListener("keydown", handleKeyboardForUserDiag);
+document.addEventListener("keydown", handleKeyboardForUserDiag);
 window.addEventListener("resize", hideModalOnResize);
 document.getElementById("UserCancelBtn").addEventListener("click", hideModal);
 
@@ -26,7 +26,7 @@ function handleKeyboardForUserDiag(e) {
 
 //hide modal when user clicks outside the dialogue
 function hideModalOnResize(e) {
-	let tg = event.target || e.target || window.event.target;
+	let tg = e.target || window.event.target;
 	if (tg != document.getElementById("userDiag") && tg != document.getElementById("modalText") && tg != document.getElementById("UserOkBtn")
 			&& tg != document.getElementById("userInput") && tg != document.getElementsByClassName("modal")[0]) {
 		hideModal();
