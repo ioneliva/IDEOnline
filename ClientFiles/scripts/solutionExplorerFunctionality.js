@@ -77,7 +77,7 @@ function attachFileToParent(fileStructure, parent) {
 	}
 	//expand parent
 	if (!parent.previousElementSibling.classList.contains("expand-down")) {
-		expandElementByDbClick();
+		expandElementByDbClick(parent);
 	}
 }
 
@@ -126,7 +126,7 @@ function openInTab(file) {
 		if (tab && file.classList.contains("inTab")) {		//if this file is already present in tabs, we only open that tab
 			setActiveTab(tab);
 			setActiveEditor(getEditorLinkedTo(tab));
-		} else {		//create new tab, named as the file+fileParent (important, to distinguish between files with the same name!)
+		} else {		//create new tab
 			let tab = createTabFor(file.id);
 			setActiveTab(tab);
 			file.classList.add("inTab");

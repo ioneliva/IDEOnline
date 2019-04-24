@@ -34,9 +34,12 @@ function getClickedItem(e) {
 }
 
 //expand/collapse expandable element by double clicking it with the mouse
-function expandElementByDbClick() {
-	clickedItem.nextElementSibling.classList.toggle("active");
-	clickedItem.previousElementSibling.classList.toggle("expand-down");
+function expandElementByDbClick(element) {
+	if (!element) {
+		element = clickedItem;
+	}
+	element.nextElementSibling.classList.toggle("active");
+	element.previousElementSibling.classList.toggle("expand-down");
 }
 
 //open file in tab on double click (or expand directory tree)

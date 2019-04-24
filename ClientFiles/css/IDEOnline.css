@@ -84,6 +84,13 @@
     z-index: 100;
     display:none;
 }
+/*checkboxes in new project modal*/
+.valid {
+    color:#249627;
+}
+.invalid {
+    color: #781010;
+}
 .modal-complex h1, .modal-complex h2, .modal-complex label:not(#small-label) {
     color: #222;
     text-shadow: 0 1px 1px #555; /*params: horizontal-shadow, vertical-shadow, blur, color*/
@@ -114,6 +121,10 @@
     font-weight: bold;
 }
 .selectProjectType:hover, .modal-complex input:hover, .modal-complex .welcomeDiagBtn:hover {
+    border-color: #000;
+    box-shadow: 3px 8px 8px #888888;
+}
+.selectProjectType:focus, .modal-complex input:focus {
     border-color: #000;
     box-shadow: 3px 8px 8px #888888;
 }
