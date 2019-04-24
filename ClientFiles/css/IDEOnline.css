@@ -65,6 +65,7 @@
     font-family: Arial, Helvetica, sans-serif;
     font-weight: bolder;
     text-align: center;
+    line-height:30px;
     box-sizing: border-box;
     user-select: none;
     -moz-user-select: none;
@@ -81,6 +82,7 @@
     width: 100%;
     height: 100%;
     z-index: 100;
+    display:none;
 }
 .modal-complex h1, .modal-complex h2, .modal-complex label:not(#small-label) {
     color: #222;
@@ -105,13 +107,13 @@
 .welcomeDiagBtn:hover{
     color: #0b175c;
 }
-.selectProject, .modal-complex input, .modal-complex .welcomeDiagBtn {
+.selectProjectType, .modal-complex input, .modal-complex .welcomeDiagBtn {
     border: 1px solid #000;
     border-radius: 10px;
     padding: 5px;
     font-weight: bold;
 }
-.selectProject:hover, .modal-complex input:hover, .modal-complex .welcomeDiagBtn:hover {
+.selectProjectType:hover, .modal-complex input:hover, .modal-complex .welcomeDiagBtn:hover {
     border-color: #000;
     box-shadow: 3px 8px 8px #888888;
 }
@@ -122,11 +124,9 @@
     color: #0026ff;
     text-shadow: 0 4px 4px #555;
 }
-.welcome {
-    display: none;
-}
-.newProject {
-    display: none;
+.disabledBtn {
+    opacity: 0.3;
+    pointer-events: none; /*disable hover effects*/
 }
 
 .loginBox {
@@ -139,8 +139,7 @@
     position: absolute;
     padding: 70px 30px 70px 30px;
     box-sizing: border-box; /*when calculating 320 width, include padding and borders*/
-    z-index: 2; /*+1 higher than the layer under*/
-
+    z-index: 101; /*+1 higher than the layer under*/
     display:none;
 }
     .loginBox h1 {
@@ -353,7 +352,7 @@
 
 .modal-simple {
     position: absolute;
-    z-index: 80;
+    z-index: 150;   /*this is also used to display error messages to the user, we want the highest z*/
     overflow: auto;
     display: none;
 }

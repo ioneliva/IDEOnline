@@ -1,6 +1,7 @@
 document.addEventListener("keydown", handleKeyboardForUserDiag);
 window.addEventListener("resize", hideModalOnResize);
 document.getElementById("UserCancelBtn").addEventListener("click", hideModal);
+document.getElementsByClassName("modalCloseBtn")[0].addEventListener("click", hideModal);
 
 //hide modal dialogue
 function hideModal() {
@@ -18,7 +19,8 @@ function handleKeyboardForUserDiag(e) {
 	if (readMyPressedKey(e) == "Escape") {
 		hideModal();
 	} else {
-		if (readMyPressedKey(e) == "Enter") {
+		let okBtn = document.getElementById("UserOkBtn");
+		if (readMyPressedKey(e) == "Enter" && okBtn.style.display=="block") {
 			document.getElementById("UserOkBtn").click();
 		}
 	}
@@ -33,26 +35,22 @@ function hideModalOnResize(e) {
 	}
 }
 
-//check if user entered a valid input in menu dialogue
-function isValidInput(inputType, input) {
-	let regex,
-		ret = false;
+//format dialogue modal to show error. Note coords for the window are optional
+function showDiagError(errText, coordX, coordY) {
+	let errBox = document.getElementsByClassName("modal-simple")[0],
+		msgToUser = document.getElementById("modalText");
 
-	if (inputType == "file") {
-		regex = /^[a-zA-Z0-9\_\-]+\.[a-zA-Z]+$/i;	//alphanumeric,"_","-", "." ex: file_0.cpp
+	if (coordX && coordY) {	//coordinates parameter received
+		//make sure the error box has events for closing attached. If they are already present, they simply get replaced
+		document.addEventListener("keydown", handleKeyboardForUserDiag);
+		window.addEventListener("resize", hideModalOnResize);
+		document.getElementById("UserCancelBtn").addEventListener("click", hideModal);
+		document.getElementsByClassName("modalCloseBtn")[0].addEventListener("click", hideModal);
+		//display error window at passed coords
+		setElementPosition(errBox, coordX, coordY);
+		errBox.style.display = "block";
 	}
-	if (inputType == "directory") {
-		regex = /^[a-zA-Z0-9\_\-]+$/i;		//alphanumeric,"_","-" ex: Work-Dir
-	}
-	if (input.match(regex) && input.length > 0) {
-		ret = true;
-	}
-	return ret;
-}
-
-//format dialogue modal to show error
-function showDiagError(errText) {
-	let msgToUser = document.getElementById("modalText");
+	//if no coordinated we passed, the error modal replaces the last position of the dialogue window
 	msgToUser.textContent = errText;
 	msgToUser.classList.add("error");
 	msgToUser.style.display = "block";
@@ -73,9 +71,9 @@ function showDiagWarning(warnText) {
 }
 
 //prepare user dialogue for operation
-function prepareUserDiag(purpose) {
+function prepareUserDiagFor(purpose) {
 	let msgToUser = document.getElementById("modalText");
-	//remove listener that hides on mouse click. Because of the delay on setTimeout, it would hide the dialogue before it would appear
+	//remove listener that hides the modal on mouse click. Because of the delay on setTimeout, it would hide the dialogue before it would appear
 	window.removeEventListener("mousedown", hideModalOnResize);
 	switch (purpose) {
 		case "rename":

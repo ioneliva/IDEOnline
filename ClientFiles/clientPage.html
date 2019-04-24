@@ -11,30 +11,24 @@
 <body>
 	<div id="wrapper">
 
+		<!--Tabs section-->
 		<div id="header">
-			<!--tab tab ... activeTab newTab-->
-			<div id="tabs" class="tabs">
-				<div id="initialFile.cs_placeholder_tab" class="tab activeTab">
-					<div class="inner-tab">
-						<!--hard coded initial file, will fix later-->
-						<p>initialFile.cs</p>
-						<button id="closeButton" class="closeButton">x</button>
-					</div>
-				</div>
-			</div>
+			<div id="tabs" class="tabs"></div>
 		</div>
 
+		<!--Editors section-->
 		<div id="content">
-			<!--initial file is hardcoded, will add a dialogue and let the client choose a name-->
-			<div id="initialFile.cs_placeholder_editor" class="activeEditorWindow" contenteditable="true" spellcheck="false" type="text"></div>
+			<!--initial file is a placeholder to keep content div open-->
+			<div id="initialFile.cs_placeholder_editor" class="activeEditorWindow" contenteditable="false" spellcheck="false" type="text"></div>
 			<div id="lineNumbering"></div>
-
-			<span id="output">Response from microservice: </span>
 		</div>
+
+		<!--Footer section-->
 		<div id="footer">
 			Copyright &copy; 2019, Licenta, eu
 		</div>
 
+		<!--Solution Explorer section-->
 		<div id="solutionWindow">
 			<div id="solutionWindowHeader">Solution Explorer</div>
 			<ul id="solExplorerUL">
@@ -60,6 +54,7 @@
 			</ul>
 		</div>
 
+		<!--Modal Dialogue Windows section-->
 		<div class="modalStretchBackground welcome">
 			<div id="welcomeDiag" class="modal-complex">
 				<h1>Hello!</h1>
@@ -76,15 +71,19 @@
 				<span class="backToWelcomeDiag">&#8634; Back</span>
 				<h2>Please pick a name and type for your project:</h2>
 				<label>Name: </label>
-				<input type="text" autocomplete="off">
-				<label>, Type:</label>
-				<select class="selectProject">
+				<input id="userProjNameInput" type="text" autocomplete="off">
+				<label>Type:</label>
+				<select class="selectProjectType">
+					<option value="" selected disabled hidden>--Please select one--</option>
 					<option>C/C++ </option>
 					<option>Java</option>
 					<option>C#</option>
 					<option>HTML</option>
 					<option>Javascript</option>
-				</select>
+				</select><br><br>
+				<label>Initial file (optional):</label>
+				<input id="userFirstFileInput" type="text" autocomplete="off"><br>
+				<button id="okSelectProjType" class="welcomeDiagBtn">Ok</button>
 			</div>
 		</div>
 
@@ -112,6 +111,7 @@
 	</div>
 
 	<!--scripts go after the elements they are applied to. If we try to reference an element we haven't created yet we get null reference error-->
+	<script type="text/javascript" src="scripts/init.js"></script>
 	<script type="text/javascript" src="scripts/tabsAndWindows.js"></script>
 	<script type="text/javascript" src="scripts/solutionExplorerUI.js"></script>
 	<script type="text/javascript" src="scripts/solutionExplorerUserDiagModals.js"></script>

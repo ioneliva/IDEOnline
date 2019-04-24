@@ -34,8 +34,6 @@ function keyUp(e) {
 			"word_and_delimiter": wordComposite, "position": cursorPosition,
 			"enterPressed": enterPressed, "preWord": preWord, "preWordPos": preWordPos, "token": token
 		}, function (response) {
-			let output = document.getElementById("output");
-			output.innerText = response;
 			//parse response from Json
 			let wordColoringMS = JSON.parse(response);
 			//decorate with color spans, if server did not lag

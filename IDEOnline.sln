@@ -29,6 +29,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{699E
 		ClientFiles\scripts\customKeyCombos.js = ClientFiles\scripts\customKeyCombos.js
 		ClientFiles\scripts\customKeys.js = ClientFiles\scripts\customKeys.js
 		ClientFiles\scripts\editorUtilities.js = ClientFiles\scripts\editorUtilities.js
+		ClientFiles\scripts\init.js = ClientFiles\scripts\init.js
 		ClientFiles\scripts\solutionExplorerFunctionality.js = ClientFiles\scripts\solutionExplorerFunctionality.js
 		ClientFiles\scripts\solutionExplorerUI.js = ClientFiles\scripts\solutionExplorerUI.js
 		ClientFiles\scripts\solutionExplorerUserDiagModals.js = ClientFiles\scripts\solutionExplorerUserDiagModals.js

@@ -1,13 +1,17 @@
-document.getElementsByClassName("activeTab")[0].addEventListener("click", clickOnTab);
-document.getElementById("closeButton").addEventListener("click", closeTab);
-
 //simple functions used so we don't have to remember the custom format for ids
 //example: file.id=="123.cs_Parent", tab.id== "123.cs_Parent_tab", editor linked to it has id=="123.cs_Parent_editor"
-function formatForEditorId(tabId) {
-	return tabId.slice(0, -4) + "_editor";
+function formatForFileId(fileName, parentName) {	//input file name, parent name
+	return fileName + "_" + parentName;				//output file.id
 }
-function formatForTabId(fileName, parentName) {
-	return fileName + "_" + parentName + "_tab";
+function formatForTabId(fileId) {					//input file.id
+	return fileId + "_tab";							//output tab.id
+}
+function formatForEditorId(tabId) {					//input tab.id
+	return tabId.slice(0, -4) + "_editor";			//output editor.id
+}
+function getFileNameFromFileId(fileId) {			//example: for id ="123.cs_Parent", this would "123.cs"
+	let _charIndex = fileId.lastIndexOf("_");
+	return fileId.slice(0, _charIndex);
 }
 
 //tab switching
@@ -22,17 +26,17 @@ function clickOnTab() {
 	}
 }
 
-//create a tab. Again, note the parent is part of the file tab name, to distinguish between files with same name
-function createTabFor(fileName, parentName) {
+//create a tab for a file
+function createTabFor(fileId) {
 	let newTab = document.createElement("div"),
 		innerTab = document.createElement("div"),
 		p = document.createElement("p"),
 		closeBtn = document.createElement("button");
 
 	//create structure for Tab
-	newTab.id = formatForTabId(fileName, parentName);
+	newTab.id = formatForTabId(fileId);
 	innerTab.className = "inner-tab";
-	p.appendChild(document.createTextNode(fileName));
+	p.appendChild(document.createTextNode(getFileNameFromFileId(fileId)));
 	closeBtn.innerHTML = "x";
 	closeBtn.id = "closeButton";
 	closeBtn.className = "closeButton";
@@ -51,17 +55,23 @@ function createTabFor(fileName, parentName) {
 	return newTab;
 }
 
-//create a new editor window and attach it, linking it to the parameter
+//create a new editor window and attach it, linking it to the parameter tab
 function attachNewEditorFor(tab) {
-	let newEditor = document.createElement("div");
+	let newEditor = document.createElement("div"),
+		content = document.getElementById("content");
 
+	//if this is the only editor added, remove placeholder
+	let placeHolder = document.getElementById("initialFile.cs_placeholder_editor");
+	if (placeHolder) {
+		content.removeChild(content.firstElementChild);
+	}
 	//set id for editor window to match the id of the linked tab
 	newEditor.id = formatForEditorId(tab.id);
 	//set the rest of the attributes for the editor window
 	newEditor.contentEditable = "true";
 	newEditor.setAttribute("spellcheck", false);
 	newEditor.setAttribute("type", "text");
-	document.getElementById("content").insertBefore(newEditor, document.getElementById("content").firstChild);
+	content.insertBefore(newEditor, content.firstChild);
 	//listeners on the editor window, responsable for all the functionality
 	newEditor.addEventListener("keyup", keyUp);
 	newEditor.addEventListener("keydown", triggerOnDown);
@@ -70,6 +80,20 @@ function attachNewEditorFor(tab) {
 	newEditor.addEventListener("paste", handlePaste);
 	
 	return newEditor;
+}
+
+//attach empty placeholder editor (needed to keep the 'content' div from colapsing when empty)
+function attachPlaceholderEditor() {
+	let newEditor = document.createElement("div"),
+		content = document.getElementById("content"),
+		lineNumbering = document.getElementById("lineNumbering");;
+	newEditor.id = "initialFile.cs_placeholder_editor";
+	newEditor.className = "activeEditorWindow";
+	newEditor.contentEditable = "false";
+	content.insertBefore(newEditor, content.firstChild);
+	while (lineNumbering.firstChild) {
+		lineNumbering.removeChild(lineNumbering.firstChild);
+	}
 }
 
 //get editor linked to a tab
@@ -107,13 +131,8 @@ function setActiveEditor(editor) {
 function renameTab(tab, newName) {
 	let editor = getEditorLinkedTo(tab);
 
-	//get parent for file in tab (it doesn't change on rename)
-	let tabIdWithoutSufix = tab.id.slice(0, -4);  //example: for tab id ="123.cs_Parent_tab", this would return "123.cs_Parent"
-	let _charIndex = tabIdWithoutSufix.lastIndexOf("_");
-	let parent = tabIdWithoutSufix.slice(_charIndex+1);
-
 	tab.querySelector("p").textContent = newName;
-	tab.id = formatForTabId(newName, parent);
+	tab.id = formatForTabId(newName);
 	editor.id = formatForEditorId(tab.id);
 }
 
@@ -132,7 +151,7 @@ function closeTab(tab) {
 	}
 	//if the user closes the last tab present on the page, show an empty editor window that can't pe edited
 	if (!tab.previousElementSibling && !tab.nextElementSibling) {
-		//TODO: place an empty, non editable editor window to hold the content body open
+		attachPlaceholderEditor();
 	}
 	else {
 		//if user is trying to close the active tab, make previous tab the active one. If there is no previous, next tab becomes active
