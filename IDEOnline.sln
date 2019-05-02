@@ -19,7 +19,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "css", "css", "{0FD692D9-555
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "imgs", "imgs", "{EC3BC114-478E-4A63-AE0C-8268F8FF6ABA}"
 	ProjectSection(SolutionItems) = preProject
-		ClientFiles\imgs\avatar.jpg = ClientFiles\imgs\avatar.jpg
+		ClientFiles\imgs\avatarPick.png = ClientFiles\imgs\avatarPick.png
 		ClientFiles\imgs\folder.png = ClientFiles\imgs\folder.png
 		ClientFiles\imgs\root.png = ClientFiles\imgs\root.png
 	EndProjectSection
@@ -30,6 +30,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{699E
 		ClientFiles\scripts\customKeys.js = ClientFiles\scripts\customKeys.js
 		ClientFiles\scripts\editorUtilities.js = ClientFiles\scripts\editorUtilities.js
 		ClientFiles\scripts\init.js = ClientFiles\scripts\init.js
+		ClientFiles\scripts\login.js = ClientFiles\scripts\login.js
 		ClientFiles\scripts\solutionExplorerFunctionality.js = ClientFiles\scripts\solutionExplorerFunctionality.js
 		ClientFiles\scripts\solutionExplorerUI.js = ClientFiles\scripts\solutionExplorerUI.js
 		ClientFiles\scripts\solutionExplorerUserDiagModals.js = ClientFiles\scripts\solutionExplorerUserDiagModals.js

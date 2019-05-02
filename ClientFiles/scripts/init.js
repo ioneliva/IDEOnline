@@ -26,8 +26,8 @@ function showNewProjectDiag() {
 	document.getElementById("userProjNameInput").focus();
 }
 function showLoginForm() {
-	//TODO: login form is not finished yet
-	document.getElementsByClassName("loginBox")[0].style.display="block";
+	document.getElementById("loginBox").style.display = "block";
+	document.getElementById("userName").focus();
 }
 
 //navigation in 'new project' window

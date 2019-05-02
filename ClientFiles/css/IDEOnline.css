@@ -140,18 +140,20 @@
     pointer-events: none; /*disable hover effects*/
 }
 
+/*Login and Register forms*/
 .loginBox {
     width: 320px;
     height: 420px;
     background: #000;
     color: #fff;
     top: 35%;
-    left: 35%;
+    left: 40%;
     position: absolute;
     padding: 70px 30px 70px 30px;
-    box-sizing: border-box; /*when calculating 320 width, include padding and borders*/
+    box-sizing: border-box; /*when calculating width, include padding and borders*/
+    user-select: none;
+    -moz-user-select: none;
     z-index: 101; /*+1 higher than the layer under*/
-    display:none;
 }
     .loginBox h1 {
         margin:0;
@@ -162,11 +164,11 @@
     .loginBox label {
         font-weight: bold;
     }
-    .loginBox input {
+    .loginBox input {   /*input fields and buttons*/
         width: 100%;
         margin-bottom: 20px;
     }
-    .loginBox #userName, #userPasswd {
+    .loginBox .loginInputField {    /*input fields only*/
         border: none;
         border-bottom: 1px solid #fff;
         background: transparent; /*kill color in the edit box, see the background*/
@@ -175,44 +177,56 @@
         color: #fff;
         font-size: 16px;
     }
-    .loginBox #subtmitBtn {
+    .loginBox .loginBoxBtn {
         border: none;
         outline: none;
-        height: 40px;
+        height: 30px;
         background: #808080;
         color: #fff;
         font-size: 18px;
         border-radius: 20px;
     }
-    .loginBox #subtmitBtn:hover {
+    .loginBox .loginBoxBtn:hover {
         cursor: pointer;
         background: #ffc107;
         color: #000;
     }
-    .loginBox a {
+    .loginBox span {
         text-decoration: none;
         font-size: 16px;
         line-height: 20px;
         color: dimgrey;
     }
-    .loginBox a:hover {
+    .loginBox span:hover {
         color: #ffc107;
     }
     .loginBox .avatar {
         width: 100px;
         height: 100px;
         border-radius: 50%; /*make round corners*/
+        border:1px solid #000;
         position: absolute;
         top: -50px; /*with a height of 100, we move it half way above the container*/
         left: 100px; /*and roughly in the middle of the width of container*/
     }
+    #loginBox{
+        display:none;
+    }
+    #registerBox{
+        top: 35%;
+        left: 40%;
+        z-index:102;
+        display:none;
+    }
 
+/*Wrapper around the text editor*/
 #content {
     border-top: 1px solid;
     position: relative;
     z-index: 1;
 }
 
+/*the text editor*/
 .activeEditorWindow {
     min-width: 99%;
     min-height: 500px;
@@ -233,6 +247,7 @@
     display: none;
 }
 
+/*vertical numbers on the left of the text editor*/
 #lineNumbering {
     width:4%;
     top:0;
@@ -250,6 +265,7 @@
     position: absolute;
 }
 
+/*solution explorer*/
 #solutionWindow {
     width: 15%;
     height:50%;
@@ -361,6 +377,7 @@
 	padding-top: 50px;
 }
 
+/*simple dialogue box*/
 .modal-simple {
     position: absolute;
     z-index: 150;   /*this is also used to display error messages to the user, we want the highest z*/

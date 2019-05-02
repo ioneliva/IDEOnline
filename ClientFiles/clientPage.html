@@ -87,19 +87,34 @@
 			</div>
 		</div>
 
-		<div id="login_Box" class="loginBox">
-			<img src="imgs/avatar.jpg" class="avatar">
+		<!--Login/Register section-->
+		<div id="loginBox" class="loginBox">
 			<h1>Welcome</h1>
 			<form id="login">
 				<label>User</label>
-				<input id="userName" type="text" name="" placeholder="Username">
+				<input id="userName" type="text" class="loginInputField" name="" placeholder="Username">
 				<label>Password</label>
-				<input id="userPasswd" type="password" name="" placeholder="Password">
-				<input id="subtmitBtn" type="submit" name="" value="Login">
-				<a href="#">Register</a>
+				<input id="userPasswd" type="password" class="loginInputField" name="" placeholder="Password">
+				<input id="loginOkBtn" type="submit" class="loginBoxBtn" name="" value="Login">
+				<input id="loginCancelBtn" type="button" class="loginBoxBtn" name="" value="Cancel">
+				<span id="registerNew">Register</span>
+			</form>
+		</div>
+		<div id="registerBox" class="loginBox">
+			<img src="imgs/avatarPick.png" class="avatar">
+			<form id="register">
+				<label>Pick username</label>
+				<input id="registerUserName" type="text" class="loginInputField" name="" placeholder="Username">
+				<label>Pick a password</label>
+				<input id="registerUserPasswd" type="password" name="" class="loginInputField" placeholder="Password">
+				<label>Confirm password</label>
+				<input id="registerConfirmPasswd" type="password" name="" class="loginInputField" placeholder="Password">
+				<input id="registerOkBtn" type="submit" class="loginBoxBtn ok" name="" value="Ok">
+				<input id="registerBackBtn" type="button" class="loginBoxBtn back" name="" value="Back">
 			</form>
 		</div>
 
+		<!--simple user diag-->
 		<div id="userDiag" class="modal-simple">
 			<span id="modalText">ask user to</span>
 			<span class="modalCloseBtn">&times;</span><br>
@@ -112,6 +127,7 @@
 
 	<!--scripts go after the elements they are applied to. If we try to reference an element we haven't created yet we get null reference error-->
 	<script type="text/javascript" src="scripts/init.js"></script>
+	<script type="text/javascript" src="scripts/login.js"></script>
 	<script type="text/javascript" src="scripts/tabsAndWindows.js"></script>
 	<script type="text/javascript" src="scripts/solutionExplorerUI.js"></script>
 	<script type="text/javascript" src="scripts/solutionExplorerUserDiagModals.js"></script>
