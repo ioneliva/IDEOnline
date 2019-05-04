@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -16,6 +17,9 @@ namespace LoginMicroservice
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<Models.LoginContext>(options =>
+                options.UseSqlite(Configuration.GetConnectionString("LoginDb")));
+
             services.AddMvc();
         }
 
