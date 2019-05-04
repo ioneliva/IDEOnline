@@ -25,7 +25,7 @@
 
 		<!--Footer section-->
 		<div id="footer">
-			Copyright &copy; 2019, Licenta, eu
+			Copyright &copy; 2019, Licenta, Ionel Iva
 		</div>
 
 		<!--Solution Explorer section-->
@@ -101,7 +101,12 @@
 			</form>
 		</div>
 		<div id="registerBox" class="loginBox">
-			<img src="imgs/avatarPick.png" class="avatar">
+			<div id="avatarContainer">
+				<label for="browseForFile"><img src="imgs/avatarPick.png" class="avatar"></label>
+				<input id="browseForFile" type="file" accept="image/jpeg, image/jpg, image/png, image/gif" />
+				<span id="procent"></span><label id="procentLabel">% uploaded</label>
+				<div id="fileSelectorErrorMessage"></div><br>
+			</div>
 			<form id="register">
 				<label>Pick username</label>
 				<input id="registerUserName" type="text" class="loginInputField" name="" placeholder="Username">

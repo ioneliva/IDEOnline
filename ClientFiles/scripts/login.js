@@ -5,6 +5,7 @@ document.getElementById("registerNew").addEventListener("click", showRegisterFor
 document.getElementById("loginBox").addEventListener("keydown", handleEscapeOnLogin);
 document.getElementById("registerBox").addEventListener("keydown", handleEscapeOnRegister);
 document.getElementById("registerBackBtn").addEventListener("click", hideRegisterForm);
+document.getElementById("browseForFile").addEventListener("change", selectAvatarPic);
 
 //get values from input fields in Login form
 function getUsername() {
@@ -59,5 +60,31 @@ function hideLoginForm() {
 function hideRegisterForm() {
 	document.getElementById("registerBox").style.display = "none";
 	showLoginForm();
+}
+
+//avatar selection
+function selectAvatarPic() {
+	var file = this.files[0],
+		mime = ["image/jpeg", "image/svg+xml", "image/png", "image/gif"],
+		fileReader = new FileReader();
+	document.getElementById("fileSelectorErrorMessage").style.display = "none";
+
+	//check valid file type
+	if (mime.indexOf(file.type) === -1) {
+		document.getElementById("fileSelectorErrorMessage").style.display = "block";
+		document.getElementById("fileSelectorErrorMessage").innerText = "Only jpg, svg, png and gif files allowed";
+		return;
+	}
+	//check if file doesn't exceed maximum allowed size (2mb set)
+	if (file.size > 2 * 1024 * 1024) {
+		document.getElementById("fileSelectorErrorMessage").style.display = "block";
+		document.getElementById("fileSelectorErrorMessage").innerText = "Size must not exceed 2MB";
+		return;
+	}
+	//all ok, set image
+	fileReader.onload = function () {
+		document.getElementsByClassName("avatar")[0].src = fileReader.result;
+	}
+	fileReader.readAsDataURL(file);
 }
 
