@@ -64,7 +64,7 @@ function hideRegisterForm() {
 
 //avatar selection
 function selectAvatarPic() {
-	var file = this.files[0],
+	let file = this.files[0],
 		mime = ["image/jpeg", "image/svg+xml", "image/png", "image/gif"],
 		fileReader = new FileReader();
 	document.getElementById("fileSelectorErrorMessage").style.display = "none";
