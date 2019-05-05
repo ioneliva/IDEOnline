@@ -6,6 +6,6 @@
         public string Name { get; set; }
         public byte[] Password { get; set; }
         public byte[] Salt { get; set; }
-        public byte[] Avatar { get; set; }
+        public string Avatar { get; set; }
     }
 }

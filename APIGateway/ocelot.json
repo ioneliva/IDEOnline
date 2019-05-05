@@ -42,7 +42,7 @@
 			"UpstreamHttpMethod": [ "Get", "Post" ]
 		},
 		{
-			"DownstreamPathTemplate": "/{url}",
+			"DownstreamPathTemplate": "/users",
 			"DownstreamScheme": "http",
 			"DownstreamHostAndPorts": [
 				{
@@ -50,8 +50,20 @@
 					"Port": 5200
 				}
 			],
-			"UpstreamPathTemplate": "/{url}",
-			"UpstreamHttpMethod": [ "Get", "Post" ]
+			"UpstreamPathTemplate": "/users",
+			"UpstreamHttpMethod": [ "Put", "Delete" ]
+		},
+		{
+			"DownstreamPathTemplate": "/auth",
+			"DownstreamScheme": "http",
+			"DownstreamHostAndPorts": [
+				{
+					"Host": "localhost",
+					"Port": 5200
+				}
+			],
+			"UpstreamPathTemplate": "/auth",
+			"UpstreamHttpMethod": [ "Post" ]
 		}
 	],
 			"GlobalConfiguration": {

@@ -232,6 +232,10 @@
     #fileSelectorErrorMessage {
         color:#ff0000;
     }
+    #registerMessageBox {
+        color: #249627;
+        display:none;
+    }
 
 /*Wrapper around the text editor*/
 #content {

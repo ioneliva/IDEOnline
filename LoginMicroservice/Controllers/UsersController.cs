@@ -19,7 +19,7 @@ namespace LoginMicroservice.Controllers
         }
 
         // PUT: /Users
-        //Put request to http://localhost:5200/Users in body payload JSon ex: { "name":"aaa", "pswd":"123"}
+        //for local testing: PUT request to http://localhost:5200/users in body payload JSon ex: { "name":"aaa", "pswd":"123"[, "avatar":base64Image]}
         [HttpPut]
         public async Task<IActionResult> PutUser([FromBody]RequestModel request)
         {
@@ -61,7 +61,7 @@ namespace LoginMicroservice.Controllers
                     }
                 }
                 //201(created) should be returned ONLY after the server has created the new object. Because this is async, we cannot guarantee that
-                return Accepted(); //202
+                return Ok(); //200
             }
             else
             {
@@ -70,7 +70,7 @@ namespace LoginMicroservice.Controllers
         }
 
         // DELETE: /Users
-        //in body payload JSon ex: { "name":"aaa", "pswd":"123"}
+        //for local testing: DELETE request to http://localhost:5200/Users, in body payload JSon ex: { "name":"aaa", "pswd":"123"}
         [HttpDelete]
         public async Task<IActionResult> DeleteUser([FromBody]RequestModel request)
         {
@@ -97,12 +97,11 @@ namespace LoginMicroservice.Controllers
         }
     }
     
-    //class representing a request body. User for model binding above
+    //class representing a request body. User for model binding in request regarding Login database
     public class RequestModel
     {
         public string Name { get; set; }
         public string Password { get; set; }
-        public byte[] Salt { get; set; }
-        public byte[] Avatar { get; set; }
+        public string Avatar { get; set; }
     }
 }

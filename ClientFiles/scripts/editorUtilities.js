@@ -47,7 +47,7 @@ function readMyPressedKey(event) {
 function sendRequest(verb, url, body, successCallback, errorCallback) {
     let xhr = new XMLHttpRequest();
     xhr.open(verb, url);
-    xhr.setRequestHeader('Content-Type', 'application/json; charset = utf - 8');
+    xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.setRequestHeader('Accept', 'application/json');
 
     xhr.addEventListener("load", function onLoad() {
