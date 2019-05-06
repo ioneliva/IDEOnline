@@ -1,6 +1,7 @@
 //Note for this entire file - variable clickedItem is a global initialized in solutionExplorerUI representing target for menu
 
 //event listeners for menu options clicks
+document.getElementById("closeProject").addEventListener("mousedown", closeProject);
 document.getElementById("openInTab").addEventListener("mousedown", openInTab);
 document.getElementById("addFile").addEventListener("mousedown", createFile);
 document.getElementById("addDir").addEventListener("mousedown", createDirectory);
@@ -281,5 +282,36 @@ function del() {	//"delete" is a reserved word
 		document.getElementById("UserOkBtn").removeEventListener("click", doDelete);
 		hideModal();
 	};
+}
+
+//close project by user (will present a warning window)
+function closeProject() {
+	prepareUserDiagFor("closeProject");
+	document.getElementById("UserOkBtn").addEventListener("click", doCloseProject);
+}
+
+//close project by program (no user interaction, no warning)
+function doCloseProject() {
+	let root = document.getElementsByClassName("project")[0];
+	//dir deletion, similar to delete function, except we are not deleting the root itself
+	if (root.nextElementSibling.firstElementChild) {	//project not empty
+		let rootContent = root.nextElementSibling.querySelectorAll(".file");
+		for (let i = 0; i < rootContent.length; i++) {
+			//closing each file tab and editor
+			closeTab(formatForTabId(rootContent[i].id));
+		}
+	}
+	//deleting
+	while (root.nextElementSibling.firstElementChild) {
+		root.nextElementSibling.removeChild(root.nextElementSibling.firstElementChild);
+	}
+	//rename root to a default placeholder, so we don't eliminate it from the DOM
+	root.lastChild.nodeValue = "root";
+	root.id = "root";
+	//hide root to make it seem like it's deleted
+	document.getElementById("solExplorerUL").style.display = "none";
+	//the next 2 lines fire only when there is user interaction and nothing will happend otherwise
+	document.getElementById("UserOkBtn").removeEventListener("click", doCloseProject);
+	hideModal();
 }
 

@@ -9,6 +9,35 @@
     position: relative;
 }
 
+/*toolbar*/
+.toolbar {
+    border: 1px solid #0b175c;
+    position: fixed;
+    top: 80%;
+    left: 60%;
+    min-width: 750px;
+    background-color: #fff;
+    z-index: 2;
+    user-select: none;
+    -moz-user-select: none;
+}
+#toolbarHeader {
+    padding: 0;
+    margin: 0;
+    text-align:center;
+}
+.toolbarBtn, #toolbarLoggingArea, #toolbarMicroserviceStatusArea, #toolbarFunctionsArea, #toolbar_LoginInfo {
+    margin: 20px;
+}
+#toolbar_LoginInfo{
+    color: #249627;
+}
+#displayedAvatar {
+    left:-50px;
+    display:none;
+}
+
+/*file tabs*/
 .tabs {
     height: 45px;
     width: 93%;
@@ -84,9 +113,13 @@
     z-index: 100;
     display:none;
 }
+#newProjectDiag {
+    background: rgba(193, 193, 193, 1);
+    height: 45%;
+}
 /*checkboxes in new project modal*/
 .valid {
-    color:#249627;
+    color: #249627;
 }
 .invalid {
     color: #781010;
@@ -104,23 +137,25 @@
 #welcomeDiag { /*there's less text in the header here, need to center it more to the right*/
     left: 35%;
 }
-.welcomeDiagBtn {
+.bigBtn {
     text-align: center;
-    font-size: 25px;
     color: #171717;
     font-family: Arial, Helvetica, sans-serif;
+}
+.welcomeDiagBtn {
+    font-size: 25px;
     margin: 30px;
 }
-.welcomeDiagBtn:hover{
+.bigBtn:hover {
     color: #0b175c;
 }
-.selectProjectType, .modal-complex input, .modal-complex .welcomeDiagBtn {
+.selectProjectType, .modal-complex input, .bigBtn {
     border: 1px solid #000;
     border-radius: 10px;
     padding: 5px;
     font-weight: bold;
 }
-.selectProjectType:hover, .modal-complex input:hover, .modal-complex .welcomeDiagBtn:hover {
+.selectProjectType:hover, .modal-complex input:hover, .bigBtn:hover {
     border-color: #000;
     box-shadow: 3px 8px 8px #888888;
 }
@@ -164,7 +199,7 @@
     .loginBox label {
         font-weight: bold;
     }
-    .loginBox input {   /*input fields and buttons*/
+    .loginBox input:not(#keepLoggedCheckbox) { /*input fields and buttons*/
         width: 100%;
         margin-bottom: 20px;
     }
@@ -218,10 +253,32 @@
         position: absolute;
         top: -50px; /*with a height of 100px, move it half way above the container*/
         left: 100px; /*and roughly in the middle of the width of container*/
-        cursor:pointer;
     }
-    .avatar:hover {
+    .avatar:hover:not(#displayedAvatar) {
         box-shadow: 3px 3px 8px #888888;
+    }
+    .loadingStretchBackground{
+        background: rgba(193, 193, 193, 0.7);
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 400;
+        display:none;
+    }
+    .loadingSymbol {
+        border: 10px solid #f3f3f3;
+        border-top: 10px solid #000000;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        animation: spin 1s linear infinite;
+        position:relative;
+        top: -90%;
+        left: 40%;
+        z-index: 500;
+        display: none;
     }
     #browseForFile {
         display: none;
@@ -298,7 +355,7 @@
     position: fixed; /*not dependant on page flow, we want it always there*/
     z-index: 50; /*higher z-index makes it cover the underlaying element with lower z*/
 }
-    #solutionWindow #solutionWindowHeader {
+    .sectionHeader {
         padding: 1%;
         cursor: move;
         z-index: 50;
@@ -430,8 +487,7 @@
     font-size: 18px;
     font-weight: bold;
 }
-.modalCloseBtn:hover,
-.modalCloseBtn:focus {
+.modalCloseBtn:hover, .modalCloseBtn:focus {
     color:#ff0000;
     cursor: pointer;
 }
@@ -445,9 +501,6 @@
     padding-top: 10px;
 }
 
-
-
-
 @media only screen and (max-width: 300px) {
   .text {
 	  font-size: 11px
@@ -456,5 +509,14 @@
 @keyframes blinker {
     50% {
         opacity: 0.5;
+    }
+}
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
     }
 }

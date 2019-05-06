@@ -10,6 +10,26 @@
 </head>
 <body>
 	<div id="wrapper">
+		<!--Toolbar section-->
+		<div id="toolbar" class="toolbar">
+			<div id="toolbarHeader" class="sectionHeader">Tools</div>
+			<div id="toolbarLoggingArea">
+				<label for="showLoginBtn" id="toolbar_Login" class="bigBtn toolbarBtn">Login</label>
+				<img id="displayedAvatar" class="avatar">
+				<label id="toolbar_LoginInfo"></label>
+				<label for="logoutBtn" id="toolbar_Logout" class="bigBtn toolbarBtn">Logout</label>
+			</div>
+			<div id="toolbarFunctionsArea">
+				<label for="newProjectBtn" id="toolbar_NewProjectBtn" class="bigBtn toolbarBtn">New project</label>
+				<label id="toolbar_SaveBtn" class="bigBtn toolbarBtn">Save project</label>
+				<label id="toolbar_LoadBtn" class="bigBtn toolbarBtn">Load project</label>
+				<label id="toolbar_CompileBtn" class="bigBtn toolbarBtn">Compile project</label>
+			</div>
+			<div id="toolbarMicroserviceStatusArea">
+				General microservice status
+			</div>
+
+		</div>
 
 		<!--Tabs section-->
 		<div id="header">
@@ -30,7 +50,7 @@
 
 		<!--Solution Explorer section-->
 		<div id="solutionWindow">
-			<div id="solutionWindowHeader">Solution Explorer</div>
+			<div id="solutionWindowHeader" class="sectionHeader">Solution Explorer</div>
 			<ul id="solExplorerUL">
 				<li>
 					<span class="expand">&#9658</span>
@@ -54,15 +74,17 @@
 			</ul>
 		</div>
 
-		<!--Modal Dialogue Windows section-->
+		<!--Modal dialogue windows section-->
 		<div class="modalStretchBackground welcome">
 			<div id="welcomeDiag" class="modal-complex">
 				<h1>Hello!</h1>
 				<h2>Please make your choice</h2>
-				<button id="newProjectBtn" class="welcomeDiagBtn">New project</button>
-				<button id="loadProjectBtn" class="welcomeDiagBtn">Load project</button><br>
-				<button id="showLoginBtn" class="welcomeDiagBtn">Login</button>
+				<button id="newProjectBtn" class="bigBtn welcomeDiagBtn">New project</button>
+				<button id="loadProjectBtn" class="bigBtn welcomeDiagBtn">Load project</button><br>
+				<button id="showLoginBtn" class="bigBtn welcomeDiagBtn">Login</button>
 				<label id="small-label">*Note you will not be able to save your work if you do not login</label>
+				<button id="logoutBtn" class="bigBtn welcomeDiagBtn">Logout</button>
+				<label id="loginInfo"></label>
 			</div>
 		</div>
 
@@ -75,45 +97,49 @@
 				<label>Type:</label>
 				<select class="selectProjectType">
 					<option value="" selected disabled hidden>--Please select one--</option>
-					<option>C/C++ </option>
-					<option>Java</option>
-					<option>C#</option>
-					<option>HTML</option>
-					<option>Javascript</option>
-				</select><br><br>
+					<option value="c++">C/C++ </option>
+					<option value="java">Java</option>
+					<option value="c#">C#</option>
+					<option value="html">HTML</option>
+					<option value="javascript">Javascript</option>
+				</select><span class="checkbox valid" id="selectTypeCheckbox">&#10004;</span><br><br>
 				<label>Initial file (optional):</label>
 				<input id="userFirstFileInput" type="text" autocomplete="off"><span class="checkbox valid" id="projOptCheckbox">&#10004;</span><br>
-				<button id="okSelectProjType" class="welcomeDiagBtn">Ok</button>
+				<button id="okSelectProjType" class="bigBtn welcomeDiagBtn">Ok</button>
 			</div>
 		</div>
 
 		<!--Login/Register section-->
 		<div id="loginBox" class="loginBox">
 			<h1>Welcome</h1>
-				<label>User</label>
-				<input id="userName" type="text" class="loginInputField" name="" placeholder="Username">
-				<label>Password</label>
-				<input id="userPasswd" type="password" class="loginInputField" name="" placeholder="Password">
-				<input id="loginOkBtn" type="submit" class="loginBoxBtn" name="" value="Login">
-				<input id="loginCancelBtn" type="button" class="loginBoxBtn" name="" value="Cancel">
-				<span id="registerNew">Register</span>
+			<label>User</label>
+			<input id="userName" type="text" class="loginInputField" name="" placeholder="Username">
+			<label>Password</label>
+			<input id="userPasswd" type="password" class="loginInputField" name="" placeholder="Password">
+			<input id="keepLoggedCheckbox" type="checkbox"> Keep me logged<br><br>
+			<input id="loginOkBtn" type="submit" class="loginBoxBtn" name="" value="Login">
+			<input id="loginCancelBtn" type="button" class="loginBoxBtn" name="" value="Cancel">
+			<span id="registerNew">Register</span>
+			<div class="loadingStretchBackground"></div>
+			<div class="loadingSymbol"></div>
 		</div>
 		<div id="registerBox" class="loginBox">
 			<div id="avatarContainer">
-				<label for="browseForFile"><img src="imgs/avatarPick.png" class="avatar"></label>
+				<label for="browseForFile"><img id="registerAvatar" src="imgs/avatarPick.png" class="avatar"></label>
 				<input id="browseForFile" type="file" accept="image/jpeg, image/jpg, image/png, image/gif" />
-				<span id="procent"></span><label id="procentLabel">% uploaded</label>
 				<div id="fileSelectorErrorMessage"></div><br>
 			</div>
 			<div id="registerMessageBox"></div>
-				<label>Pick username</label>
-				<input id="registerUserName" type="text" class="loginInputField" name="" placeholder="Username">
-				<label>Pick a password</label>
-				<input id="registerUserPasswd" type="password" name="" class="loginInputField" placeholder="Password">
-				<label>Confirm password</label>
-				<input id="registerConfirmPasswd" type="password" name="" class="loginInputField" placeholder="Password">
-				<input id="registerOkBtn" type="submit" class="loginBoxBtn ok" name="" value="Ok">
-				<input id="registerBackBtn" type="button" class="loginBoxBtn back" name="" value="Back">
+			<label>Pick username</label>
+			<input id="registerUserName" type="text" class="loginInputField" name="" placeholder="Username">
+			<label>Pick a password</label>
+			<input id="registerUserPasswd" type="password" name="" class="loginInputField" placeholder="Password">
+			<label>Confirm password</label>
+			<input id="registerConfirmPasswd" type="password" name="" class="loginInputField" placeholder="Password">
+			<input id="registerOkBtn" type="submit" class="loginBoxBtn ok" name="" value="Ok">
+			<input id="registerBackBtn" type="button" class="loginBoxBtn back" name="" value="Back">
+			<div class="loadingStretchBackground"></div>
+			<div class="loadingSymbol"></div>
 		</div>
 
 		<!--simple user diag-->

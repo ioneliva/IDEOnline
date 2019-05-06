@@ -1,20 +1,21 @@
 document.getElementById("loginOkBtn").addEventListener("click", okPressedOnLogin);
 document.getElementById("registerOkBtn").addEventListener("click", okPressedOnRegister);
-document.getElementById("loginCancelBtn").addEventListener("click", hideLoginForm);
-document.getElementById("registerNew").addEventListener("click", showRegisterForm);
+document.getElementById("loginCancelBtn").addEventListener("click", hideLoginBox);
+document.getElementById("registerNew").addEventListener("click", showRegisterBox);
 document.getElementById("loginBox").addEventListener("keydown", handleEscapeOnLogin);
 document.getElementById("registerBox").addEventListener("keydown", handleEscapeOnRegister);
-document.getElementById("registerBackBtn").addEventListener("click", hideRegisterForm);
+document.getElementById("registerBackBtn").addEventListener("click", hideRegisterBox);
 document.getElementById("browseForFile").addEventListener("change", selectAvatarPic);
+document.getElementById("logoutBtn").addEventListener("click", logout);
 
-//get values from input fields in Login form
+//get values from input fields in Login box
 function getUsername() {
 	return document.getElementById("userName").value.toString();
 }
 function getPasswd() {
 	return document.getElementById("userPasswd").value.toString();
 }
-//get values from input fields in Register form
+//get values from input fields in Register box
 function getRegisterUsername() {
 	return document.getElementById("registerUserName").value.toString();
 }
@@ -25,27 +26,27 @@ function getRegisterPasswdConfirm() {
 	return document.getElementById("registerConfirmPasswd").value.toString();
 }
 
-//make Register form visible
-function showRegisterForm() {
+//make Register box visible
+function showRegisterBox() {
 	document.getElementById("loginBox").style.display = "none";
 	document.getElementById("registerBox").style.display = "block";
 	document.getElementById("registerUserName").focus();
 }
 
-//Escape pressed in Login form
+//Escape pressed in Login box
 function handleEscapeOnLogin(e) {
 	if (readMyPressedKey(e) == "Escape") {
-		hideLoginForm();
+		hideLoginBox();
 	}
 }
-//Escape pressed on Register form
+//Escape pressed on Register box
 function handleEscapeOnRegister(e) {
 	if (readMyPressedKey(e) == "Escape") {
-		hideRegisterForm();
+		hideRegisterBox();
 	}
 }
 
-//ok pressed on Login form
+//ok pressed on Login box
 function okPressedOnLogin() {
 	const loginNameInput = document.getElementById("userName").getBoundingClientRect(),
 		passwdInput = document.getElementById("userPasswd").getBoundingClientRect();
@@ -65,6 +66,9 @@ function okPressedOnLogin() {
 		return;
 	}
 
+	//note: I have coded a loading screen in the html file, with class="loadingStretchBackground", respectively "loadingSymbol", but 
+	//server comunication is so fast it just causes a screen flicker. To activate it set style.display="block" for both elements
+
 	//send user and passwd to Login microservice
 	fetch(apiGateway + "/auth", {
 		method: 'POST',
@@ -76,7 +80,7 @@ function okPressedOnLogin() {
 			'Content-Type': 'application/json'
 		}
 	}).then(response => {
-		console.log("status code=" + response.status);
+		//here I would hide the loading screen (for now I will leave it out, it's pointles)
 		switch (response.status) {
 			case 401:
 				showDiagError("Error: wrong password!", passwdInputX, passwdInputY);
@@ -86,14 +90,77 @@ function okPressedOnLogin() {
 		}
 		return response.json();
 		}).then(response => {
-		//TODO: set these values! For now only displaying them for testing
-		console.log("Token:" + JSON.stringify(response.access_token));
-		console.log("Expires in " + JSON.stringify(response.expires_in));
-		console.log("User avatar: " + JSON.stringify(response.userAvatar));
-	}).catch(error => console.error('Error:', error));
+			//save JWT token received from Auth server
+			if (document.getElementById("keepLoggedCheckbox").checked == true) {
+				localStorage.setItem('JWT', JSON.stringify(response.access_token));
+			}
+			else {
+				sessionStorage.setItem('JWT', JSON.stringify(response.access_token));
+			}
+			hideLoginBox();
+			hideGroup("login");
+			//set avatar for this user
+			if (response.userAvatar) {//user has custom avatar saved
+				document.getElementById("displayedAvatar").src = response.userAvatar;
+			}
+			else { //display a stock default avatar for user
+				console.log("setting default avatar/...");
+				document.getElementById("displayedAvatar").setAttribute("src", "imgs/default_avatar.png");
+			}
+		}).catch(error => console.error('Error:', error));
 }
 
-//ok pressed on Register form
+//decode JWT token
+function parseJwt(token) {
+	var base64Url = token.split('.')[1];
+	var base64 = decodeURIComponent(atob(base64Url).split('').map(function (c) {
+		return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+	}).join(''));
+
+	//the returned value is a json, with the standard values for JWT (sub,jti,iat,nbf,exp...)
+	return JSON.parse(base64);
+}
+
+//check if JWT is expired
+function expiredJWT(token) {
+	token = parseJwt(token);
+	//problem if the auth server is in another time zone than the client! Not the case here
+	let current_time = Date.now() / 1000,
+		ret = false;
+
+	if (token.exp < current_time) {
+		//delete expired token (the browser should deletes them automatically after a while, but just to make sure)
+		localStorage.removeItem('JWT');
+		sessionStorage.removeItem('JWT');
+		ret =true
+	}
+
+	return ret;
+}
+
+//get JWT from local or session storage
+function getJWTFromStorage() {
+	let ret = null;
+
+	if (localStorage.getItem('JWT')) {
+		ret = localStorage.getItem('JWT');
+	}
+	else if (sessionStorage.getItem('JWT')) {
+		ret = sessionStorage.getItem('JWT');
+	}
+	return ret;
+}
+
+//get user name from JWT
+function getUserFromJWT() {
+	let token = getJWTFromStorage();
+	if (token && !expiredJWT(token)) {
+		return parseJwt(token).sub;
+	}
+	return null;
+}
+
+//ok pressed on Register box
 function okPressedOnRegister() {
 	const registerNameInput = document.getElementById("registerUserName").getBoundingClientRect(),
 		passwdInput = document.getElementById("registerUserPasswd").getBoundingClientRect();
@@ -121,6 +188,7 @@ function okPressedOnRegister() {
 		return;
 	}
 
+	//note: again, a loading screen is coded, but I will not use it. See Login above to understand why
 	//send user, passwd and avatar to microservice as new values
 	fetch(apiGateway + "/users", {
 		method: 'PUT',
@@ -149,12 +217,12 @@ function okPressedOnRegister() {
 }
 
 //cancel button pressed on Login/Register
-function hideLoginForm() {
+function hideLoginBox() {
 	document.getElementById("loginBox").style.display="none";
 }
-function hideRegisterForm() {
+function hideRegisterBox() {
 	document.getElementById("registerBox").style.display = "none";
-	showLoginForm();
+	showLoginBox();
 }
 
 //variable for a base64 string representation of the avatar image
@@ -181,9 +249,15 @@ function selectAvatarPic() {
 	}
 	//all ok, set image
 	fileReader.onload = function () {
-		document.getElementsByClassName("avatar")[0].src = fileReader.result;
+		document.getElementById("registerAvatar").src = fileReader.result;
 		avatarBase64 = fileReader.result;
 	}
 	fileReader.readAsDataURL(file);
 }
 
+//logout button
+function logout() {
+	localStorage.removeItem('JWT');
+	sessionStorage.removeItem('JWT');
+	hideGroup("logout");
+}

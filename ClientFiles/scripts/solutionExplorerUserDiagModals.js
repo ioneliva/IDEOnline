@@ -76,23 +76,26 @@ function prepareUserDiagFor(purpose) {
 	//remove listener that hides the modal on mouse click. Because of the delay on setTimeout, it would hide the dialogue before it would appear
 	window.removeEventListener("mousedown", hideModalOnResize);
 	switch (purpose) {
-		case "rename":
+		case "rename": {
 			msgToUser.textContent = "Rename to:";
 			document.getElementById("userInput").style.display = "block";
 			document.getElementById("UserOkBtn").style.display = "block";
 			document.getElementById("UserCancelBtn").style.display = "none";
+		}
 			break;
-		case "newFile":
+		case "newFile": {
 			msgToUser.textContent = "New file name:";
 			document.getElementById("userInput").style.display = "block";
 			document.getElementById("UserOkBtn").style.display = "block";
 			document.getElementById("UserCancelBtn").style.display = "none";
+		}
 			break;
-		case "newDir":
+		case "newDir": {
 			msgToUser.textContent = "New directory name:";
 			document.getElementById("userInput").style.display = "block";
 			document.getElementById("UserOkBtn").style.display = "block";
 			document.getElementById("UserCancelBtn").style.display = "none";
+		}
 			break;
 		case "delete": {
 			msgToUser.textContent = "Are you sure you want to delete this item?"
@@ -102,6 +105,16 @@ function prepareUserDiagFor(purpose) {
 			document.getElementById("UserOkBtn").style.display = "block";
 			document.getElementById("UserCancelBtn").style.display = "block";
 		}
+			break;
+		case "closeProject": {
+			msgToUser.textContent = "You will loose all unsaved data in the project. Are you sure?"
+			document.getElementById("userInput").style.display = "none";
+			document.getElementById("UserOkBtn").value = "YES";
+			document.getElementById("UserCancelBtn").value = "NO";
+			document.getElementById("UserOkBtn").style.display = "block";
+			document.getElementById("UserCancelBtn").style.display = "block";
+		}
+			break;
 	}
 	msgToUser.classList.remove("error");
 	let diagWindow = document.getElementById("userDiag");

@@ -1,39 +1,92 @@
-var isLogged=false;
-
 document.addEventListener("DOMContentLoaded", setDefaultValues);
 document.getElementById("newProjectBtn").addEventListener("click", showNewProjectDiag);
-document.getElementById("showLoginBtn").addEventListener("click", showLoginForm);
-document.getElementsByClassName("backToWelcomeDiag")[0].addEventListener("click", showWelcomeDiag);
+document.getElementById("showLoginBtn").addEventListener("click", showLoginBox);
+document.getElementsByClassName("backToWelcomeDiag")[0].addEventListener("click", hideNewProjDiag);
 document.getElementById("userProjNameInput").addEventListener("blur", setCheckBoxForProjInput);
+document.getElementsByClassName("selectProjectType")[0].addEventListener("blur", setCheckBoxForTypeSelection);
+document.getElementsByClassName("selectProjectType")[0].addEventListener("change", setCheckBoxForTypeSelection);
 document.getElementById("userFirstFileInput").addEventListener("blur", setCheckboxForOptInput);
 document.getElementById("okSelectProjType").addEventListener("click",okPressedOnProjSelect);
 
 //on page load events (more accurately, when the DOM is loaded, without waiting on stylesheets or images )
 function setDefaultValues() {
-	if (!isLogged) {
-		//TODO: check if user is logged (from page cache) and disable the button. For now, we start as unlogged
-		document.getElementById("loadProjectBtn").classList.add("disabledBtn");
-		document.getElementsByClassName("welcome")[0].style.display = "block";
-		document.getElementById("projNameCheckbox").style.display = "none";
-		document.getElementById("projOptCheckbox").style.display = "none";
+	if (getUserFromJWT() != null) { //user logged and saved in local storage
+		hideGroup("login");
 	}
+	else { //not logged
+		hideGroup("logout");
+	}
+	document.getElementsByClassName("welcome")[0].style.display = "block";
+	document.getElementById("projNameCheckbox").style.display = "none";
+	document.getElementById("selectTypeCheckbox").style.display = "none";
+	document.getElementById("projOptCheckbox").style.display = "none";
+
+	//make toolbar dragable
+	dragElement(document.getElementById("toolbar"));
 }
 
 //navigation in 'welcome' window
 function showNewProjectDiag() {
-	document.getElementsByClassName("welcome")[0].style.display = "none";
+	//document.getElementsByClassName("welcome")[0].style.display = "none";
 	document.getElementsByClassName("newProject")[0].style.display = "block";
 	document.getElementById("userProjNameInput").focus();
 }
-function showLoginForm() {
+function showLoginBox() {
 	document.getElementById("loginBox").style.display = "block";
 	document.getElementById("userName").focus();
 }
 
 //navigation in 'new project' window
-function showWelcomeDiag() {
+function hideNewProjDiag() {
 	document.getElementsByClassName("newProject")[0].style.display = "none";
-	document.getElementsByClassName("welcome")[0].style.display = "block";
+	//document.getElementsByClassName("welcome")[0].style.display = "block";
+}
+
+//hide a group of buttons and labels and replace them with the opposite
+function hideGroup(group) {
+	let loginBtn = document.getElementById("showLoginBtn"),
+		warnLabel = document.getElementById("small-label"),
+		loginInfo = document.getElementById("loginInfo"),
+		logoutBtn = document.getElementById("logoutBtn"),
+		loadBtn = document.getElementById("loadProjectBtn"),
+		toolbarLoginBtn = document.getElementById("toolbar_Login"),
+		toolbarLogout = document.getElementById("toolbar_Logout"),
+		toolbarLoginInfo = document.getElementById("toolbar_LoginInfo"),
+		toolbarSaveBtn = document.getElementById("toolbar_SaveBtn"),
+		toolbarLoadBtn = document.getElementById("toolbar_LoadBtn"),
+		displayedAvatar = document.getElementById("displayedAvatar");
+
+	if (group == "login") {
+		//welcome screen
+		loginBtn.style.display = "none";
+		warnLabel.style.display = "none";
+		logoutBtn.style.display = "block";
+		loginInfo.style.display = "block";
+		loadBtn.classList.remove("disabledBtn");
+		loginInfo.innerHTML = "You are logged as " + getUserFromJWT();
+		//clones in the toolbar
+		toolbarLoginBtn.style.display = "none";
+		toolbarLogout.style.display = "inline";
+		toolbarLoginInfo.style.display = "inline";
+		toolbarLoginInfo.innerHTML = "You are logged as " + getUserFromJWT();
+		toolbarSaveBtn.style.display = "inline";
+		toolbarLoadBtn.style.display = "inline";
+		displayedAvatar.style.display = "block";
+	} else if (group == "logout") {
+		//welcome screen
+		loginBtn.style.display = "block";
+		warnLabel.style.display = "block";
+		logoutBtn.style.display = "none";
+		loginInfo.style.display = "none";
+		loadBtn.classList.add("disabledBtn");
+		//clones in the toolbar
+		toolbarLoginBtn.style.display = "inline";
+		toolbarLogout.style.display = "none";
+		toolbarLoginInfo.style.display = "none";
+		toolbarSaveBtn.style.display = "none";
+		toolbarLoadBtn.style.display = "none";
+		displayedAvatar.style.display = "none";
+	}
 }
 
 //get values from input fields in 'new project' window
@@ -74,6 +127,17 @@ function setCheckBoxForProjInput() {
 	}
 }
 
+//set checkbox valid or invalid for project type selection
+function setCheckBoxForTypeSelection() {
+	document.getElementById("selectTypeCheckbox").style.display = "inline";
+	if (projectTypeSelected()) {
+		setCheckboxValid(document.getElementById("selectTypeCheckbox"));
+	}
+	else {
+		setCheckboxInvalid(document.getElementById("selectTypeCheckbox"));
+	}
+}
+
 //set checkbox valid or invalid for optional input field
 function setCheckboxForOptInput() {
 	document.getElementById("projOptCheckbox").style.display = "inline";
@@ -85,13 +149,28 @@ function setCheckboxForOptInput() {
 	}
 }
 
+//check if user selected a value for project type
+function projectTypeSelected() {
+	let selection = document.getElementsByClassName("selectProjectType")[0],
+		ret=true;
+	let selectedValue = selection.options[selection.selectedIndex].value;
+	if (selectedValue == "") {
+		ret = false;
+	}
+
+	return ret;
+}
+
 //set startup project from values entered by user
 function okPressedOnProjSelect() {
 	const projNameInput = document.getElementById("userProjNameInput").getBoundingClientRect(),
-			projFirstFileInput = document.getElementById("userFirstFileInput").getBoundingClientRect();
+		projFirstFileInput = document.getElementById("userFirstFileInput").getBoundingClientRect(),
+		projTypeSelect = document.getElementsByClassName("selectProjectType")[0].getBoundingClientRect();
 	let userInputProjName, userInputOptional,
 		projNameInputErrorX = projNameInput.left,
 		projNameInputErrorY = projNameInput.top + projNameInput.height,
+		projTypeErrorX = projTypeSelect.left,
+		projTypeErrorY = projTypeSelect.top + projTypeSelect.height,
 		projFirstFileInputX = projFirstFileInput.left,
 		projFirstFileInputY = projFirstFileInput.top + projFirstFileInput.height,
 		allOk = false;
@@ -100,7 +179,12 @@ function okPressedOnProjSelect() {
 	userInputOptional = getOptionalFile();
 	if (isValidInput("project", userInputProjName)) {
 		if (isValidInput("file", userInputOptional) || !userInputOptional) {
-			allOk = true;
+			if (projectTypeSelected()) {
+				allOk = true;
+			}
+			else {	//user didn't pick a project type
+				showDiagError("please select a project type", projTypeErrorX, projTypeErrorY);
+			}
 		}
 		else {	//user enter an invalid value for optional startup file
 			showDiagError(userInputOptional + " is not a valid name for a file! try filename.extension", projFirstFileInputX, projFirstFileInputY);
@@ -112,8 +196,10 @@ function okPressedOnProjSelect() {
 
 	//tests passed, all values entered are valid
 	if (allOk) {
+		//delete old project contents
+		doCloseProject();
 		//set root on Solution Explorer window
-		let root = document.getElementById("root");
+		let root = document.getElementsByClassName("project")[0];
 		root.lastChild.nodeValue = getProjectName();
 		root.id = getProjectName();
 		if (userInputOptional) {
@@ -121,7 +207,9 @@ function okPressedOnProjSelect() {
 			attachFileToParent(fileStructure, root);
 			openInTab(fileStructure.lastChild);
 		}
-		//hide 'new project' window so the user can progress
+		document.getElementById("solExplorerUL").style.display = "block";
+		//hide 'new project' and 'welcome' window so the user can progress
 		document.getElementsByClassName("newProject")[0].style.display = "none";
+		document.getElementsByClassName("welcome")[0].style.display = "none";
 	}
 }
