@@ -127,12 +127,12 @@ function setActiveEditor(editor) {
 	updateLineNumbering();
 }
 
-//change name for tab and editor linked to it
-function renameTab(tab, newName) {
+//change name for tab and editor linked to it to match a new fileId
+function renameTab(tab, newFileNameId) {
 	let editor = getEditorLinkedTo(tab);
 
-	tab.querySelector("p").textContent = newName;
-	tab.id = formatForTabId(newName);
+	tab.querySelector("p").textContent = getFileNameFromFileId(newFileNameId);
+	tab.id = formatForTabId(newFileNameId);
 	editor.id = formatForEditorId(tab.id);
 }
 

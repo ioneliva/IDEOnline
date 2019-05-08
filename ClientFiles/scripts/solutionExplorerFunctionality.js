@@ -214,7 +214,7 @@ function rename() {
 					if (clickedItem.classList.contains("inTab")) {
 						let tab = document.querySelector("div[id=\"" + formatForTabId(clickedItem.id) + "\" ]");
 						if (tab) {
-							renameTab(tab, userInput)
+							renameTab(tab, formatForFileId(userInput, hierarchyParent.id));
 						}
 					}
 					//rename file in solution window

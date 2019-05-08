@@ -180,7 +180,6 @@ function hideMenuOnEscape(e) {
 }
 
 // Make the solution Window draggable, inspired from w3schools https://www.w3schools.com/howto/howto_js_draggable.asp
-dragElement(document.getElementById("solutionWindow"));
 function dragElement(elmnt) {
 	let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
 	if (document.getElementById(elmnt.id + "Header")) {
