@@ -13,9 +13,9 @@
 .toolbar {
     border: 1px solid #0b175c;
     position: fixed;
-    top: 80%;
-    left: 60%;
-    min-width: 750px;
+    top: 75%;
+    left: 63%;
+    min-width: 700px;
     background-color: #fff;
     z-index: 3;
     user-select: none;
@@ -26,15 +26,66 @@
     margin: 0;
     text-align:center;
 }
-.toolbarBtn, #toolbarLoggingArea, #toolbarMicroserviceStatusArea, #toolbarFunctionsArea, #toolbar_LoginInfo {
-    margin: 20px;
+.toolbarBtn, #toolbarLoggingArea, #toolbar_LoginInfo, #toolbarFunctionsArea, #toolbarMicroserviceStatusArea {
+    margin: 20px 20px;
 }
-#toolbar_LoginInfo{
+.leftTollbar {
+    width: 70%;
+    float: left;
+}
+.rightToolbar {
+    width: 24%;
+    float: right;
+}
+#toolbar_LoginInfo {
     color: #249627;
 }
 #displayedAvatar {
-    left:-50px;
-    display:none;
+    left: -50px;
+    display: none;
+}
+.rightToolbar .small-label{
+    float: right;
+}
+.rightToolbar ul {
+    list-style-type: none; /*remove list bullets*/
+}
+.statusIcon {
+    width: 17px;
+    height: 16px;
+}
+/*"label for=.." can only bind to ids of form elements, not to text. I used a fake button, with text displayed only*/
+.fakeBtn {
+    background: none;
+    border: none;
+    margin: 0;
+    padding: 0;
+}
+/*made my own circles by rounding the corners of a square container*/
+.circle {
+    border-radius: 100%;
+    border: 1px solid #000;
+    text-align: center;
+    display: inline-block;
+}
+.green {
+    background: #5EA226;
+    color: #5EA226;
+}
+.yellow {
+    background: #ffc107;
+    color: #ffc107;
+}
+.toolbar_MSInfo {
+    list-style-type: none;
+    background: #fff;
+    border: 1px solid #000;
+    position: absolute;
+    z-index: 4;
+}
+.optionsIcon {
+    height: 25px;
+    width: 25px;
 }
 
 /*file tabs*/
@@ -128,7 +179,7 @@
     color: #222;
     text-shadow: 0 1px 1px #555; /*params: horizontal-shadow, vertical-shadow, blur, color*/
 }
-.modal-complex #small-label {
+.small-label {
     font-size: 10px;
     font-weight: normal;
     text-decoration: underline;

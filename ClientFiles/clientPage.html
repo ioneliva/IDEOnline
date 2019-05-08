@@ -10,27 +10,6 @@
 </head>
 <body>
 	<div id="wrapper">
-		<!--Toolbar section-->
-		<div id="toolbar" class="toolbar">
-			<div id="toolbarHeader" class="sectionHeader">Tools</div>
-			<div id="toolbarLoggingArea">
-				<label for="showLoginBtn" id="toolbar_Login" class="bigBtn toolbarBtn">Login</label>
-				<img id="displayedAvatar" class="avatar">
-				<label id="toolbar_LoginInfo"></label>
-				<label for="logoutBtn" id="toolbar_Logout" class="bigBtn toolbarBtn">Logout</label>
-			</div>
-			<div id="toolbarFunctionsArea">
-				<label for="newProjectBtn" id="toolbar_NewProjectBtn" class="bigBtn toolbarBtn">New project</label>
-				<label id="toolbar_SaveBtn" class="bigBtn toolbarBtn">Save project</label>
-				<label id="toolbar_LoadBtn" class="bigBtn toolbarBtn">Load project</label>
-				<label id="toolbar_CompileBtn" class="bigBtn toolbarBtn">Compile project</label>
-			</div>
-			<div id="toolbarMicroserviceStatusArea">
-				General microservice status
-			</div>
-
-		</div>
-
 		<!--Tabs section-->
 		<div id="header">
 			<div id="tabs" class="tabs"></div>
@@ -82,7 +61,7 @@
 				<button id="newProjectBtn" class="bigBtn welcomeDiagBtn">New project</button>
 				<button id="loadProjectBtn" class="bigBtn welcomeDiagBtn">Load project</button><br>
 				<button id="showLoginBtn" class="bigBtn welcomeDiagBtn">Login</button>
-				<label id="small-label">*Note you will not be able to save your work if you do not login</label>
+				<label id="small-label" class="small-label">*Note you will not be able to save your work if you do not login</label>
 				<button id="logoutBtn" class="bigBtn welcomeDiagBtn">Logout</button>
 				<label id="loginInfo"></label>
 			</div>
@@ -152,6 +131,46 @@
 			<button id="UserCancelBtn" type="button">Cancel</button>
 		</div>
 
+		<!--Toolbar section-->
+		<div id="toolbar" class="toolbar">
+			<div id="toolbarHeader" class="sectionHeader">Tools</div>
+			<div class="leftTollbar">
+				<div id="toolbarLoggingArea">
+					<label for="showLoginBtn" id="toolbar_Login" class="bigBtn toolbarBtn">Login</label>
+					<img id="displayedAvatar" class="avatar">
+					<label id="toolbar_LoginInfo"></label>
+					<label id="toolbarLoggedOptions"><img class="optionsIcon" src="imgs/gear.png"></label>
+					<label for="logoutBtn" id="toolbar_Logout" class="bigBtn toolbarBtn">Logout</label>
+				</div>
+				<div id="toolbarFunctionsArea">
+					<label for="newProjectBtn" id="toolbar_NewProjectBtn" class="bigBtn toolbarBtn">New project</label>
+					<label id="toolbar_SaveBtn" class="bigBtn toolbarBtn">Save project</label>
+					<label id="toolbar_LoadBtn" class="bigBtn toolbarBtn">Load project</label><br><br>
+					<label id="toolbar_RunBtn" class="bigBtn toolbarBtn">Run project</label>
+				</div>
+			</div>
+			<div id="toolbarMicroserviceStatusArea" class="rightToolbar">
+				<span><u>Microservices Status</u></span><br>
+				<label class="small-label">(*Hover to get more info)</label>
+				<ul>
+					<li><label for="wordStatus" class="yellow circle statusIcon">-</label><button id="wordStatus" class="fakeBtn">Word Coloring</button></li>
+					<li><label for="wordRepairStatus" class="yellow circle statusIcon">-</label><button id="wordRepairStatus" class="fakeBtn">Coloring Repairs</button></li>
+					<li><label for="UndoStatus" class="green circle statusIcon">-</label><button id="UndoStatus" class="fakeBtn">Undo/Redo</button></li>
+					<li><label for="LoginStatus" class="statusIcon">&#128128;</label><button id="LoginStatus" class="fakeBtn">Login/Register</button></li>
+					<li><label for="SaveStatus" class="statusIcon">&#128128;</label><button id="SaveStatus" class="fakeBtn">Save/Load</button></li>
+					<li><label for="RunStatus" class="statusIcon">&#128128;</label><button id="RunStatus" class="fakeBtn">Compile and run</button></li>
+				</ul>
+			</div>
+		</div>
+		<ul id="toolbar_MSDetailedInfo" class="toolbar_MSInfo">
+			<li id="author">xxx</li>
+			<li id="accessLevel">xxx</li>
+			<li id="createdOn">xxx</li>
+			<li id="uptime">xx</li>
+			<li if="lastAccessedByYou">xxx</li>
+			<li id="maxPing">xx</li>
+			<li id="avgPing">xxx</li>
+		</ul>
 	</div>
 
 	<!--scripts go after the elements they are applied to. If we try to reference an element we haven't created yet we get null reference error-->

@@ -56,6 +56,7 @@ function keyUp(e) {
 			sendRequest("PUT", apiGateway + "/doUndo", { "state": currentState, "position": getCursorPosition(editor.id) });
 		}, function (err) {
 			// Word coloring microservice is down
+			console.log("Word coloring error:" + err);
 		});
 
 	}

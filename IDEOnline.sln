@@ -22,6 +22,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "imgs", "imgs", "{EC3BC114-4
 		ClientFiles\imgs\avatarPick.png = ClientFiles\imgs\avatarPick.png
 		ClientFiles\imgs\default_avatar.png = ClientFiles\imgs\default_avatar.png
 		ClientFiles\imgs\folder.png = ClientFiles\imgs\folder.png
+		ClientFiles\imgs\gear.png = ClientFiles\imgs\gear.png
 		ClientFiles\imgs\root.png = ClientFiles\imgs\root.png
 	EndProjectSection
 EndProject

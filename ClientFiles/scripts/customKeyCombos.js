@@ -23,7 +23,7 @@ function handleUndo() {
 	sendRequest("GET", apiGateway+"/doUndo/undo", null, function (response) {
 		getEditor().innerHTML = response;
 	}, function (err) {
-		// Do/Undo microservice is down
+		console.log("Undo/Redo coloring error:" + err);
 	});
 }
 
@@ -31,7 +31,7 @@ function handleRedo() {
 	sendRequest("GET", apiGateway + "/doUndo/redo", null, function (response) {
 		getEditor().innerHTML = response;
 	}, function (err) {
-		// Do/Undo microservice is down
+		console.log("Undo/redo error:" + err);
 	});
 }
 

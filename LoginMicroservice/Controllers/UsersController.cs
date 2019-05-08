@@ -23,6 +23,12 @@ namespace LoginMicroservice.Controllers
         [HttpPut]
         public async Task<IActionResult> PutUser([FromBody]RequestModel request)
         {
+            //despite the fact that name is varchar(20), Sqlite converts it to text type if it's larger and still allows it
+            //that would allow very long user names that would cause malformed html displayed on client page
+            if (request.Name.Length > 20)
+            {
+                return StatusCode(413); //Request Entity Too Large
+            }
             //check if user already exists in the database
             Users existingUser = _context.Users.Where(u => u.Name == request.Name).SingleOrDefault();
             CryptoUtility util = new CryptoUtility();

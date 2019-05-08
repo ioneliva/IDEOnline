@@ -90,9 +90,15 @@ function okPressedOnLogin() {
 		}
 		return response.json();
 		}).then(response => {	//handle response payload
-			//save JWT token received from Auth server
+			//save JWT token received from Auth server and avatar image, if user wants to be kept after browser closing
 			if (document.getElementById("keepLoggedCheckbox").checked == true) {
 				localStorage.setItem('JWT', JSON.stringify(response.access_token));
+				if (response.userAvatar) {
+					localStorage.setItem('avatar', response.userAvatar);
+				}
+				else { 
+					localStorage.setItem('avatar', "imgs/default_avatar.png");
+				}
 			}
 			else {
 				sessionStorage.setItem('JWT', JSON.stringify(response.access_token));
@@ -140,6 +146,7 @@ function expiredJWT(token) {
 		//delete expired token (the browser should deletes them automatically after a while, but just to make sure)
 		localStorage.removeItem('JWT');
 		sessionStorage.removeItem('JWT');
+		localStorage.removeItem('avatar');
 		ret =true
 	}
 
@@ -213,12 +220,15 @@ function okPressedOnRegister() {
 		switch (response.status) {
 			case 200: 
 				document.getElementById("registerMessageBox").innerHTML = "Success, you may go back and login...";
-			break;
+				break;
 			case 409:
 				showDiagError("Error: user name already exists!", nameInputErrorX, nameInputErrorY);
-			break;
+				break;
 			case 400:
 				document.getElementById("registerMessageBox").innerHTML = "Bad request, your input values are not valid!";
+				break;
+			case 413:
+				showDiagError("Error: user name is too long!", nameInputErrorX, nameInputErrorY);
 		}
 		}).catch(error => {	//fail callback
 			let errorBox = document.getElementById("registerMessageBox");
@@ -275,5 +285,6 @@ function selectAvatarPic() {
 function logout() {
 	localStorage.removeItem('JWT');
 	sessionStorage.removeItem('JWT');
+	localStorage.removeItem('avatar');
 	hideGroup("logout");
 }

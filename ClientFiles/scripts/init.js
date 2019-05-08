@@ -11,6 +11,7 @@ document.getElementById("okSelectProjType").addEventListener("click",okPressedOn
 //on page load events (more accurately, when the DOM is loaded, without waiting on stylesheets or images )
 function setDefaultValues() {
 	if (getUserFromJWT() != null) { //user logged and saved in local storage
+		document.getElementById("displayedAvatar").src = localStorage.getItem('avatar');
 		hideGroup("login");
 	}
 	else { //not logged
