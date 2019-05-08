@@ -79,7 +79,7 @@ function okPressedOnLogin() {
 		headers: {
 			'Content-Type': 'application/json'
 		}
-	}).then(response => {
+	}).then(response => {	//success callback
 		//here I would hide the loading screen (for now I will leave it out, it's pointles)
 		switch (response.status) {
 			case 401:
@@ -89,7 +89,7 @@ function okPressedOnLogin() {
 				showDiagError("Error: user name does not exist!", nameInputErrorX, nameInputErrorY);
 		}
 		return response.json();
-		}).then(response => {
+		}).then(response => {	//handle response payload
 			//save JWT token received from Auth server
 			if (document.getElementById("keepLoggedCheckbox").checked == true) {
 				localStorage.setItem('JWT', JSON.stringify(response.access_token));
@@ -104,10 +104,18 @@ function okPressedOnLogin() {
 				document.getElementById("displayedAvatar").src = response.userAvatar;
 			}
 			else { //display a stock default avatar for user
-				console.log("setting default avatar/...");
 				document.getElementById("displayedAvatar").setAttribute("src", "imgs/default_avatar.png");
 			}
-		}).catch(error => console.error('Error:', error));
+		}).catch(error => {	//fail callback
+			let errorBox = document.getElementById("loginMessageBox");
+			errorBox.style.display = "block";
+			if (error == "TypeError: NetworkError when attempting to fetch resource.") {
+				errorBox.innerHTML = "Login server is down, try again later...";
+			}
+			else {
+				document.getElementById("registerMessageBox").innerHTML = error;
+			}
+		});
 }
 
 //decode JWT token
@@ -200,12 +208,11 @@ function okPressedOnRegister() {
 		headers: {
 			'Content-Type': 'application/json'
 		}
-	}).then(function (response) {
+	}).then(function (response) {	//success callback
+		document.getElementById("registerMessageBox").style.display = "block";
 		switch (response.status) {
-			case 200: {
-				document.getElementById("registerMessageBox").style.display = "block";
-				document.getElementById("registerMessageBox").innerHTML="Success, you may go back and login..."
-			}
+			case 200: 
+				document.getElementById("registerMessageBox").innerHTML = "Success, you may go back and login...";
 			break;
 			case 409:
 				showDiagError("Error: user name already exists!", nameInputErrorX, nameInputErrorY);
@@ -213,7 +220,16 @@ function okPressedOnRegister() {
 			case 400:
 				document.getElementById("registerMessageBox").innerHTML = "Bad request, your input values are not valid!";
 		}
-	}).catch(error => document.getElementById("registerMessageBox").innerHTML = "Server error:" + error);
+		}).catch(error => {	//fail callback
+			let errorBox = document.getElementById("registerMessageBox");
+			errorBox.style.display = "block";
+			errorBox.style.color = "red";
+			if (error == "TypeError: NetworkError when attempting to fetch resource.") {
+				document.getElementById("registerMessageBox").innerHTML = "Login server is down, try again later...";
+			} else {
+				document.getElementById("registerMessageBox").innerHTML = error;
+			}
+		});
 }
 
 //cancel button pressed on Login/Register

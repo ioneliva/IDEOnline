@@ -53,7 +53,7 @@ namespace LoginMicroservice.Controllers
                         audience: "Editor Registered Client",
                         claims: claims,
                         notBefore: DateTime.UtcNow,
-                        expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(5)),
+                        expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(120)),    //2 hours to expire
                         signingCredentials: new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256)
                     );
                     string encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);

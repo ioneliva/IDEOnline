@@ -178,7 +178,7 @@
 /*Login and Register forms*/
 .loginBox {
     width: 320px;
-    height: 420px;
+    height: 440px;
     background: #000;
     color: #fff;
     top: 35%;
@@ -288,6 +288,10 @@
     }
     #fileSelectorErrorMessage {
         color:#ff0000;
+    }
+    #loginMessageBox {
+        color: #ff0000;
+        display:none;
     }
     #registerMessageBox {
         color: #249627;
