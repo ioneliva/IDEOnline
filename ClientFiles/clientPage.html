@@ -135,6 +135,7 @@
 		<div id="toolbar" class="toolbar">
 			<div id="toolbarHeader" class="sectionHeader">Tools</div>
 			<div class="leftTollbar">
+				<!--Toolbar login-->
 				<div id="toolbarLoggingArea">
 					<label for="showLoginBtn" id="toolbar_Login" class="bigBtn toolbarBtn">Login</label>
 					<img id="displayedAvatar" class="avatar">
@@ -142,6 +143,7 @@
 					<label id="toolbarLoggedOptions"><img class="optionsIcon" src="imgs/gear.png"></label>
 					<label for="logoutBtn" id="toolbar_Logout" class="bigBtn toolbarBtn">Logout</label>
 				</div>
+				<!--Toolbar function buttons-->
 				<div id="toolbarFunctionsArea">
 					<label for="newProjectBtn" id="toolbar_NewProjectBtn" class="bigBtn toolbarBtn">New project</label>
 					<label id="toolbar_SaveBtn" class="bigBtn toolbarBtn">Save project</label>
@@ -150,32 +152,40 @@
 				</div>
 			</div>
 			<div id="toolbarMicroserviceStatusArea" class="rightToolbar">
+				<!--Toolbar Microservice info-->
 				<span><u>Microservices Status</u></span><br>
 				<label class="small-label">(*Hover to get more info)</label>
 				<ul>
-					<li><label for="wordStatus" class="yellow circle statusIcon">-</label><button id="wordStatus" class="fakeBtn">Word Coloring</button></li>
-					<li><label for="wordRepairStatus" class="yellow circle statusIcon">-</label><button id="wordRepairStatus" class="fakeBtn">Coloring Repairs</button></li>
-					<li><label for="UndoStatus" class="green circle statusIcon">-</label><button id="UndoStatus" class="fakeBtn">Undo/Redo</button></li>
-					<li><label for="LoginStatus" class="statusIcon">&#128128;</label><button id="LoginStatus" class="fakeBtn">Login/Register</button></li>
-					<li><label for="SaveStatus" class="statusIcon">&#128128;</label><button id="SaveStatus" class="fakeBtn">Save/Load</button></li>
-					<li><label for="RunStatus" class="statusIcon">&#128128;</label><button id="RunStatus" class="fakeBtn">Compile and run</button></li>
+					<!--<li><label class="circle statusIcon">-</label><button id="wordColorMicroservice" class="MSinfoBtn">Word Coloring</button></li>-->
+					<!--<li><label class="statusIcon">&#128128;</label><button id="loginMicroservice" class="MSinfoBtn">Login/Register</button></li>-->
+					<li><label class="statusIcon">&#128128;</label><button id="wordColorMicroservice" class="MSinfoBtn">Word Coloring</button></li>
+					<li><label class="statusIcon">&#128128;</label><button id="wordRepairMicroservice" class="MSinfoBtn">Coloring Repairs</button></li>
+					<li><label class="statusIcon">&#128128;</label><button id="undoMicroservice" class="MSinfoBtn">Undo/Redo</button></li>
+					<li><label class="statusIcon">&#128128;</label><button id="loginMicroservice" class="MSinfoBtn">Login/Register</button></li>
+					<li><label class="statusIcon">&#128128;</label><button id="saveMicroservice" class="MSinfoBtn">Save/Load</button></li>
+					<li><label class="statusIcon">&#128128;</label><button id="runMicroservice" class="MSinfoBtn">Compile and run</button></li>
 				</ul>
 			</div>
 		</div>
-		<ul id="toolbar_MSDetailedInfo" class="toolbar_MSInfo">
-			<li id="author">xxx</li>
-			<li id="accessLevel">xxx</li>
-			<li id="createdOn">xxx</li>
-			<li id="uptime">xx</li>
-			<li if="lastAccessedByYou">xxx</li>
-			<li id="maxPing">xx</li>
-			<li id="avgPing">xxx</li>
-		</ul>
+		<!--hover over toolbar info box-->
+		<div id="toolbar_MSDetailedInfo" class="toolbar_MSInfo">
+			<span class="serverDown">This server is currently down, you can obtain more info when it comes back</span>
+			<span class="article">About: </span><span id="infAbout"></span><br>
+			<span class="article">Author: </span><span id="infAuthor"></span><br>
+			<span class="article">Acess level needed: </span><span id="infAccessLevel"></span><br>
+			<span class="article">Server started on: </span><span id="infStartedOn"></span><br>
+			<span class="article">Server uptime: </span><span id="infUptime"></span><br>
+			<span class="article">Pre warm-up ping: </span><span id="infWarmPing"></span><br>
+			<span class="article">Last accessed from this machine: </span><span id="infLastAccessedByYou"></span><br>
+			<span class="article">Last ping from this machine: </span><span id="infPing"></span><br><br>
+			<span class="article">When Down: </span><span id="infDown"></span><br>
+		</div>
 	</div>
 
 	<!--scripts go after the elements they are applied to. If we try to reference an element we haven't created yet we get null reference error-->
 	<script type="text/javascript" src="scripts/init.js"></script>
 	<script type="text/javascript" src="scripts/login.js"></script>
+	<script type="text/javascript" src="scripts/toolbar.js"></script>
 	<script type="text/javascript" src="scripts/tabsAndWindows.js"></script>
 	<script type="text/javascript" src="scripts/solutionExplorerUI.js"></script>
 	<script type="text/javascript" src="scripts/solutionExplorerUserDiagModals.js"></script>

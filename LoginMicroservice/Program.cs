@@ -8,7 +8,12 @@ namespace LoginMicroservice
     {
         public static void Main(string[] args)
         {
-            CreateWebHostBuilder(args).Build().Run();
+            var builder = CreateWebHostBuilder(args);
+
+            //rememeber server starting time
+            GlobalStatistics.SetServerStart();
+
+            builder.Build().Run();
         }
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>

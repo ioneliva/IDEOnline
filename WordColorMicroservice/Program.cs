@@ -20,6 +20,9 @@ namespace WordColorMicroservice
                 .UseStartup<Startup>()
                 .Build();
 
+            //rememeber server starting time
+            GlobalStatistics.SetServerStart();
+
             host.Run();
         }
     }

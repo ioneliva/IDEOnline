@@ -70,6 +70,11 @@ function okPressedOnLogin() {
 	//server comunication is so fast it just causes a screen flicker. To activate it set style.display="block" for both elements
 
 	//send user and passwd to Login microservice
+	if (loginMicroserviceState == "running") {
+		loginMicroserviceState = "busy";
+		setIconForMicroservice("loginMicroservice","busy");
+	}
+	let startPing = new Date();
 	fetch(apiGateway + "/auth", {
 		method: 'POST',
 		body: JSON.stringify({
@@ -80,7 +85,12 @@ function okPressedOnLogin() {
 			'Content-Type': 'application/json'
 		}
 	}).then(response => {	//success callback
-		//here I would hide the loading screen (for now I will leave it out, it's pointles)
+		//get statistical data about access data and ping
+		loginLastAccessed = new Date();
+		loginMicroserviceState = "running";
+		setIconForMicroservice("loginMicroservice", "running");
+		loginPing = loginLastAccessed - startPing;
+		//handle user errors
 		switch (response.status) {
 			case 401:
 				showDiagError("Error: wrong password!", passwdInputX, passwdInputY);
@@ -116,6 +126,8 @@ function okPressedOnLogin() {
 			let errorBox = document.getElementById("loginMessageBox");
 			errorBox.style.display = "block";
 			if (error == "TypeError: NetworkError when attempting to fetch resource.") {
+				loginMicroserviceState = "down";
+				setIconForMicroservice("loginMicroservice", "down");
 				errorBox.innerHTML = "Login server is down, try again later...";
 			}
 			else {
@@ -205,6 +217,11 @@ function okPressedOnRegister() {
 
 	//note: again, a loading screen is coded, but I will not use it. See Login above to understand why
 	//send user, passwd and avatar to microservice as new values
+	if (loginMicroserviceState == "running") {
+		loginMicroserviceState = "busy";
+		setIconForMicroservice("loginMicroservice", "busy");
+	}
+	let startPing = new Date();
 	fetch(apiGateway + "/users", {
 		method: 'PUT',
 		body: JSON.stringify({
@@ -216,6 +233,12 @@ function okPressedOnRegister() {
 			'Content-Type': 'application/json'
 		}
 	}).then(function (response) {	//success callback
+		//get statistical data about access data and ping
+		loginLastAccessed = new Date();
+		loginMicroserviceState = "running";
+		setIconForMicroservice("loginMicroservice", "running");
+		loginPing = loginLastAccessed - startPing;
+		//handle user errors
 		document.getElementById("registerMessageBox").style.display = "block";
 		switch (response.status) {
 			case 200: 
@@ -235,6 +258,8 @@ function okPressedOnRegister() {
 			errorBox.style.display = "block";
 			errorBox.style.color = "red";
 			if (error == "TypeError: NetworkError when attempting to fetch resource.") {
+				loginMicroserviceState = "down";
+				setIconForMicroservice("loginMicroservice", "down");
 				document.getElementById("registerMessageBox").innerHTML = "Login server is down, try again later...";
 			} else {
 				document.getElementById("registerMessageBox").innerHTML = error;

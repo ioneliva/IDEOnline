@@ -1,8 +1,3 @@
-/*Bit of info I always forget:
-    margin -space outside the box
-    padding - space inside the box
-    order is clockwise -top, right, bot, left
-*/
 #wrapper {
     padding: 100px;
 	width: 80%;
@@ -17,7 +12,7 @@
     left: 63%;
     min-width: 700px;
     background-color: #fff;
-    z-index: 3;
+    z-index: 51; /*Solution explorer has 50, we want it over that*/
     user-select: none;
     -moz-user-select: none;
 }
@@ -55,7 +50,7 @@
     height: 16px;
 }
 /*"label for=.." can only bind to ids of form elements, not to text. I used a fake button, with text displayed only*/
-.fakeBtn {
+.MSinfoBtn {
     background: none;
     border: none;
     margin: 0;
@@ -77,11 +72,24 @@
     color: #ffc107;
 }
 .toolbar_MSInfo {
-    list-style-type: none;
     background: #fff;
+    min-width: 300px;
+    max-width: 600px;
     border: 1px solid #000;
     position: absolute;
-    z-index: 4;
+    padding: 0px, 10px, 10px, 10px;
+    margin: 0;
+    z-index: 71; /*1 more than the most non-modal element*/
+    display: none;
+}
+.toolbar_MSInfo .article{
+    font-family: Arial, Helvetica, sans-serif;
+    color: blue;
+}
+.toolbar_MSInfo .serverDown {
+    font-family: Arial, Helvetica, sans-serif;
+    color: #ff0000;
+    display: none;
 }
 .optionsIcon {
     height: 25px;

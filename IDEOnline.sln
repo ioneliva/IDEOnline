@@ -38,6 +38,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{699E
 		ClientFiles\scripts\solutionExplorerUserDiagModals.js = ClientFiles\scripts\solutionExplorerUserDiagModals.js
 		ClientFiles\scripts\tabsAndWindows.js = ClientFiles\scripts\tabsAndWindows.js
 		ClientFiles\scripts\textEditor.js = ClientFiles\scripts\textEditor.js
+		ClientFiles\scripts\toolbar.js = ClientFiles\scripts\toolbar.js
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "APIGateway", "APIGateway\APIGateway.csproj", "{E8EBE6AD-43C0-44C5-952C-EBA2B3033F08}"

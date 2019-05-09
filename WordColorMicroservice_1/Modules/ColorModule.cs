@@ -23,7 +23,8 @@ namespace WordColorMicroservice_1.Modules
                 //server warm-up from client, ignore values
                 if (clientMessage.SelectToken("enterPressed").ToString()=="")
                 {
-                    return HttpStatusCode.Continue;
+                    responsePair.Add("serverStart", GlobalStatistics.getServerStartTime().ToString());
+                    return Response.AsJson(responsePair, HttpStatusCode.OK);
                 }
 
                 //normal key press values

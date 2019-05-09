@@ -1,9 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 using LoginMicroservice.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -27,6 +27,18 @@ namespace LoginMicroservice.Controllers
         //access token obtained can be tested at jwt.io
         public IActionResult SetJWTForUser([FromBody]RequestModel request)
         {
+            //status request from client
+            if(request.Name== "thisIsAStatusRequestFromClient")
+            {
+                Dictionary<string, string> responsePair = new Dictionary<string, string>
+                {
+                    { "serverStart", GlobalStatistics.getServerStartTime().ToString() }
+                };
+
+                return Json(responsePair);
+            }
+
+            //normal functionality
             //check if user exists in the database
             CryptoUtility util = new CryptoUtility();
             Users existingUser = _context.Users.Where(u => u.Name == request.Name).SingleOrDefault();
@@ -45,7 +57,9 @@ namespace LoginMicroservice.Controllers
                     new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToUniversalTime().ToString(), ClaimValueTypes.Integer64)     //Time at which the JWT was issued
 };
 
-                    //todo: move the secret key out of here, into a secure location. Make a generator for unique crypto keys
+                    //the secret is used to sign the JWT. I should move the secret key out of here, into a secure location
+                    //but -if I move the secret into an enviroment variable, I won't be able to include it to my upload to Github. 
+                    //I will leave it here up until deployement. Maybe even after that, because I want this to be open-source and fully available out-of-the-box
                     string secret = "Y2F0Y2hlciUyMHdvbmclMjBsb3ZlJTIwLm5ldA==";
                     SymmetricSecurityKey signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secret));
                     JwtSecurityToken jwt = new JwtSecurityToken(

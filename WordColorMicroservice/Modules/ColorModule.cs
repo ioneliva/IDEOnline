@@ -4,7 +4,6 @@ using Nancy.Extensions;
 using Nancy.IO;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json.Linq;
-using System;
 
 namespace WordColorMicroservice.Modules
 {
@@ -24,7 +23,8 @@ namespace WordColorMicroservice.Modules
                 //server warm-up from client, ignore values
                 if (clientMessage.SelectToken("enterPressed").ToString()=="")
                 {
-                    return HttpStatusCode.Continue;
+                    responsePair.Add("serverStart", GlobalStatistics.getServerStartTime().ToString());
+                    return Response.AsJson(responsePair, HttpStatusCode.OK);
                 }
 
                 //normal key press values

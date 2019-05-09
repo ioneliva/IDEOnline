@@ -68,11 +68,20 @@ namespace DoUndoMicroservice.Modules
             Put("/", _ =>
             {
                 JObject clientMessage = JObject.Parse(RequestStream.FromStream(Request.Body).AsString());
+
+                //request asking for server statistics
+                Dictionary<string, string> responsePair = new Dictionary<string, string>();
+                if (clientMessage["statusRequest"] != null)
+                {
+                    responsePair.Add("serverStart", GlobalStatistics.getServerStartTime().ToString());
+                    return Response.AsJson(responsePair, HttpStatusCode.OK);
+                }
+
+                //normal put request
                 string state = clientMessage["state"].ToString();
                 undoStack.Push(state);
                 return HttpStatusCode.Accepted; //202
             });
-
         }
     }
 }

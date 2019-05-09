@@ -2,13 +2,6 @@ var apiGateway = "http://localhost:5100";
 var prevKey;
 
 getEditor().addEventListener("keyup", keyUp);
-//warm up function for xhr-XMLHttpRequest to server. First request took too long to execute, this solves it.
-window.addEventListener('load', function () {
-	sendRequest("POST", apiGateway+"/coloring", {
-		"word_and_delimiter": "", "position": "",
-		"enterPressed": "", "preWord": "", "preWordPos": "", "token": ""
-	}, function (response) { }
-	)});
 
 //on key up
 function keyUp(e) {
@@ -30,10 +23,20 @@ function keyUp(e) {
 		wordComposite = selectNodesAround(cursorPosition).toString();
 		token = getToken(cursorPosition);
 		//send data to server
+		if (wordColorMicroserviceState == "running") {
+			wordColorMicroserviceState = "busy";
+			setIconForMicroservice("wordColorMicroservice", "busy");
+		}
+		let startPing = new Date();
 		sendRequest("POST", apiGateway + "/coloring", {
 			"word_and_delimiter": wordComposite, "position": cursorPosition,
 			"enterPressed": enterPressed, "preWord": preWord, "preWordPos": preWordPos, "token": token
 		}, function (response) {
+			//get statistical data about access data and ping
+			wordColorLastAccessed = new Date();
+			wordColorMicroserviceState = "running";
+			setIconForMicroservice("wordColorMicroservice", "running");
+			wordColorPing = wordColorLastAccessed - startPing;
 			//parse response from Json
 			let wordColoringMS = JSON.parse(response);
 			//decorate with color spans, if server did not lag
@@ -56,7 +59,8 @@ function keyUp(e) {
 			sendRequest("PUT", apiGateway + "/doUndo", { "state": currentState, "position": getCursorPosition(editor.id) });
 		}, function (err) {
 			// Word coloring microservice is down
-			console.log("Word coloring error:" + err);
+			wordColorMicroserviceState = "down";
+			setIconForMicroservice("wordColorMicroservice", "down");
 		});
 
 	}
