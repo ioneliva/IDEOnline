@@ -5,12 +5,14 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using LoginMicroservice.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
 namespace LoginMicroservice.Controllers
 {
     [Route("[controller]")]
+    [AllowAnonymous]
     [ApiController]
     public class AuthController : Controller
     {
@@ -51,11 +53,11 @@ namespace LoginMicroservice.Controllers
                 {
                     //success, user and password match
                     Claim[] claims = new Claim[]
-{
-                    new Claim(JwtRegisteredClaimNames.Sub, request.Name),                       //Subject Identifier
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),  //The "jti" (JWT ID) claim provides a unique identifier for the JWT
-                    new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToUniversalTime().ToString(), ClaimValueTypes.Integer64)     //Time at which the JWT was issued
-};
+                    {
+                        new Claim(JwtRegisteredClaimNames.Sub, request.Name),                       //Subject Identifier
+                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),  //The "jti" (JWT ID) claim provides a unique identifier for the JWT
+                        new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToUniversalTime().ToString(), ClaimValueTypes.Integer64)     //Time at which the JWT was issued
+                    };
 
                     //the secret is used to sign the JWT. I should move the secret key out of here, into a secure location
                     //but -if I move the secret into an enviroment variable, I won't be able to include it to my upload to Github. 
@@ -74,7 +76,7 @@ namespace LoginMicroservice.Controllers
                     var responseJson = new
                     {
                         access_token = encodedJwt,
-                        expires_in = (int)TimeSpan.FromMinutes(5).TotalSeconds,
+                        expires_in = (int)TimeSpan.FromMinutes(120).TotalSeconds,
                         userAvatar = existingUser.Avatar //avatar picture is sent as byte array, we'll convert in client
                     };
 

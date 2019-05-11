@@ -1,8 +1,12 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
+using System;
+using System.Text;
 
 namespace LoginMicroservice
 {
@@ -20,6 +24,25 @@ namespace LoginMicroservice
             services.AddDbContext<Models.LoginContext>(options =>
                 options.UseSqlite(Configuration.GetConnectionString("LoginDb")));
 
+            string secret= "Y2F0Y2hlciUyMHdvbmclMjBsb3ZlJTIwLm5ldA==";
+            SymmetricSecurityKey signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secret));
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(opt => 
+                {
+                    opt.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        // Clock skew compensates for server time drift
+                        ClockSkew = TimeSpan.FromMinutes(5),
+                        IssuerSigningKey = signingKey,
+                        RequireSignedTokens = true,
+                        RequireExpirationTime = true,
+                        ValidateLifetime = true,
+                        ValidateAudience = true,
+                        ValidAudience = "Editor Registered Client",
+                        ValidIssuer = "http://localhost:5200"
+                    };
+                });
+
             services.AddMvc();
         }
 
@@ -30,6 +53,7 @@ namespace LoginMicroservice
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseAuthentication();
             app.UseMvc();
         }
     }

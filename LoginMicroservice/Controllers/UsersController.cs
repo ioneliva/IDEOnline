@@ -4,10 +4,12 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using LoginMicroservice.Models;
 using System.Data.SqlClient;
+using Microsoft.AspNetCore.Authorization;
 
 namespace LoginMicroservice.Controllers
 {
     [Route("[controller]")]
+    [Authorize]
     [ApiController]
     public class UsersController : ControllerBase
     {
@@ -20,6 +22,7 @@ namespace LoginMicroservice.Controllers
 
         // PUT: /Users
         //for local testing: PUT request to http://localhost:5200/users in body payload JSon ex: { "name":"aaa", "pswd":"123"[, "avatar":base64Image]}
+        [AllowAnonymous]
         [HttpPut]
         public async Task<IActionResult> PutUser([FromBody]RequestModel request)
         {
@@ -75,26 +78,82 @@ namespace LoginMicroservice.Controllers
             }
         }
 
+        // put: /Users/Edit/name
+        //in body payload ex:{"oldname" :"name","newname":"name"} 
+        [HttpPut("/edit/name")]
+        public async Task<IActionResult> EditUsername([FromBody]NameChangeRequestModel request)
+        {
+            //find user in the database
+            Users existingUser = _context.Users.Where(u => u.Name == request.Name).SingleOrDefault();
+            //we don't need to ask for a password because the client is authorized for this operation with jwt bearer token
+            if (existingUser != null)
+            {
+                existingUser.Name = request.NewName;
+                _context.Update(existingUser);
+                await _context.SaveChangesAsync();
+                return Ok(); //200
+            }
+            else
+            {
+                return NotFound(); //404
+            }
+        }
+
+        // put: /Users/Edit/password
+        //in body payload ex:{"name" :"name","newPassword":"123"} 
+        [HttpPut("/edit/name")]
+        public async Task<IActionResult> EditPassword([FromBody]PasswordChangeRequestModel request)
+        {
+            //find user in the database
+            Users existingUser = _context.Users.Where(u => u.Name == request.Name).SingleOrDefault();
+            //we could get the user name from the jwt token, but we'll just send it from the client
+            if (existingUser != null)
+            {
+                CryptoUtility util = new CryptoUtility();
+                existingUser.Password = util.GenerateHash(request.NewPassword, existingUser.Salt);
+                _context.Update(existingUser);
+                await _context.SaveChangesAsync();
+                return Ok(); //200
+            }
+            else
+            {
+                return NotFound(); //404
+            }
+        }
+
+        // put: /Users/Edit/avatar
+        //in body payload ex:{"name" :"name","avatar": base64String} 
+        [HttpPut("/edit/name")]
+        public async Task<IActionResult> EditAvatar([FromBody]AvatarChangeRequestModel request)
+        {
+            //find user in the database
+            Users existingUser = _context.Users.Where(u => u.Name == request.Name).SingleOrDefault();
+            //no need for password, jwt token must be presented
+            if (existingUser != null)
+            {
+                existingUser.Avatar = request.Avatar;
+                _context.Update(existingUser);
+                await _context.SaveChangesAsync();
+                return Ok(); //200
+            }
+            else
+            {
+                return NotFound(); //404
+            }
+        }
+
         // DELETE: /Users
         //for local testing: DELETE request to http://localhost:5200/Users, in body payload JSon ex: { "name":"aaa", "pswd":"123"}
         [HttpDelete]
         public async Task<IActionResult> DeleteUser([FromBody]RequestModel request)
         {
-            //check if user exists in database and if the request matched it's password
+            //check if user exists in database, no need for password because we have jwt auth
             Users existingUser = _context.Users.Where(u => u.Name == request.Name).SingleOrDefault();
-            CryptoUtility util = new CryptoUtility();
             if (existingUser != null)
             {
-                if (util.ComparePasswd(request.Password, existingUser.Password, existingUser.Salt))
-                {
-                    //user name and password provided match existing user in database, deleting
-                    _context.Users.Remove(existingUser);
-                    await _context.SaveChangesAsync();
-                    return Ok(); //200
-                }else //wrong password, user is not authorized to delete this
-                {
-                    return Unauthorized(); //401
-                }
+                _context.Users.Remove(existingUser);
+                await _context.SaveChangesAsync();
+                return Ok(); //200
             }
             else
             {
@@ -103,11 +162,26 @@ namespace LoginMicroservice.Controllers
         }
     }
     
-    //class representing a request body. User for model binding in request regarding Login database
+    //classes representing a request body. Used for model binding in requests
     public class RequestModel
     {
         public string Name { get; set; }
         public string Password { get; set; }
+        public string Avatar { get; set; }
+    }
+    public class NameChangeRequestModel
+    {
+        public string Name { get; set; }
+        public string NewName { get; set; }
+    }
+    public class PasswordChangeRequestModel
+    {
+        public string Name { get; set; }
+        public string NewPassword { get; set; }
+    }
+    public class AvatarChangeRequestModel
+    {
+        public string Name { get; set; }
         public string Avatar { get; set; }
     }
 }
