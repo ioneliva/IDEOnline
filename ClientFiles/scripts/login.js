@@ -70,8 +70,8 @@ function okPressedOnLogin() {
 	//server comunication is so fast it just causes a screen flicker. To activate it set style.display="block" for both elements
 
 	//send user and passwd to Login microservice
-	if (loginMicroserviceState == "running") {
-		loginMicroserviceState = "busy";
+	if (loginMicroservice.state == "running") {
+		loginMicroservice.state = "busy";
 		setIconForMicroservice("loginMicroservice","busy");
 	}
 	let startPing = new Date();
@@ -86,10 +86,10 @@ function okPressedOnLogin() {
 		}
 	}).then(response => {	//success callback
 		//get statistical data about access data and ping
-		loginLastAccessed = new Date();
-		loginMicroserviceState = "running";
+		loginMicroservice.accessedDate = new Date();
+		loginMicroservice.state = "running";
 		setIconForMicroservice("loginMicroservice", "running");
-		loginPing = loginLastAccessed - startPing;
+		loginMicroservice.ping = loginMicroservice.accessedDate - startPing;
 		//handle user errors
 		switch (response.status) {
 			case 401:
@@ -112,6 +112,12 @@ function okPressedOnLogin() {
 			}
 			else {
 				sessionStorage.setItem('JWT', JSON.stringify(response.access_token));
+				if (response.userAvatar) {
+					sessionStorage.setItem('avatar', response.userAvatar);
+				}
+				else { 
+					sessionStorage.setItem('avatar', "imgs/default_avatar.png");
+				}
 			}
 			hideLoginBox();
 			hideGroup("login");
@@ -126,7 +132,7 @@ function okPressedOnLogin() {
 			let errorBox = document.getElementById("loginMessageBox");
 			errorBox.style.display = "block";
 			if (error == "TypeError: NetworkError when attempting to fetch resource.") {
-				loginMicroserviceState = "down";
+				loginMicroservice.state = "down";
 				setIconForMicroservice("loginMicroservice", "down");
 				errorBox.innerHTML = "Login server is down, try again later...";
 			}
@@ -217,8 +223,8 @@ function okPressedOnRegister() {
 
 	//note: again, a loading screen is coded, but I will not use it. See Login above to understand why
 	//send user, passwd and avatar to microservice as new values
-	if (loginMicroserviceState == "running") {
-		loginMicroserviceState = "busy";
+	if (loginMicroservice.state == "running") {
+		loginMicroservice.state = "busy";
 		setIconForMicroservice("loginMicroservice", "busy");
 	}
 	let startPing = new Date();
@@ -234,10 +240,10 @@ function okPressedOnRegister() {
 		}
 	}).then(function (response) {	//success callback
 		//get statistical data about access data and ping
-		loginLastAccessed = new Date();
-		loginMicroserviceState = "running";
+		loginMicroservice.accessedDate = new Date();
+		loginMicroservice.state = "running";
 		setIconForMicroservice("loginMicroservice", "running");
-		loginPing = loginLastAccessed - startPing;
+		loginMicroservice.ping = loginMicroservice.accessedDate - startPing;
 		//handle user errors
 		document.getElementById("registerMessageBox").style.display = "block";
 		switch (response.status) {
@@ -258,7 +264,7 @@ function okPressedOnRegister() {
 			errorBox.style.display = "block";
 			errorBox.style.color = "red";
 			if (error == "TypeError: NetworkError when attempting to fetch resource.") {
-				loginMicroserviceState = "down";
+				loginMicroservice.state = "down";
 				setIconForMicroservice("loginMicroservice", "down");
 				document.getElementById("registerMessageBox").innerHTML = "Login server is down, try again later...";
 			} else {

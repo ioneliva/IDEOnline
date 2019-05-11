@@ -153,37 +153,26 @@
 			</div>
 			<div id="toolbarMicroserviceStatusArea" class="rightToolbar">
 				<!--Toolbar Microservice info-->
-				<span><u>Microservices Status</u></span><br>
-				<label class="small-label">(*Hover to get more info)</label>
-				<ul>
-					<!--<li><label class="circle statusIcon">-</label><button id="wordColorMicroservice" class="MSinfoBtn">Word Coloring</button></li>-->
-					<!--<li><label class="statusIcon">&#128128;</label><button id="loginMicroservice" class="MSinfoBtn">Login/Register</button></li>-->
-					<li><label class="statusIcon">&#128128;</label><button id="wordColorMicroservice" class="MSinfoBtn">Word Coloring</button></li>
-					<li><label class="statusIcon">&#128128;</label><button id="wordRepairMicroservice" class="MSinfoBtn">Coloring Repairs</button></li>
-					<li><label class="statusIcon">&#128128;</label><button id="undoMicroservice" class="MSinfoBtn">Undo/Redo</button></li>
-					<li><label class="statusIcon">&#128128;</label><button id="loginMicroservice" class="MSinfoBtn">Login/Register</button></li>
-					<li><label class="statusIcon">&#128128;</label><button id="saveMicroservice" class="MSinfoBtn">Save/Load</button></li>
-					<li><label class="statusIcon">&#128128;</label><button id="runMicroservice" class="MSinfoBtn">Compile and run</button></li>
-				</ul>
+				<button id="showMSHiddenInfo" class="bigBtn">Microservices Status</button><br>
+				<label class="small-label">(*click to expand)</label>
+				<div id="MSHiddenInfo">
+					<label class="statusIcon">&#128128;</label><button id="wordColorMicroservice" class="MSinfoBtn">Word Coloring</button><br>
+					<label class="statusIcon">&#128128;</label><button id="wordRepairMicroservice" class="MSinfoBtn">Coloring Repairs</button><br>
+					<label class="statusIcon">&#128128;</label><button id="undoMicroservice" class="MSinfoBtn">Undo/Redo</button><br>
+					<label class="statusIcon">&#128128;</label><button id="loginMicroservice" class="MSinfoBtn">Login/Register</button><br>
+					<label class="statusIcon">&#128128;</label><button id="saveMicroservice" class="MSinfoBtn">Save/Load</button><br>
+					<label class="statusIcon">&#128128;</label><button id="runMicroservice" class="MSinfoBtn">Compile and run</button><br>
+				</div>
 			</div>
 		</div>
 		<!--hover over toolbar info box-->
-		<div id="toolbar_MSDetailedInfo" class="toolbar_MSInfo">
-			<span class="serverDown">This server is currently down, you can obtain more info when it comes back</span>
-			<span class="article">About: </span><span id="infAbout"></span><br>
-			<span class="article">Author: </span><span id="infAuthor"></span><br>
-			<span class="article">Acess level needed: </span><span id="infAccessLevel"></span><br>
-			<span class="article">Server started on: </span><span id="infStartedOn"></span><br>
-			<span class="article">Server uptime: </span><span id="infUptime"></span><br>
-			<span class="article">Pre warm-up ping: </span><span id="infWarmPing"></span><br>
-			<span class="article">Last accessed from this machine: </span><span id="infLastAccessedByYou"></span><br>
-			<span class="article">Last ping from this machine: </span><span id="infPing"></span><br><br>
-			<span class="article">When Down: </span><span id="infDown"></span><br>
+		<div id="toolbar_MSDetailedInfo" class="hovering toolbar_MSInfo">
 		</div>
 	</div>
 
 	<!--scripts go after the elements they are applied to. If we try to reference an element we haven't created yet we get null reference error-->
 	<script type="text/javascript" src="scripts/init.js"></script>
+	<script type="text/javascript" src="scripts/statistics.js"></script>
 	<script type="text/javascript" src="scripts/login.js"></script>
 	<script type="text/javascript" src="scripts/toolbar.js"></script>
 	<script type="text/javascript" src="scripts/tabsAndWindows.js"></script>

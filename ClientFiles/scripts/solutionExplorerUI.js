@@ -116,19 +116,27 @@ function setElementPosition(element, mouseCoordX, mouseCoordY) {
 	let elementWidth = element.offsetWidth,
 		elementHeight = element.offsetHeight;
 
-	if ((mouseCoordX + elementWidth) > window.innerWidth) {	//menu would break out of bounds to the right
-		//for modal dialogue windows, cluster the containing elements to the right
+	//notice I add extra 20 pixels to the calculation, to prevent element from touching the border. Stylistic decision
+	if ((mouseCoordX + elementWidth) > (window.innerWidth-20)) { 
+		//menu would break out of bounds to the right
 		if (element.classList.contains("modal-simple")) {
+		//for modal dialogue windows, cluster the containing elements to the right
 			document.getElementById("modalText").style.float = "right";
 			document.getElementById("UserOkBtn").style.float = "right";
 			document.getElementById("UserCancelBtn").style.float = "right";
 			document.getElementsByClassName("modalCloseBtn")[0].style.float = "right";
 		}
-		element.style.left = (mouseCoordX - elementWidth) + "px";
+		//for hovered items, a large surface (aprox 22-23 pixels in a square) acts as the trigger, not just the tip of the pointer (default broser behaviour)
+		//in our case it would cause the mouse to hover over the repositioned element. We add 25px to the calculation to make it clear the way
+		if (element.classList.contains("hovering")) {
+			element.style.left = (mouseCoordX - elementWidth - 25) + "px";
+		} else {
+			element.style.left = (mouseCoordX - elementWidth) + "px";
+		}
 	}
 	else {
-		//similar to above, but we float them left
 		if (element.classList.contains("modal-simple")) {
+			//similar to above, but we float them left
 			document.getElementById("modalText").style.float = "left";
 			document.getElementById("UserOkBtn").style.float = "left";
 			document.getElementById("UserCancelBtn").style.float = "left";
@@ -136,8 +144,13 @@ function setElementPosition(element, mouseCoordX, mouseCoordY) {
 		}
 		element.style.left = mouseCoordX + "px";
 	}
-	if ((mouseCoordY + elementHeight) > window.innerHeight) {	//menu would break out of bonds to the bottom
-		element.style.top = (mouseCoordY - elementHeight) + "px";
+	if ((mouseCoordY + elementHeight) > (window.innerHeight-20)) {
+		//menu would break out of bonds to the bottom
+		if (element.classList.contains("hovering")) {
+			element.style.top = (mouseCoordY - elementHeight - 25) + "px";
+		}else {
+			element.style.top = (mouseCoordY - elementHeight) + "px";
+		}
 	}
 	else {
 		element.style.top = mouseCoordY + "px";

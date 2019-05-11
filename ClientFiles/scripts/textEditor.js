@@ -23,8 +23,8 @@ function keyUp(e) {
 		wordComposite = selectNodesAround(cursorPosition).toString();
 		token = getToken(cursorPosition);
 		//send data to server
-		if (wordColorMicroserviceState == "running") {
-			wordColorMicroserviceState = "busy";
+		if (wordColorMicroservice.state == "running") {
+			wordColorMicroservice.state = "busy";
 			setIconForMicroservice("wordColorMicroservice", "busy");
 		}
 		let startPing = new Date();
@@ -33,10 +33,10 @@ function keyUp(e) {
 			"enterPressed": enterPressed, "preWord": preWord, "preWordPos": preWordPos, "token": token
 		}, function (response) {
 			//get statistical data about access data and ping
-			wordColorLastAccessed = new Date();
-			wordColorMicroserviceState = "running";
+			wordColorMicroservice.accessedDate = new Date();
+			wordColorMicroservice.state = "running";
 			setIconForMicroservice("wordColorMicroservice", "running");
-			wordColorPing = wordColorLastAccessed - startPing;
+			wordColorMicroservice.ping = wordColorMicroservice.accessedDate - startPing;
 			//parse response from Json
 			let wordColoringMS = JSON.parse(response);
 			//decorate with color spans, if server did not lag
@@ -59,7 +59,7 @@ function keyUp(e) {
 			sendRequest("PUT", apiGateway + "/doUndo", { "state": currentState, "position": getCursorPosition(editor.id) });
 		}, function (err) {
 			// Word coloring microservice is down
-			wordColorMicroserviceState = "down";
+			wordColorMicroservice.state = "down";
 			setIconForMicroservice("wordColorMicroservice", "down");
 		});
 

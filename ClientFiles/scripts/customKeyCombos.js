@@ -20,39 +20,39 @@ function triggerOnDownCombos(e) {
 }
 
 function handleUndo() {
-	if (undoMicroserviceState == "running") {
-		undoMicroserviceState = "busy";
+	if (undoMicroservice.state == "running") {
+		undoMicroservice.state = "busy";
 		setIconForMicroservice("undoMicroservice", "busy");
 	}
 	let startPing = new Date();
 	sendRequest("GET", apiGateway + "/doUndo/undo", null, function (response) {
 		//get statistical data about access data and ping
-		undoRedoLastAccessed = new Date();
-		undoMicroserviceState = "running";
+		undoMicroservice.accessedDate = new Date();
+		undoMicroservice.state = "running";
 		setIconForMicroservice("undoMicroservice", "running");
-		undoRedoPing = undoRedoLastAccessed - startPing;
+		undoMicroservice.ping = undoMicroservice.accessedDate - startPing;
 		//use response from microservice
 		getEditor().innerHTML = response;
 	}, function (err) {
-		undoMicroserviceState = "down";
+		undoMicroservice.state = "down";
 		setIconForMicroservice("undoMicroservice", "down");
 	});
 }
 
 function handleRedo() {
-	if (undoMicroserviceState == "running") {
-		undoMicroserviceState = "busy";
+	if (undoMicroservice.state == "running") {
+		undoMicroservice.state = "busy";
 		setIconForMicroservice("undoMicroservice", "busy");
 	}
 	let startPing = new Date();
 	sendRequest("GET", apiGateway + "/doUndo/redo", null, function (response) {
-		undoRedoLastAccessed = new Date();
-		undoMicroserviceState = "running";
+		undoMicroservice.accessedDate = new Date();
+		undoMicroservice.state = "running";
 		setIconForMicroservice("undoMicroservice", "running");
-		undoRedoPing = undoRedoLastAccessed - startPing;
+		undoMicroservice.ping = undoMicroservice.accessedDate - startPing;
 		getEditor().innerHTML = response;
 	}, function (err) {
-		undoMicroserviceState = "down";
+		undoMicroservice.state = "down";
 		setIconForMicroservice("undoMicroservice", "down");
 	});
 }

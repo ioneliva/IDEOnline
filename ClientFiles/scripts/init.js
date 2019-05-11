@@ -1,10 +1,3 @@
-//global variables used for statistics
-var wordColorMicroserviceState = "down", wordRepairMicroserviceState = "down", undoMicroserviceState = "down",
-	loginMicroserviceState = "down", saveMicroserviceState = "down", runMicroserviceState = "down",
-	startTime, wordColorStartDate, wordColorWarmUpPing, wordColorLastAccessed, wordColorPing,
-	undoRedoStartDate, undoRedoWarmUpPing, undoRedoLastAccessed, undoRedoPing,
-	loginStartDate, loginWarmUpPing, loginLastAccessed, loginPing;
-
 document.addEventListener("DOMContentLoaded", setDefaultValues);
 document.getElementById("newProjectBtn").addEventListener("click", showNewProjectDiag);
 document.getElementById("showLoginBtn").addEventListener("click", showLoginBox);
@@ -17,8 +10,9 @@ document.getElementById("okSelectProjType").addEventListener("click",okPressedOn
 
 //on page load events (more accurately, when the DOM is loaded, without waiting on stylesheets, images or subframes )
 function setDefaultValues() {
-	if (getUserFromJWT() != null) { //user logged and saved in local storage
-		document.getElementById("displayedAvatar").src = localStorage.getItem('avatar');
+	if (getUserFromJWT() != null) { //user logged and saved in local/session storage
+		localStorage.length > 0 ? document.getElementById("displayedAvatar").src = localStorage.getItem('avatar')
+			: document.getElementById("displayedAvatar").src = sessionStorage.getItem('avatar');
 		hideGroup("login");
 	}
 	else { //not logged
@@ -39,64 +33,6 @@ function setDefaultValues() {
 
 	//servers warm-up
 	warmUpMicroservices();
-}
-
-//sending an empty request to all microservices. We want a ping and server start time
-//and, more importantly, we also want to warm-up the microservice(auto stores data into RAM and cache, makes further requests a lot faster)
-function warmUpMicroservices() {
-	//word coloring
-	startTime = new Date();
-	sendRequest("POST", apiGateway + "/coloring", {
-		"word_and_delimiter": "", "position": "",
-		"enterPressed": "", "preWord": "", "preWordPos": "", "token": ""
-	}, function (response) {
-		wordColorWarmUpPing = new Date() - startTime;
-		wordColorMicroserviceState = "running";
-		setIconForMicroservice("wordColorMicroservice", "running");
-		let wordColoringMS = JSON.parse(response);
-		wordColorStartDate = wordColoringMS.serverStart;
-	}, function (err) {
-		wordColorMicroserviceState = "down";
-		setIconForMicroservice("wordColorMicroservice", "down");
-	});
-
-	//undo/redo(put new state endpoint)
-	startTime = new Date();
-	sendRequest("PUT", apiGateway + "/doUndo", {
-		"statusRequest":""
-	}, function (response) {
-		undoRedoWarmUpPing = new Date() - startTime;
-		undoMicroserviceState = "running";
-		setIconForMicroservice("undoMicroservice", "running");
-		let undoRedoMS = JSON.parse(response);
-		undoRedoStartDate = undoRedoMS.serverStart;
-		}, function (err) {
-		undoMicroserviceState = "down";
-		setIconForMicroservice("undoMicroservice", "down");
-	});
-
-	//login(authentification endpoint)
-	startTime = new Date();
-	fetch(apiGateway + "/auth", {
-		method: 'POST',
-		body: JSON.stringify({
-			"name":"thisIsAStatusRequestFromClient"
-		}),
-		headers: {
-			'Content-Type': 'application/json'
-		}
-	}).then(response => response.json()
-	).then(response => {
-		loginWarmUpPing = new Date() - startTime;
-		loginMicroserviceState = "running";
-		setIconForMicroservice("loginMicroservice", "running");
-		loginStartDate = response.serverStart;
-	}).catch(error => {
-		if (error == "TypeError: NetworkError when attempting to fetch resource.") {
-			loginMicroserviceState = "down";
-			setIconForMicroservice("loginMicroservice", "down");
-		}
-	});
 }
 
 //navigation in 'welcome' window

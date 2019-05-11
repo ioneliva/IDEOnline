@@ -4,98 +4,6 @@
     position: relative;
 }
 
-/*toolbar*/
-.toolbar {
-    border: 1px solid #0b175c;
-    position: fixed;
-    top: 75%;
-    left: 63%;
-    min-width: 700px;
-    background-color: #fff;
-    z-index: 51; /*Solution explorer has 50, we want it over that*/
-    user-select: none;
-    -moz-user-select: none;
-}
-#toolbarHeader {
-    padding: 0;
-    margin: 0;
-    text-align:center;
-}
-.toolbarBtn, #toolbarLoggingArea, #toolbar_LoginInfo, #toolbarFunctionsArea, #toolbarMicroserviceStatusArea {
-    margin: 20px 20px;
-}
-.leftTollbar {
-    width: 70%;
-    float: left;
-}
-.rightToolbar {
-    width: 24%;
-    float: right;
-}
-#toolbar_LoginInfo {
-    color: #249627;
-}
-#displayedAvatar {
-    left: -50px;
-    display: none;
-}
-.rightToolbar .small-label{
-    float: right;
-}
-.rightToolbar ul {
-    list-style-type: none; /*remove list bullets*/
-}
-.statusIcon {
-    width: 17px;
-    height: 16px;
-}
-/*"label for=.." can only bind to ids of form elements, not to text. I used a fake button, with text displayed only*/
-.MSinfoBtn {
-    background: none;
-    border: none;
-    margin: 0;
-    padding: 0;
-}
-/*made my own circles by rounding the corners of a square container*/
-.circle {
-    border-radius: 100%;
-    border: 1px solid #000;
-    text-align: center;
-    display: inline-block;
-}
-.green {
-    background: #5EA226;
-    color: #5EA226;
-}
-.yellow {
-    background: #ffc107;
-    color: #ffc107;
-}
-.toolbar_MSInfo {
-    background: #fff;
-    min-width: 300px;
-    max-width: 600px;
-    border: 1px solid #000;
-    position: absolute;
-    padding: 0px, 10px, 10px, 10px;
-    margin: 0;
-    z-index: 71; /*1 more than the most non-modal element*/
-    display: none;
-}
-.toolbar_MSInfo .article{
-    font-family: Arial, Helvetica, sans-serif;
-    color: blue;
-}
-.toolbar_MSInfo .serverDown {
-    font-family: Arial, Helvetica, sans-serif;
-    color: #ff0000;
-    display: none;
-}
-.optionsIcon {
-    height: 25px;
-    width: 25px;
-}
-
 /*file tabs*/
 .tabs {
     height: 45px;
@@ -554,6 +462,94 @@
     color:#ff0000;
     cursor: pointer;
 }
+
+/*toolbar section*/
+.toolbar {
+    border: 1px solid #0b175c;
+    position: fixed;
+    top: 75%;
+    left: 63%;
+    min-width: 700px;
+    background-color: #fff;
+    z-index: 51; /*Solution explorer has 50, we want it over that*/
+    user-select: none;
+    -moz-user-select: none;
+}
+    #toolbarHeader {
+        padding: 0;
+        margin: 0;
+        text-align: center;
+    }
+    .toolbarBtn, #toolbarLoggingArea, #toolbar_LoginInfo, #toolbarFunctionsArea, #toolbarMicroserviceStatusArea {
+        margin: 20px 20px;
+    }
+    .leftTollbar {
+        width: 70%;
+        float: left;
+    }
+    .rightToolbar {
+        width: 24%;
+        float: right;
+    }
+    .rightToolbar div {
+        display: none;
+
+    }
+    #toolbar_LoginInfo {
+        color: #249627;
+    }
+    #displayedAvatar {
+        left: -50px;
+        display: none;
+    }
+    .statusIcon {
+        width: 17px;
+        height: 16px;
+    }
+    .MSinfoBtn {
+        background: none;
+        border: none;
+        margin: 0;
+        padding: 0;
+    }
+    /*made my own circles by rounding the corners of a square container*/
+    .circle {
+        border-radius: 100%;
+        border: 1px solid #000;
+        text-align: center;
+        display: inline-block;
+    }
+    .green {
+        background: #5EA226;
+        color: #5EA226;
+    }
+    .yellow {
+        background: #ffc107;
+        color: #ffc107;
+    }
+    .toolbar_MSInfo {
+        background: #fff;
+        min-width: 300px;
+        max-width: 600px;
+        border: 3px solid #000;
+        position: absolute;
+        margin: 0;
+        z-index: 51; /*1 more than solution explorer*/
+        display: none;
+    }
+    .toolbar_MSInfo .article {
+        font-family: Arial, Helvetica, sans-serif;
+        color: blue;
+    }
+    .toolbar_MSInfo .serverDown {
+        font-family: Arial, Helvetica, sans-serif;
+        color: #ff0000;
+
+    }
+    .optionsIcon {
+        height: 25px;
+        width: 25px;
+    }
 
 #footer {
     clear: both;

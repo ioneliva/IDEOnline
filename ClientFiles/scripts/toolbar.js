@@ -1,180 +1,112 @@
+document.getElementById("showMSHiddenInfo").addEventListener("click", showMicroserviceList);
 for (let i = 0; i < document.getElementsByClassName("MSinfoBtn").length; i++) {
 	document.getElementsByClassName("MSinfoBtn")[i].addEventListener("mouseenter", showMSInfo);
 	document.getElementsByClassName("MSinfoBtn")[i].addEventListener("mouseleave", hideMSInfo);
 }
 
+//show microservice list in toolbar
+function showMicroserviceList() {
+	if (document.getElementById("MSHiddenInfo").style.display == "block") {
+		document.getElementById("showMSHiddenInfo").nextElementSibling.nextElementSibling.textContent = "(*click to expand)";
+		document.getElementById("MSHiddenInfo").style.display = "none";
+	} else {
+		for (let i = 0; i < document.getElementsByClassName("MSinfoBtn").length; i++) {
+			let microservice = document.getElementsByClassName("MSinfoBtn")[i], state;
+			//in javascript all variables are available within their scope as named properties of their parent object, so var x == window["x"] for globals
+			let microserviceObject = window[microservice.id];
+			//microservices not finished yet are only present as buttons, with no object implementation
+			if (!(microserviceObject instanceof HTMLButtonElement)) {
+				setIconForMicroservice(microservice.id, microserviceObject.state);
+			}
+		}
+		document.getElementById("showMSHiddenInfo").nextElementSibling.nextElementSibling.textContent = "(*hover over each to get more info)";
+		document.getElementById("MSHiddenInfo").style.display = "block";
+	}
+}
+
 //get item the user is hovering over
 function getHoveredElement(e) {
-	let hoveredElement = e.target || e.srcElement;
+	let hoveredElement, microserviceObject;
 
-	return hoveredElement.id;
-}
+	hoveredElement= e.target || e.srcElement;
+	microserviceObject = window[hoveredElement.id];
 
-//get state for microservice
-function getMicroserviceState(microserviceName) {
-	if (microserviceName == "wordColorMicroservice") {
-		return wordColorMicroserviceState;
-	}
-	if (microserviceName == "wordRepairMicroservice") {
-		return wordRepairMicroserviceState;
-	}
-	if (microserviceName == "undoMicroservice") {
-		return undoMicroserviceState;
-	}
-	if (microserviceName == "loginMicroservice") {
-		return loginMicroserviceState;
-	}
-	if (microserviceName == "saveMicroservice") {
-		return saveMicroserviceState;
-	}
-	if (microserviceName == "runMicroservice") {
-		return runMicroserviceState;
-	}
-}
-
-//populate microservice user info box
-function writeMSInfo(e) {
-	let about = document.getElementById("infAbout"),
-		author = document.getElementById("infAuthor"),
-		accessLevel = document.getElementById("infAccessLevel"),
-		startedOn = document.getElementById("infStartedOn"),
-		uptime = document.getElementById("infUptime"),
-		warmUpPing = document.getElementById("infWarmPing"),
-		lastAccessed = document.getElementById("infLastAccessedByYou"),
-		ping = document.getElementById("infPing"),
-		down = document.getElementById("infDown");
-	const authorName = "Ionel Iva", freeAccess = "no login required, you can access all data on this server",
-		protectedAccess = "you need to login to access this service",
-		undefinedValue = "no data collected yet, ",
-		abnormalPingExplain = " (the server was recently accessed from this browser session, that's why the war-up ping might be lower than the normal one)";
-
-	author.innerText += authorName;
-	switch (getHoveredElement(e)) {
-		case "wordColorMicroservice": {
-			about.innerText = "this microservice handles dynamic word coloring in the editor, according to dictionaries it stores for each language supported";
-			accessLevel.innerText = freeAccess;
-			startedOn.innerText = wordColorStartDate;
-			uptime.innerText = getElapsedTime(wordColorStartDate);
-			(wordColorWarmUpPing != null && wordColorPing != null && (wordColorWarmUpPing < wordColorPing))
-				? warmUpPing.innerText = wordColorWarmUpPing + abnormalPingExplain
-				: warmUpPing.innerText = wordColorWarmUpPing;
-			wordColorLastAccessed == null ? lastAccessed.innerText = undefinedValue + "type something in the editor first..."
-				: lastAccessed.innerText = wordColorLastAccessed;
-			wordColorPing == null ? ping.innerText = undefinedValue + "you made no request to the server..."
-				: ping.innerText = wordColorPing;
-			down.innerText = "you will not be able to use custom text formatting and coloring";
-		}
-			break;
-		case "wordRepairMicroservice": {
-			//TODO
-		}
-			break;
-		case "undoMicroservice": {
-			about.innerText = "this microservice handles a custom undo and redo functionality, that preserves coloring and doesn't break underlying html structure";
-			accessLevel.innerText = freeAccess;
-			startedOn.innerText = undoRedoStartDate;
-			uptime.innerText = getElapsedTime(undoRedoStartDate);
-			(undoRedoWarmUpPing != null && undoRedoPing != null && (undoRedoWarmUpPing < undoRedoPing))
-				? warmUpPing.innerText = undoRedoWarmUpPing + abnormalPingExplain
-				: warmUpPing.innerText = undoRedoWarmUpPing;
-			undoRedoLastAccessed == null ? lastAccessed.innerText = undefinedValue + "try to use undo or redo..."
-				: lastAccessed.innerText = undoRedoLastAccessed;
-			undoRedoPing == null ? ping.innerText = undefinedValue + "you made no request to the server..."
-				: ping.innerText = undoRedoPing;
-			down.innerText = "you will not be able to use undo functionality (and obviously no redo either)";
-		}
-			break;
-		case "loginMicroservice": {
-			about.innerText = "this microservice handles all login functionality, as well as security token distribution";
-			accessLevel.innerText = protectedAccess;
-			startedOn.innerText = loginStartDate;
-			uptime.innerText = getElapsedTime(loginStartDate);
-			(loginWarmUpPing != null && loginPing != null && (loginWarmUpPing < loginPing))
-				? warmUpPing.innerText = loginWarmUpPing + abnormalPingExplain
-				: warmUpPing.innerText = loginWarmUpPing;
-			loginLastAccessed == null ? lastAccessed.innerText = undefinedValue + "try to re-log to get a reading..."
-				: lastAccessed.innerText = loginLastAccessed;
-			ping.innerText = loginPing;
-			down.innerText = "you will suffer no repercussions for a while, because your security token will still be active. Once the token expires "
-				+ "or you log out, you not be able to log in and will have to use the application in anonymous mode. You will still have access to most" 
-				+ "of the functionality, but you will not be able to save or load files. If you close or refresh the browser session, your work will be lost."
-				+ "You also loose access to a custom avatar picture, but you will get a default stock picture";
-		}
-			break;
-		case "saveMicroservice": {
-			//TODO
-		}
-			break;
-		case "runMicroservice": {
-			//TODO
-		}
-	}
+	return microserviceObject;
 }
 
 //clear info box
-function clearMSInfo() {
-	document.getElementById("infAbout").innerText = "";
-	document.getElementById("infAuthor").innerText = "";
-	document.getElementById("infAccessLevel").innerText = "";
-	document.getElementById("infStartedOn").innerText = "";
-	document.getElementById("infUptime").innerText = "";
-	document.getElementById("infLastAccessedByYou").innerText = "";
-	document.getElementById("infWarmPing").innerText = "";
-	document.getElementById("infDown").innerText = "";
+function clearMicroserviceInfoBox() {
+	let infoContainer = document.getElementById("toolbar_MSDetailedInfo");
+
+	while (infoContainer.firstElementChild) {
+		infoContainer.removeChild(infoContainer.firstElementChild);
+	}
+}
+
+//add an article to microservice info box (third parameter is optional)
+function createArticle(title, articleContent, addRedColor) {
+	let infoContainer = document.getElementById("toolbar_MSDetailedInfo"), article, content;
+
+	article = document.createElement("SPAN");
+	article.className = "article";
+	if (addRedColor) {
+		article.classList.add("serverDown");
+	}
+	article.textContent = title;
+	content = document.createElement("SPAN");
+	content.textContent = articleContent;
+	infoContainer.appendChild(article);
+	infoContainer.appendChild(content);
+	infoContainer.appendChild(document.createElement("BR"));
 }
 
 //show info box while hovering the Microservice list
 function showMSInfo(e) {
 	let infoContainer = document.getElementById("toolbar_MSDetailedInfo");
-	if (getMicroserviceState(getHoveredElement(e)) == "down") {
-		document.getElementsByClassName("serverDown")[0].style.display = "block";
-		for (let i = 0; i < document.getElementsByClassName("article").length; i++) {
-			document.getElementsByClassName("article")[i].style.display = "none";
-			document.getElementsByClassName("article")[i].nextElementSibling.style.display = "none";
-			document.getElementById("toolbar_MSDetailedInfo").style.height=20+"px";
-		}
+
+	clearMicroserviceInfoBox();
+	//populate info box with articles
+	if ((getHoveredElement(e)).state == "down") { //microservice hovered is down
+		createArticle("About: ", getHoveredElement(e).about);
+		createArticle("This server is currently: ", getHoveredElement(e).state, true);
+		createArticle("When down: ", getHoveredElement(e).whenDown, true);
 	}
-	else {
-		document.getElementsByClassName("serverDown")[0].style.display = "none";
-		for (let i = 0; i < document.getElementsByClassName("article").length; i++) {
-			document.getElementsByClassName("article")[i].style.display = "inline";
-			document.getElementsByClassName("article")[i].nextElementSibling.style.display = "inline";
-			document.getElementById("toolbar_MSDetailedInfo").style.height = "initial";
+	else { //microservice is running
+		createArticle("About: ", getHoveredElement(e).about);
+		createArticle("This server is currently: ", getHoveredElement(e).state);
+		createArticle("Acess level needed: ", getHoveredElement(e).accessLevel);
+		if (getHoveredElement(e).serverStartDate != null) {
+			createArticle("Server started on: ", getHoveredElement(e).serverStartDate);
+			createArticle("Server uptime: ", getElapsedTime(getHoveredElement(e).serverStartDate));
 		}
+		let warmup = getHoveredElement(e).warmupPing, ping = getHoveredElement(e).ping,
+			abnormalPingExplain = " (the server was recently accessed from this browser session, that's why the warm-up ping might be lower than the normal one)";
+		if (warmup != 0 && ping != 0 && (warmup < ping)) {
+			createArticle("Pre warm-up ping: ", (warmup + abnormalPingExplain));
+		}
+		else {
+			if (warmup != 0) {
+				createArticle("Pre warm-up ping: ", getHoveredElement(e).warmupPing);
+			}
+		}
+		if (getHoveredElement(e).accessedDate != null) {
+			createArticle("Last accessed from this machine: ", getHoveredElement(e).accessedDate);
+		}
+		if (getHoveredElement(e).ping != 0) {
+			createArticle("Last ping from this machine: ", getHoveredElement(e).ping);
+		} else {
+			createArticle("Last ping from this machine: ", " no data collected yet, use the microservice first...");
+		}
+		createArticle("When down: ", getHoveredElement(e).whenDown, true);
 	}
-	writeMSInfo(e);
 	infoContainer.style.display = "block";
 	setElementPosition(infoContainer, e.pageX, e.pageY); //this function is defined in "solutionExplorerUi.js"
 }
 
 //hide and clear info box while leaving hover
 function hideMSInfo(e) {
-	clearMSInfo();
+	clearMicroserviceInfoBox();
 	document.getElementById("toolbar_MSDetailedInfo").style.display = "none";
-}
-
-//get time elapsed since oldDate param, convert it to seconds/minutes/hours/days if needed
-function getElapsedTime(oldDate) {
-	let timeNow = new Date(),
-		miliseconds = timeNow - new Date(oldDate),
-		elapsed = miliseconds + " ms";
-
-	if (miliseconds > 5000) { //get seconds
-		let seconds = Math.floor(miliseconds / 1000);
-		miliseconds = miliseconds % 1000;
-		elapsed = seconds + " s, " + miliseconds + " ms";
-		if (seconds > 60) {	//get hours
-			let minutes = Math.floor(seconds / 60);
-			seconds = seconds % 60;
-			elapsed = minutes + " m, " + seconds + " s, " + miliseconds + " ms";
-			if (minutes > 60) {
-				let hours = Math.floor(hours / 60);
-				minutes = minutes % 60;
-				elapsed = hours + " h, " + minutes + " m, " + seconds + " s, " + miliseconds + " ms";
-			}
-		}
-	}
-	return elapsed;
 }
 
 //set status icon for a microservice
