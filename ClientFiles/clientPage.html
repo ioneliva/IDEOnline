@@ -64,7 +64,15 @@
 				<label id="small-label" class="small-label">*Note you will not be able to save your work if you do not login</label>
 				<button id="logoutBtn" class="bigBtn welcomeDiagBtn">Logout</button>
 				<label id="loginInfo"></label>
+				<button id="loginOptionsBtn" class="bigBtn welcomeDiagBtn"><img class="optionsIcon" src="imgs/gear.png">Options</button>
 			</div>
+		</div>
+		<div class="loginOptionsMenu" id="LoginOptionsMenu">
+			<ul>
+				<li class="options" id="loginOptions_ChangeUsername">Change name</li>
+				<li class="options" id="loginOptions_ChangePassword">Change password</li>
+				<li class="options" id="loginOptions_ChangeAvatar">Change avatar</li>
+			</ul>
 		</div>
 
 		<div class="modalStretchBackground newProject">
@@ -121,6 +129,39 @@
 			<div class="loadingStretchBackground"></div>
 			<div class="loadingSymbol"></div>
 		</div>
+		<!--Name/Password/Avatar change-->
+		<div id="changeNameBox" class="loginBox">
+			<h1>Change Name:</h1>
+			<div id="changeNameMessageBox"></div>
+			<label>Confirm password</label>
+			<input id="changeNamePasswd" type="password" class="loginInputField" name="" placeholder="Password">
+			<label>Pick new user name</label>
+			<input id="changeNameUsername" type="text" class="loginInputField" name="" placeholder="Username">
+			<input id="changeNameOkBtn" type="submit" class="loginBoxBtn" name="" value="Change">
+			<input id="changeNameCancelBtn" type="button" class="loginBoxBtn" name="" value="Cancel">
+		</div>
+		<div id="changePasswordBox" class="loginBox">
+			<h1>Change Password:</h1>
+			<div id="changePasswordMessageBox"></div>
+			<label>Old password</label>
+			<input id="changePasswdOld" type="text" class="loginInputField" name="" placeholder="Password">
+			<label>New password</label>
+			<input id="changePasswdNew" type="text" class="loginInputField" name="" placeholder="Password">
+			<label>Confirm password</label>
+			<input id="changePasswdConfirm" type="password" class="loginInputField" name="" placeholder="Password">
+			<input id="changePasswdOkBtn" type="submit" class="loginBoxBtn" name="" value="Change">
+			<input id="changePasswdCancelBtn" type="button" class="loginBoxBtn" name="" value="Cancel">
+		</div>
+		<div id="changeAvatarBox" class="loginBox">
+			<h1>Change Your Avatar:</h1>
+			<div id="changeAvatarMessageBox"></div>
+			<label>Confirm password</label>
+			<input id="changeAvatarPasswd" type="password" class="loginInputField" name="" placeholder="Password">
+			<label>Pick new avatar</label><br><br>
+			<input id="browseForNewAvatar" type="file" accept="image/jpeg, image/jpg, image/png, image/gif" />
+			<input id="changeAvatarOkBtn" type="submit" class="loginBoxBtn" name="" value="Change">
+			<input id="changeAvatarCancelBtn" type="button" class="loginBoxBtn" name="" value="Cancel">
+		</div>
 
 		<!--simple user diag-->
 		<div id="userDiag" class="modal-simple">
@@ -140,7 +181,7 @@
 					<label for="showLoginBtn" id="toolbar_Login" class="bigBtn toolbarBtn">Login</label>
 					<img id="displayedAvatar" class="avatar">
 					<label id="toolbar_LoginInfo"></label>
-					<label id="toolbarLoggedOptions"><img class="optionsIcon" src="imgs/gear.png"></label>
+					<label for="loginOptionsBtn" id="toolbar_Options" class="bigBtn toolbarBtn"><img class="optionsIcon" src="imgs/gear.png">Options</label>
 					<label for="logoutBtn" id="toolbar_Logout" class="bigBtn toolbarBtn">Logout</label>
 				</div>
 				<!--Toolbar function buttons-->
@@ -174,6 +215,7 @@
 	<script type="text/javascript" src="scripts/init.js"></script>
 	<script type="text/javascript" src="scripts/statistics.js"></script>
 	<script type="text/javascript" src="scripts/login.js"></script>
+	<script type="text/javascript" src="scripts/loginOptions.js"></script>
 	<script type="text/javascript" src="scripts/toolbar.js"></script>
 	<script type="text/javascript" src="scripts/tabsAndWindows.js"></script>
 	<script type="text/javascript" src="scripts/solutionExplorerUI.js"></script>

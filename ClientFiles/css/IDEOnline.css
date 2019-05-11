@@ -84,6 +84,35 @@
     background: rgba(193, 193, 193, 1);
     height: 45%;
 }
+/*the login options menu*/
+.loginOptionsMenu {
+    margin: 0;
+    padding: 0;
+    min-width: 150px;
+    height: auto;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    border: 1px solid;
+    border-color: #808080;
+    background-color: #fff;
+    position: absolute;
+    z-index: 101; /*layer underneath is the stretch background, with z=100*/
+    display: none;
+}
+    .loginOptionsMenu ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+    .loginOptionsMenu .options {
+        padding: 10px 5px 10px 5px;
+        border-left: 4px solid transparent;
+        cursor: pointer;
+    }
+    .loginOptionsMenu .options:hover {
+        background: #eee;
+        border-left: 4px solid #666;
+    }
 /*checkboxes in new project modal*/
 .valid {
     color: #249627;
@@ -142,7 +171,7 @@
     pointer-events: none; /*disable hover effects*/
 }
 
-/*Login and Register forms*/
+/*Login and Register forms (also recycled into change name and password forms)*/
 .loginBox {
     width: 320px;
     height: 440px;
@@ -263,6 +292,16 @@
     #registerMessageBox {
         color: #249627;
         display:none;
+    }
+    /*login options*/
+    #changeNameBox{
+        display: none;
+    }
+    #changePasswordBox{
+        display: none;
+    }
+    #changeAvatarBox{
+        display: none;
     }
 
 /*Wrapper around the text editor*/
@@ -547,8 +586,8 @@
 
     }
     .optionsIcon {
-        height: 25px;
-        width: 25px;
+        height: 20px;
+        width: 20px;
     }
 
 #footer {

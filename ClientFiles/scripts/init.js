@@ -64,18 +64,22 @@ function hideGroup(group) {
 		toolbarLoginInfo = document.getElementById("toolbar_LoginInfo"),
 		toolbarSaveBtn = document.getElementById("toolbar_SaveBtn"),
 		toolbarLoadBtn = document.getElementById("toolbar_LoadBtn"),
-		displayedAvatar = document.getElementById("displayedAvatar");
+		displayedAvatar = document.getElementById("displayedAvatar"),
+		optionsBtn = document.getElementById("loginOptionsBtn"),
+		toolbarOptions = document.getElementById("toolbar_Options");
 
 	if (group == "login") {
 		//welcome screen
 		loginBtn.style.display = "none";
 		warnLabel.style.display = "none";
-		logoutBtn.style.display = "block";
-		loginInfo.style.display = "block";
+		logoutBtn.style.display = "inline";
+		loginInfo.style.display = "inline";
+		optionsBtn.style.display = "inline";
 		loadBtn.classList.remove("disabledBtn");
 		loginInfo.innerHTML = "You are logged as " + getUserFromJWT();
 		//clones in the toolbar
 		toolbarLoginBtn.style.display = "none";
+		toolbarOptions.style.display = "inline";
 		toolbarLogout.style.display = "inline";
 		toolbarLoginInfo.style.display = "inline";
 		toolbarLoginInfo.innerHTML = "You are logged as " + getUserFromJWT();
@@ -88,9 +92,11 @@ function hideGroup(group) {
 		warnLabel.style.display = "block";
 		logoutBtn.style.display = "none";
 		loginInfo.style.display = "none";
+		optionsBtn.style.display = "none";
 		loadBtn.classList.add("disabledBtn");
 		//clones in the toolbar
 		toolbarLoginBtn.style.display = "inline";
+		toolbarOptions.style.display = "none";
 		toolbarLogout.style.display = "none";
 		toolbarLoginInfo.style.display = "none";
 		toolbarSaveBtn.style.display = "none";
