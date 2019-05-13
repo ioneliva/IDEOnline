@@ -24,8 +24,7 @@ namespace LoginMicroservice
             services.AddDbContext<Models.LoginContext>(options =>
                 options.UseSqlite(Configuration.GetConnectionString("LoginDb")));
 
-            string secret= "Y2F0Y2hlciUyMHdvbmclMjBsb3ZlJTIwLm5ldA==";
-            SymmetricSecurityKey signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secret));
+            SymmetricSecurityKey signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration.GetSection("SecretKey")["secret"]));
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(opt => 
                 {

@@ -54,7 +54,7 @@
 			"UpstreamHttpMethod": [ "Put", "Delete" ]
 		},
 		{
-			"DownstreamPathTemplate": "/users/editName",
+			"DownstreamPathTemplate": "/users/{action}",
 			"DownstreamScheme": "http",
 			"DownstreamHostAndPorts": [
 				{
@@ -62,44 +62,8 @@
 					"Port": 5200
 				}
 			],
-			"UpstreamPathTemplate": "/users/editName",
-			"UpstreamHttpMethod": [ "Post" ]
-		},
-		{
-			"DownstreamPathTemplate": "/users/editPassword",
-			"DownstreamScheme": "http",
-			"DownstreamHostAndPorts": [
-				{
-					"Host": "localhost",
-					"Port": 5200
-				}
-			],
-			"UpstreamPathTemplate": "/users/editPassword",
-			"UpstreamHttpMethod": [ "Post" ]
-		},
-		{
-			"DownstreamPathTemplate": "/users/editAvatar",
-			"DownstreamScheme": "http",
-			"DownstreamHostAndPorts": [
-				{
-					"Host": "localhost",
-					"Port": 5200
-				}
-			],
-			"UpstreamPathTemplate": "/users/editAvatar",
-			"UpstreamHttpMethod": [ "Post" ]
-		},
-		{
-			"DownstreamPathTemplate": "/users/deleteAccount",
-			"DownstreamScheme": "http",
-			"DownstreamHostAndPorts": [
-				{
-					"Host": "localhost",
-					"Port": 5200
-				}
-			],
-			"UpstreamPathTemplate": "/users/deleteAccount",
-			"UpstreamHttpMethod": [ "Delete" ]
+			"UpstreamPathTemplate": "/users/{action}",
+			"UpstreamHttpMethod": [ "Post", "Delete" ]
 		},
 		{
 			"DownstreamPathTemplate": "/auth",

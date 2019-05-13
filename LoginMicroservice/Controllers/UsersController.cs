@@ -70,7 +70,6 @@ namespace LoginMicroservice.Controllers
                         }
                     }
                 }
-                //201(created) should be returned ONLY after the server has created the new object. Because this is async, we cannot guarantee that
                 return Ok(); //200
             }
             else
@@ -83,6 +82,7 @@ namespace LoginMicroservice.Controllers
         [HttpPost("editName")]
         public async Task<IActionResult> EditUsername([FromBody]NameChangeRequestModel req)
         {
+            //not checking name length this this, I did it on the client
             //find current user name for request client
             string username = User.FindFirst(ClaimTypes.NameIdentifier).Value;
 
