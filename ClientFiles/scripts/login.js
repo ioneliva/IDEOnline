@@ -48,26 +48,20 @@ function handleEscapeOnRegister(e) {
 
 //ok pressed on Login box
 function okPressedOnLogin() {
-	const loginNameInput = document.getElementById("userName").getBoundingClientRect(),
-		passwdInput = document.getElementById("userPasswd").getBoundingClientRect();
-	let nameInputErrorX = loginNameInput.left,
-		nameInputErrorY = loginNameInput.top + loginNameInput.height,
-		passwdInputX = passwdInput.left,
-		passwdInputY = passwdInput.top + passwdInput.height;
+	let errorBox = document.getElementById("loginErrMessageBox");
+	errorBox.innerHTML = "";
+	errorBox.style.display = "block";
 
 	//validate that user field is not empty
 	if (getUsername() == "") {
-		showDiagError("Error: user name cannot be empty!", nameInputErrorX, nameInputErrorY);
+		errorBox.innerHTML = "Error: user name cannot be empty!";
 		return;
 	}
 	//validate password fields are not empty
 	if (getPasswd() == "") {
-		showDiagError("Error: password cannot be empty!", passwdInputX, passwdInputY);
+		errorBox.innerHTML = "Error: password cannot be empty!";
 		return;
 	}
-
-	//note: I have coded a loading screen in the html file, with class="loadingStretchBackground", respectively "loadingSymbol", but 
-	//server comunication is so fast it just causes a screen flicker. To activate it set style.display="block" for both elements
 
 	//send user and passwd to Login microservice
 	if (loginMicroservice.state == "running") {
@@ -93,16 +87,16 @@ function okPressedOnLogin() {
 		//handle user errors
 		switch (response.status) {
 			case 401:
-				showDiagError("Error: wrong password!", passwdInputX, passwdInputY);
+				errorBox.innerHTML = "Error: wrong password!";
 				break;
 			case 404:
-				showDiagError("Error: user name does not exist!", nameInputErrorX, nameInputErrorY);
+				errorBox.innerHTML = "Error: user name does not exist!";
 		}
 		return response.json();
 		}).then(response => {	//handle response payload
 			//save JWT token received from Auth server and avatar image, if user wants to be kept after browser closing
 			if (document.getElementById("keepLoggedCheckbox").checked == true) {
-				localStorage.setItem('JWT', JSON.stringify(response.access_token));
+				localStorage.setItem('JWT', response.access_token);
 				if (response.userAvatar) {
 					localStorage.setItem('avatar', response.userAvatar);
 				}
@@ -111,7 +105,7 @@ function okPressedOnLogin() {
 				}
 			}
 			else {
-				sessionStorage.setItem('JWT', JSON.stringify(response.access_token));
+				sessionStorage.setItem('JWT', response.access_token);
 				if (response.userAvatar) {
 					sessionStorage.setItem('avatar', response.userAvatar);
 				}
@@ -129,15 +123,10 @@ function okPressedOnLogin() {
 				document.getElementById("displayedAvatar").setAttribute("src", "imgs/default_avatar.png");
 			}
 		}).catch(error => {	//fail callback
-			let errorBox = document.getElementById("loginMessageBox");
-			errorBox.style.display = "block";
 			if (error == "TypeError: NetworkError when attempting to fetch resource.") {
 				loginMicroservice.state = "down";
 				setIconForMicroservice("loginMicroservice", "down");
 				errorBox.innerHTML = "Login server is down, try again later...";
-			}
-			else {
-				document.getElementById("registerMessageBox").innerHTML = error;
 			}
 		});
 }
@@ -193,6 +182,11 @@ function getUserFromJWT() {
 	return null;
 }
 
+//validate name field in Register box is not empty
+function validateRegisterName() {
+
+}
+
 //ok pressed on Register box
 function okPressedOnRegister() {
 	const registerNameInput = document.getElementById("registerUserName").getBoundingClientRect(),
@@ -202,8 +196,11 @@ function okPressedOnRegister() {
 		passwdInputX = passwdInput.left,
 		passwdInputY = passwdInput.top + passwdInput.height;
 
-	//hide message box (it would remain open on the last message otherwise)
+	//hide message boxes (they would remain open on the last message otherwise)
 	document.getElementById("registerMessageBox").style.display = "none";
+	document.getElementById("registerErrMessageBox").style.display = "none";
+	document.getElementById("registerMessageBox").innerHTML = "";
+	document.getElementById("registerErrMessageBox").innerHTML = "";
 
 	//validate that user field is not empty
 	if (getRegisterUsername() == "") {
@@ -221,7 +218,6 @@ function okPressedOnRegister() {
 		return;
 	}
 
-	//note: again, a loading screen is coded, but I will not use it. See Login above to understand why
 	//send user, passwd and avatar to microservice as new values
 	if (loginMicroservice.state == "running") {
 		loginMicroservice.state = "busy";
@@ -246,6 +242,7 @@ function okPressedOnRegister() {
 		loginMicroservice.ping = loginMicroservice.accessedDate - startPing;
 		//handle user errors
 		document.getElementById("registerMessageBox").style.display = "block";
+		document.getElementById("registerErrMessageBox").style.display = "block";
 		switch (response.status) {
 			case 200: 
 				document.getElementById("registerMessageBox").innerHTML = "Success, you may go back and login...";
@@ -254,27 +251,25 @@ function okPressedOnRegister() {
 				showDiagError("Error: user name already exists!", nameInputErrorX, nameInputErrorY);
 				break;
 			case 400:
-				document.getElementById("registerMessageBox").innerHTML = "Bad request, your input values are not valid!";
+				document.getElementById("registerErrMessageBox").innerHTML = "Bad request, your input values are not valid!";
 				break;
 			case 413:
 				showDiagError("Error: user name is too long!", nameInputErrorX, nameInputErrorY);
 		}
 		}).catch(error => {	//fail callback
-			let errorBox = document.getElementById("registerMessageBox");
+			let errorBox = document.getElementById("registerErrMessageBox");
 			errorBox.style.display = "block";
-			errorBox.style.color = "red";
 			if (error == "TypeError: NetworkError when attempting to fetch resource.") {
 				loginMicroservice.state = "down";
 				setIconForMicroservice("loginMicroservice", "down");
-				document.getElementById("registerMessageBox").innerHTML = "Login server is down, try again later...";
-			} else {
-				document.getElementById("registerMessageBox").innerHTML = error;
+				errorBox.innerHTML = "Login server is down, try again later...";
 			}
 		});
 }
 
 //cancel button pressed on Login/Register
 function hideLoginBox() {
+	document.getElementById("loginErrMessageBox").innerHTML="";
 	document.getElementById("loginBox").style.display="none";
 }
 function hideRegisterBox() {
@@ -289,19 +284,28 @@ var avatarBase64;
 function selectAvatarPic() {
 	let file = this.files[0],
 		mime = ["image/jpeg", "image/svg+xml", "image/png", "image/gif"],
-		fileReader = new FileReader();
-	document.getElementById("fileSelectorErrorMessage").style.display = "none";
+		fileReader = new FileReader(),
+		errBox = document.getElementById("fileSelectorErrorMessage");
+
+	errBox.style.display = "none";
+
+	//check if user actually selected a file or left the field empty
+	if (document.getElementById("browseForFile").files.length == 0) {
+		errBox.style.display = "block";
+		errBox.innerText = "You must select a file or go back";
+		return;
+	}
 
 	//check valid file type
 	if (mime.indexOf(file.type) === -1) {
-		document.getElementById("fileSelectorErrorMessage").style.display = "block";
-		document.getElementById("fileSelectorErrorMessage").innerText = "Only jpg, svg, png and gif files allowed";
+		errBox.style.display = "block";
+		errBox.innerText = "Only jpg, svg, png and gif files allowed";
 		return;
 	}
 	//check if file doesn't exceed maximum allowed size (1mb set)
 	if (file.size > 1024 * 1024) {
-		document.getElementById("fileSelectorErrorMessage").style.display = "block";
-		document.getElementById("fileSelectorErrorMessage").innerText = "Size must not exceed 1 MB";
+		errBox.style.display = "block";
+		errBox.innerText = "Size must not exceed 1 MB";
 		return;
 	}
 	//all ok, set image

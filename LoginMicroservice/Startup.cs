@@ -39,6 +39,7 @@ namespace LoginMicroservice
                         ValidateLifetime = true,
                         ValidateAudience = true,
                         ValidAudience = "Editor Registered Client",
+                        ValidateIssuer =true,
                         ValidIssuer = "http://localhost:5200"
                     };
                 });

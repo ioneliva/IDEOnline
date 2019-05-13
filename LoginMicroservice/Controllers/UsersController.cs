@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using LoginMicroservice.Models;
 using System.Data.SqlClient;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Security.Claims;
 
 namespace LoginMicroservice.Controllers
 {
@@ -21,7 +23,6 @@ namespace LoginMicroservice.Controllers
         }
 
         // PUT: /Users
-        //for local testing: PUT request to http://localhost:5200/users in body payload JSon ex: { "name":"aaa", "pswd":"123"[, "avatar":base64Image]}
         [AllowAnonymous]
         [HttpPut]
         public async Task<IActionResult> PutUser([FromBody]RequestModel request)
@@ -78,110 +79,114 @@ namespace LoginMicroservice.Controllers
             }
         }
 
-        // put: /Users/Edit/name
-        //in body payload ex:{"oldname" :"name","newname":"name"} 
-        [HttpPut("/edit/name")]
-        public async Task<IActionResult> EditUsername([FromBody]NameChangeRequestModel request)
+        // POST: /users/editName
+        [HttpPost("editName")]
+        public async Task<IActionResult> EditUsername([FromBody]NameChangeRequestModel req)
         {
+            //find current user name for request client
+            string username = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+
             //find user in the database
-            Users existingUser = _context.Users.Where(u => u.Name == request.Name).SingleOrDefault();
-            //we don't need to ask for a password because the client is authorized for this operation with jwt bearer token
-            if (existingUser != null)
+            Users existingUser = _context.Users.Where(u => u.Name == username).SingleOrDefault();
+            //check if desired username is not too long
+            if (req.NewName.Length < 20)
             {
-                existingUser.Name = request.NewName;
-                _context.Update(existingUser);
-                await _context.SaveChangesAsync();
-                return Ok(); //200
-            }
-            else
+                //check if desired username is not already taken
+                Users userNameTaken = _context.Users.Where(u => u.Name == req.NewName).SingleOrDefault();
+                if (userNameTaken == null)
+                {
+                    try
+                    {
+                        existingUser.Name = req.NewName;
+                        _context.Update(existingUser);
+                        await _context.SaveChangesAsync();
+                        return Ok(); //200
+                    }
+                    catch
+                    {
+                        return StatusCode(420); //Method Failure
+                    }
+                }
+                else
+                {
+                    return Conflict(); //409
+                }
+            }else
             {
-                return NotFound(); //404
+                return StatusCode(413); //Request Entity Too Large
             }
         }
 
-        // put: /Users/Edit/password
-        //in body payload ex:{"name" :"name","newPassword":"123"} 
-        [HttpPut("/edit/name")]
+        // POST: /users/editPassword
+        [HttpPost("editPassword")]
         public async Task<IActionResult> EditPassword([FromBody]PasswordChangeRequestModel request)
         {
+            //find current user name for request client
+            string username = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+
             //find user in the database
-            Users existingUser = _context.Users.Where(u => u.Name == request.Name).SingleOrDefault();
-            //we could get the user name from the jwt token, but we'll just send it from the client
-            if (existingUser != null)
+            Users existingUser = _context.Users.Where(u => u.Name == username).SingleOrDefault();
+            CryptoUtility util = new CryptoUtility();
+            try
             {
-                CryptoUtility util = new CryptoUtility();
                 existingUser.Password = util.GenerateHash(request.NewPassword, existingUser.Salt);
                 _context.Update(existingUser);
                 await _context.SaveChangesAsync();
                 return Ok(); //200
             }
-            else
+            catch
             {
-                return NotFound(); //404
+                return StatusCode(420); //Method Failure
             }
         }
 
-        // put: /Users/Edit/avatar
-        //in body payload ex:{"name" :"name","avatar": base64String} 
-        [HttpPut("/edit/name")]
+        // POST: /Users/editAvatar
+        [HttpPost("editAvatar")]
         public async Task<IActionResult> EditAvatar([FromBody]AvatarChangeRequestModel request)
         {
+            //find current user name for request client
+            string username = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+
             //find user in the database
-            Users existingUser = _context.Users.Where(u => u.Name == request.Name).SingleOrDefault();
-            //no need for password, jwt token must be presented
-            if (existingUser != null)
+            Users existingUser = _context.Users.Where(u => u.Name == username).SingleOrDefault();
+            try
             {
-                existingUser.Avatar = request.Avatar;
+                existingUser.Avatar = request.NewAvatar;
                 _context.Update(existingUser);
                 await _context.SaveChangesAsync();
                 return Ok(); //200
             }
-            else
+            catch
             {
-                return NotFound(); //404
+                return StatusCode(420); //Method Failure
             }
         }
 
-        // DELETE: /Users
-        //for local testing: DELETE request to http://localhost:5200/Users, in body payload JSon ex: { "name":"aaa", "pswd":"123"}
-        [HttpDelete]
-        public async Task<IActionResult> DeleteUser([FromBody]RequestModel request)
+        // DELETE: /Users/deleteAccount
+        [HttpDelete("deleteAccount")]
+        public async Task<IActionResult> DeleteAccount()
         {
-            //check if user exists in database, no need for password because we have jwt auth
-            Users existingUser = _context.Users.Where(u => u.Name == request.Name).SingleOrDefault();
+            //find current user name for request client from the jwt token
+            string username = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            //find user in the database
+            Users existingUser = _context.Users.Where(u => u.Name == username).SingleOrDefault();
+            //delete it
             if (existingUser != null)
             {
+                try { 
                 _context.Users.Remove(existingUser);
                 await _context.SaveChangesAsync();
                 return Ok(); //200
+                }
+                catch
+                {
+                    return StatusCode(420); //Method Failure
+                }
             }
             else
             {
                 return NotFound(); //404
             }
         }
-    }
-    
-    //classes representing a request body. Used for model binding in requests
-    public class RequestModel
-    {
-        public string Name { get; set; }
-        public string Password { get; set; }
-        public string Avatar { get; set; }
-    }
-    public class NameChangeRequestModel
-    {
-        public string Name { get; set; }
-        public string NewName { get; set; }
-    }
-    public class PasswordChangeRequestModel
-    {
-        public string Name { get; set; }
-        public string NewPassword { get; set; }
-    }
-    public class AvatarChangeRequestModel
-    {
-        public string Name { get; set; }
-        public string Avatar { get; set; }
     }
 }
