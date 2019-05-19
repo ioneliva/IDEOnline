@@ -4,13 +4,13 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace SaveLoadMicroservice.Models
 {
-    public partial class dbContext : DbContext
+    public partial class SaveLoadDbContext : DbContext
     {
-        public dbContext()
+        public SaveLoadDbContext()
         {
         }
 
-        public dbContext(DbContextOptions<dbContext> options)
+        public SaveLoadDbContext(DbContextOptions<SaveLoadDbContext> options)
             : base(options)
         {
         }
@@ -37,7 +37,8 @@ namespace SaveLoadMicroservice.Models
 
                 entity.Property(e => e.Content)
                     .HasColumnName("content")
-                    .HasColumnType("VARCHAR");
+                    .HasColumnType("VARCHAR")
+                    .HasDefaultValueSql("\"\"");
 
                 entity.Property(e => e.Name)
                     .IsRequired()
@@ -45,6 +46,10 @@ namespace SaveLoadMicroservice.Models
                     .HasColumnType("VARCHAR");
 
                 entity.Property(e => e.ParentId).HasColumnName("parentId");
+
+                entity.Property(e => e.Type)
+                    .HasColumnName("type")
+                    .HasColumnType("VARCHAR (20)");
 
                 entity.Property(e => e.UserId).HasColumnName("userId");
 

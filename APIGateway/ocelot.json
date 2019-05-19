@@ -76,6 +76,18 @@
 			],
 			"UpstreamPathTemplate": "/auth",
 			"UpstreamHttpMethod": [ "Post" ]
+		},
+		{
+			"DownstreamPathTemplate": "/save",
+			"DownstreamScheme": "http",
+			"DownstreamHostAndPorts": [
+				{
+					"Host": "localhost",
+					"Port": 5010
+				}
+			],
+			"UpstreamPathTemplate": "/save",
+			"UpstreamHttpMethod": [ "Put" ]
 		}
 	],
 			"GlobalConfiguration": {

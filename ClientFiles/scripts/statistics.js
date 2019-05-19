@@ -84,6 +84,30 @@ var loginMicroservice = {
 		});
 	}
 };
+var saveMicroservice = {
+	name: "saveMicroservice",
+	about: "this microservice handles storage and retrieval of file data",
+	state: "down",
+	accessLevel: "you need to be logged in to access this microservice",
+	serverStartDate: null,
+	accessedDate: null,
+	warmupPing: 0,
+	ping: 0,
+	whenDown: "you will not be able save or load your project",
+	sendPing: function () {
+		let startTime = new Date();
+		sendRequest("PUT", apiGateway + "/save", {
+			"statusRequest": ""
+		}, function (response) {
+			saveMicroservice.warmupPing = new Date() - startTime;
+			saveMicroservice.state = "running";
+			let saveMS = JSON.parse(response);
+			saveMicroservice.serverStartDate = saveMS.serverStart;
+		}, function (err) {
+			saveMicroservice.state = "down";
+		});
+	}
+};
 
 
 //warm-up the microservice(auto stores data into RAM and cache, makes further requests a lot faster)
@@ -91,6 +115,7 @@ function warmUpMicroservices() {
 	wordColorMicroservice.sendPing();
 	undoMicroservice.sendPing();
 	loginMicroservice.sendPing();
+	saveMicroservice.sendPing();
 }
 
 //get time elapsed since oldDate param, convert it to seconds/minutes/hours/days if needed

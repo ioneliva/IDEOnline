@@ -9,9 +9,13 @@ function formatForTabId(fileId) {					//input file.id
 function formatForEditorId(tabId) {					//input tab.id
 	return tabId.slice(0, -4) + "_editor";			//output editor.id
 }
-function getFileNameFromFileId(fileId) {			//example: for id ="123.cs_Parent", this would "123.cs"
+function getFileNameFromFileId(fileId) {			//input id ="123.cs_Parent"
 	let _charIndex = fileId.lastIndexOf("_");
-	return fileId.slice(0, _charIndex);
+	return fileId.slice(0, _charIndex);				//output  "123.cs"
+}
+function getEditorForFile(fileId) {		//input id= "123.cs_Parent"
+	let editorObject = document.getElementById(fileId + "_editor");
+	return editorObject;			//output: object representing the editor linked to the file id
 }
 
 //tab switching
