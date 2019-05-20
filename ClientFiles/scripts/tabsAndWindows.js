@@ -82,6 +82,11 @@ function attachNewEditorFor(tab) {
 	newEditor.contentEditable = "true";
 	newEditor.setAttribute("spellcheck", false);
 	newEditor.setAttribute("type", "text");
+	//get contents (locally) if file was modified previously and closed in this session
+	let contents = getFileContents(getFileIdFromTabId(tab.id));
+	if (contents != "") {
+		newEditor.innerHTML = contents;
+	}
 	contentSection.insertBefore(newEditor, contentSection.firstChild);
 	//listeners on the editor window, responsable for all the functionality
 	newEditor.addEventListener("keyup", keyUp);
@@ -191,6 +196,8 @@ function closeTab(tab) {
 	editor.removeEventListener("keydown", triggerOnDownCombos);
 	editor.removeEventListener("cut", handleCut);
 	editor.removeEventListener("paste", handlePaste);
+	//save contents of editor for future opening of it in this session
+	saveFileForSession(getFileIdFromTabId(tab.id), editor.innerHTML);
 	//remove attached editor
 	editor.parentElement.removeChild(editor);
 	//signal solution window this tab is closed

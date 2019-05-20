@@ -240,3 +240,32 @@ function hideLoadScreen() {
 	document.getElementById("fileSelectorStretchBackground").style.display = "none";
 	document.getElementById("loadFileSelectorWindow").style.display = "none";
 }
+
+/*object to hold an array of pairs {"file":file, "content":content}. Used to save file content for current session (locally)
+for saving over multiple sessions, the user will have to to use save Microservice*/
+var projectFilesContents = new Array();
+
+//save one file content for the session
+function saveFileForSession(fileId, fileContent) {
+	//remove last saved content for this file
+	for (let i = 0; i < projectFilesContents.length; i++) {
+		if (projectFilesContents[i].fileId == fileId) {
+			projectFilesContents.splice(i, 1);
+			break;
+		}
+	}
+	//add new content
+	projectFilesContents.push({ "fileId": fileId, "fileContent": fileContent});
+}
+
+//get file contents by id
+function getFileContents(fileId) {
+	ret = "";
+	for (let i = 0; i < projectFilesContents.length; i++) {
+		if (projectFilesContents[i].fileId == fileId) {
+			ret = projectFilesContents[i].fileContent;
+			break;
+		}
+	}
+	return ret;
+}

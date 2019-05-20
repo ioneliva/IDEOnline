@@ -132,7 +132,6 @@ function openInTab(file) {
 			setActiveTab(tab);
 			let editor = attachNewEditorFor(tab);
 			setActiveEditor(editor);
-			//TODO: load contents of editor window from Save/Load Microservice
 		}
 	}
 }

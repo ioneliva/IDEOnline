@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
@@ -51,12 +50,10 @@ namespace SaveLoadMicroservice.Controllers
                 /* sql would look like: SELECT * FROM UserFiles
                                             INNER JOIN Users 
                                                 WHERE Users.Id = UserFiles.userId 
-                                                AND (UserFiles.ParentID =
-                                                    (SELECT UserFiles.id FROM UserFiles WHERE UserFiles.name = current.Name )) */
+                                                AND UserFiles.ParentID = current.id */
                 IQueryable<UserFiles> userFiles = from f in _context.UserFiles
                                                   join u in _context.Users on f.UserId equals u.Id
-                                                  where u.Name == username
-                                                    && (f.ParentId == (_context.UserFiles.Where(uf => uf.Name == current.Name).SingleOrDefault()).Id)
+                                                  where u.Name == username && f.ParentId == current.Id
                                                   select f;
                 if (userFiles.Any())
                 {
