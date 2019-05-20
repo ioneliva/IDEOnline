@@ -15,7 +15,8 @@ function triggerOnDownCombos(e) {
 	}
 	//save
 	if (c === "s" && e.ctrlKey) {
-		//todo
+		e.preventDefault();
+		save();
 	}
 }
 

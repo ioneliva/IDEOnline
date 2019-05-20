@@ -15,7 +15,7 @@ namespace WordColorMicroservice.Modules
         {
             Post("/wordColorMicroservice", _ =>
             {
-                string plainWord, plainWordPosition, plainPreWord, plainPreWordPosition, coloredWord, coloredPreWord, token;
+                string plainWord, plainWordPosition, lang, plainPreWord, plainPreWordPosition, coloredWord, coloredPreWord, token;
                 bool enterPressedOnClient = false, preWordEmpty=false, postWordEmpty=false;
                 Dictionary<string, string> responsePair = new Dictionary<string, string>();
                 JObject clientMessage = JObject.Parse(RequestStream.FromStream(Request.Body).AsString());
@@ -30,8 +30,9 @@ namespace WordColorMicroservice.Modules
                 //normal key press values
                 plainWord = clientMessage["word_and_delimiter"].ToString();
                 plainWordPosition = clientMessage["position"].ToString();
+                lang = clientMessage["language"].ToString();
                 if (plainWord.Length>0) {
-                    coloredWord = MatchToColor(plainWord);
+                    coloredWord = MatchToColor(plainWord, lang);
                     responsePair.Add("coloredWord", coloredWord);
                     responsePair.Add("position", plainWordPosition);
                 }
@@ -47,7 +48,7 @@ namespace WordColorMicroservice.Modules
                     plainPreWord = clientMessage["preWord"].ToString();
                     plainPreWordPosition = clientMessage["preWordPos"].ToString();
                     if (plainPreWord.Length > 0){
-                        coloredPreWord = MatchToColor(plainPreWord);
+                        coloredPreWord = MatchToColor(plainPreWord, lang);
                         responsePair.Add("coloredPreWord", coloredPreWord);
                         responsePair.Add("coloredPreWordPosition", plainPreWordPosition);
                     }
@@ -71,13 +72,27 @@ namespace WordColorMicroservice.Modules
             });
         }
 
-        private string MatchToColor(string compositeWord)
+        private string MatchToColor(string compositeWord, string lang)
         {
             string word="", ret = "";
             char delimiter;
             var regex = Resources.Delimiters.PRINTABLE;
             string wordColor = Resources.Colors.BLACK,
                    delimiterColor = Resources.Colors.BLACK;
+            List<string> dictionary;
+
+            switch (lang.ToLower())
+            {
+                case "java":
+                    dictionary = Resources.KeyWords.JAVA_LANGUAGE;
+                    break;
+                case "c#":
+                    dictionary = Resources.KeyWords.CSHARP_LANGUAGE;
+                    break;
+                default:
+                    dictionary = Resources.KeyWords.C_LANGUAGE;
+                    break;
+            }
 
             //split de composite word into word+delimiter, construct the span <word><delimiter> structure
             for (int i = 0; i < compositeWord.Length; i++)
@@ -89,7 +104,7 @@ namespace WordColorMicroservice.Modules
                     // we need to trigger the coloring
                     if (i==compositeWord.Length-1) 
                     {
-                        if (Resources.KeyWords.C_LANGUAGE.Contains(word.ToLower()))
+                        if (dictionary.Contains(word))
                         {
                             wordColor = Resources.Colors.BLUE;
                         }
@@ -99,7 +114,7 @@ namespace WordColorMicroservice.Modules
                 }
                 else{       //reached a delimiter
                     //adding the word(up to the encountered delimiter) to the span structure
-                    if (Resources.KeyWords.C_LANGUAGE.Contains(word.ToLower()))
+                    if (dictionary.Contains(word))
                     {
                         wordColor = Resources.Colors.BLUE;
                     }
@@ -124,6 +139,5 @@ namespace WordColorMicroservice.Modules
 
             return ret;
         }
-
     }
 }
