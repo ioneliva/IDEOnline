@@ -26,11 +26,10 @@ function setDefaultValues() {
 
 	//project root must be hidden until user exits initial "select project" screen to avoid showing placeholder root
 	document.getElementById("solExplorerUL").style.display = "none";
-	//make toolbar dragable
+	//make various large containers draggable
 	dragElement(document.getElementById("toolbar"));
-	//make solution explorer dragable
 	dragElement(document.getElementById("solutionWindow"));
-
+	dragElement(document.getElementById("loadFileSelectorWindow"));
 	//servers warm-up
 	warmUpMicroservices();
 }

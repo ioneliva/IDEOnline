@@ -63,7 +63,7 @@ function attachDirToParent(dirStructure, parent) {
 	parent.nextElementSibling.appendChild(dirStructure);
 	//expand parent
 	if (!parent.previousElementSibling.classList.contains("expand-down")) {
-		expandElementByDbClick();
+		expandElementByDbClick(parent);
 	}
 }
 
@@ -130,7 +130,6 @@ function openInTab(file) {
 		} else {		//create new tab
 			let tab = createTabFor(file.id);
 			setActiveTab(tab);
-			file.classList.add("inTab");
 			let editor = attachNewEditorFor(tab);
 			setActiveEditor(editor);
 			//TODO: load contents of editor window from Save/Load Microservice

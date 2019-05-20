@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -48,7 +47,7 @@ namespace SaveLoadMicroservice.Controllers
                     Content = fileContent,
                 };
 
-                //extract user name from token
+                //extract user name from JWT token
                 string username = User.FindFirst(ClaimTypes.NameIdentifier).Value;
                 //check if user already exists in the Users table
                 try
@@ -56,10 +55,7 @@ namespace SaveLoadMicroservice.Controllers
                     Users existingUser = _context.Users.Where(u => u.Name == username).SingleOrDefault();
                 if (existingUser == null) //insert new user, new files
                 {
-                    Users newUser = new Users
-                    {
-                        Name = username
-                    };
+                    Users newUser = new Users { Name = username };
                     _context.Users.Add(newUser);
                     _context.SaveChanges(); //not async, we need the id created before we can proceed
                     //get id of user from users table, knowing user name

@@ -13,6 +13,9 @@ function getFileNameFromFileId(fileId) {			//input id ="123.cs_Parent"
 	let _charIndex = fileId.lastIndexOf("_");
 	return fileId.slice(0, _charIndex);				//output  "123.cs"
 }
+function getFileIdFromTabId(tabId) {				//input tab.id
+	return tabId.slice(0, -4);						//output file.id
+}
 function getEditorForFile(fileId) {		//input id= "123.cs_Parent"
 	let editorObject = document.getElementById(fileId + "_editor");
 	return editorObject;			//output: object representing the editor linked to the file id
@@ -55,6 +58,10 @@ function createTabFor(fileId) {
 	//put the new tab before the others
 	let tabsParent = document.getElementById("tabs");
 	tabsParent.insertBefore(newTab, tabsParent.firstChild);
+	//modify file in solution explorer to signal it is opened in tab
+	fileId = fileId.replace(/\./g, "\\.");
+	solExplFile = document.getElementById("solExplorerUL").querySelector("#" + fileId);
+	solExplFile.classList.add("inTab");
 
 	return newTab;
 }
@@ -62,12 +69,12 @@ function createTabFor(fileId) {
 //create a new editor window and attach it, linking it to the parameter tab
 function attachNewEditorFor(tab) {
 	let newEditor = document.createElement("div"),
-		content = document.getElementById("content");
+		contentSection = document.getElementById("content");
 
 	//if this is the only editor added, remove placeholder
 	let placeHolder = document.getElementById("initialFile.cs_placeholder_editor");
 	if (placeHolder) {
-		content.removeChild(content.firstElementChild);
+		contentSection.removeChild(contentSection.firstElementChild);
 	}
 	//set id for editor window to match the id of the linked tab
 	newEditor.id = formatForEditorId(tab.id);
@@ -75,7 +82,7 @@ function attachNewEditorFor(tab) {
 	newEditor.contentEditable = "true";
 	newEditor.setAttribute("spellcheck", false);
 	newEditor.setAttribute("type", "text");
-	content.insertBefore(newEditor, content.firstChild);
+	contentSection.insertBefore(newEditor, contentSection.firstChild);
 	//listeners on the editor window, responsable for all the functionality
 	newEditor.addEventListener("keyup", keyUp);
 	newEditor.addEventListener("keydown", triggerOnDown);
@@ -187,10 +194,8 @@ function closeTab(tab) {
 	//remove attached editor
 	editor.parentElement.removeChild(editor);
 	//signal solution window this tab is closed
-	//get file name from tab id  ex:filename.extension_parent_tab, we need filename.extension
-	let _char = tab.id.indexOf("_"),
-		fileNameInSolutionExplorer = tab.id.slice(0, _char);
-	//document.getElementById(fileNameInSolutionExplorer).classList.remove("inTab");
+	let fileId = getFileIdFromTabId(tab.id);
+	document.getElementById(fileId).classList.remove("inTab");
     //remove parent tab
 	allTabs.removeChild(tab);
 }

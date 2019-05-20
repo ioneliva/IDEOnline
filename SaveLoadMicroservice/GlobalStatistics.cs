@@ -11,7 +11,7 @@ namespace SaveLoadMicroservice
             serverStartDate = DateTime.Now;
         }
 
-        public static DateTime getServerStartTime()
+        public static DateTime GetServerStartTime()
         {
             return serverStartDate;
         }

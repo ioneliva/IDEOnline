@@ -88,7 +88,7 @@ var saveMicroservice = {
 	name: "saveMicroservice",
 	about: "this microservice handles storage and retrieval of file data",
 	state: "down",
-	accessLevel: "you need to be logged in to access this microservice",
+	accessLevel: "you need to login to access this service",
 	serverStartDate: null,
 	accessedDate: null,
 	warmupPing: 0,
@@ -96,19 +96,23 @@ var saveMicroservice = {
 	whenDown: "you will not be able save or load your project",
 	sendPing: function () {
 		let startTime = new Date();
-		sendRequest("PUT", apiGateway + "/save", {
-			"statusRequest": ""
-		}, function (response) {
+		fetch(apiGateway + "/statistics/ping", {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		}).then(response => response.json()
+		).then(response => {
 			saveMicroservice.warmupPing = new Date() - startTime;
 			saveMicroservice.state = "running";
-			let saveMS = JSON.parse(response);
-			saveMicroservice.serverStartDate = saveMS.serverStart;
-		}, function (err) {
-			saveMicroservice.state = "down";
+			saveMicroservice.serverStartDate = response.serverStart;
+		}).catch(error => {
+			if (error == "TypeError: NetworkError when attempting to fetch resource.") {
+				saveMicroservice.state = "down";
+			}
 		});
 	}
 };
-
 
 //warm-up the microservice(auto stores data into RAM and cache, makes further requests a lot faster)
 function warmUpMicroservices() {

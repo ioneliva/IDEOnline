@@ -88,6 +88,42 @@
 			],
 			"UpstreamPathTemplate": "/save",
 			"UpstreamHttpMethod": [ "Put" ]
+		},
+		{
+			"DownstreamPathTemplate": "/projectManager/{action}",
+			"DownstreamScheme": "http",
+			"DownstreamHostAndPorts": [
+				{
+					"Host": "localhost",
+					"Port": 5010
+				}
+			],
+			"UpstreamPathTemplate": "/projectManager/{action}",
+			"UpstreamHttpMethod": [ "Get" ]
+		},
+		{
+			"DownstreamPathTemplate": "/load?projectName={query}",
+			"DownstreamScheme": "http",
+			"DownstreamHostAndPorts": [
+				{
+					"Host": "localhost",
+					"Port": 5010
+				}
+			],
+			"UpstreamPathTemplate": "/load?projectName={query}",
+			"UpstreamHttpMethod": [ "Get" ]
+		},
+		{
+			"DownstreamPathTemplate": "/statistics/ping",
+			"DownstreamScheme": "http",
+			"DownstreamHostAndPorts": [
+				{
+					"Host": "localhost",
+					"Port": 5010
+				}
+			],
+			"UpstreamPathTemplate": "/statistics/ping",
+			"UpstreamHttpMethod": [ "Get" ]
 		}
 	],
 			"GlobalConfiguration": {

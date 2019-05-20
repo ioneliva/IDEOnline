@@ -196,7 +196,7 @@
 				<div id="toolbarFunctionsArea">
 					<label for="newProjectBtn" id="toolbar_NewProjectBtn" class="bigBtn toolbarBtn">New project</label>
 					<label id="toolbar_SaveBtn" class="bigBtn toolbarBtn">Save project</label>
-					<label id="toolbar_LoadBtn" class="bigBtn toolbarBtn">Load project</label><br><br>
+					<label for="loadProjectBtn" id="toolbar_LoadBtn" class="bigBtn toolbarBtn">Load project</label><br><br>
 					<label id="toolbar_RunBtn" class="bigBtn toolbarBtn">Run project</label>
 				</div>
 			</div>
@@ -215,24 +215,34 @@
 			</div>
 		</div>
 		<!--hover over toolbar info box-->
-		<div id="toolbar_MSDetailedInfo" class="hovering toolbar_MSInfo">
+		<div id="toolbar_MSDetailedInfo" class="hovering toolbar_MSInfo"></div>
+		<!--file selector container used for Load-->
+		<div id="fileSelectorStretchBackground" class="modalStretchBackground">
+			<div id="loadFileSelectorWindow">
+				<div id="loadFileSelectorHeader" class="sectionHeader">Load a project</div>
+				<div class="boxWrapper">
+					<div id="fileListContainer"></div>
+				</div>
+				<input id="loadFileSelectOkBtn" type="submit" class="loginBoxBtn loadBoxBtn" name="" value="Ok">
+				<input id="loadFileSelectCancelBtn" type="button" class="loginBoxBtn loadBoxBtn" name="" value="Cancel">
+			</div>
 		</div>
-	</div>
+		</div>
 
-	<!--scripts must load after the elements they are applied to-->
-	<script type="text/javascript" src="scripts/init.js"></script>
-	<script type="text/javascript" src="scripts/statistics.js"></script>
-	<script type="text/javascript" src="scripts/login.js"></script>
-	<script type="text/javascript" src="scripts/loginOptions.js"></script>
-	<script type="text/javascript" src="scripts/saveLoad.js"></script>
-	<script type="text/javascript" src="scripts/toolbar.js"></script>
-	<script type="text/javascript" src="scripts/tabsAndWindows.js"></script>
-	<script type="text/javascript" src="scripts/solutionExplorerUI.js"></script>
-	<script type="text/javascript" src="scripts/solutionExplorerUserDiagModals.js"></script>
-	<script type="text/javascript" src="scripts/solutionExplorerFunctionality.js"></script>
-	<script type="text/javascript" src="scripts/editorUtilities.js"></script>
-	<script type="text/javascript" src="scripts/customKeys.js"></script>
-	<script type="text/javascript" src="scripts/customKeyCombos.js"></script>
-	<script type="text/javascript" src="scripts/textEditor.js"></script>
+		<!--scripts must load after the elements they are applied to-->
+		<script type="text/javascript" src="scripts/init.js"></script>
+		<script type="text/javascript" src="scripts/statistics.js"></script>
+		<script type="text/javascript" src="scripts/login.js"></script>
+		<script type="text/javascript" src="scripts/loginOptions.js"></script>
+		<script type="text/javascript" src="scripts/saveLoad.js"></script>
+		<script type="text/javascript" src="scripts/toolbar.js"></script>
+		<script type="text/javascript" src="scripts/tabsAndWindows.js"></script>
+		<script type="text/javascript" src="scripts/solutionExplorerUI.js"></script>
+		<script type="text/javascript" src="scripts/solutionExplorerUserDiagModals.js"></script>
+		<script type="text/javascript" src="scripts/solutionExplorerFunctionality.js"></script>
+		<script type="text/javascript" src="scripts/editorUtilities.js"></script>
+		<script type="text/javascript" src="scripts/customKeys.js"></script>
+		<script type="text/javascript" src="scripts/customKeyCombos.js"></script>
+		<script type="text/javascript" src="scripts/textEditor.js"></script>
 </body>
 </html>
