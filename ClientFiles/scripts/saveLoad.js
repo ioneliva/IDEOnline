@@ -13,17 +13,14 @@ function fileTreeToObject() {
 		fileTreeMember;
 
 	fileTree.push({
-		"name": root.id,
-		"type": getProjectType(),
-		"parent": "",
-		"content": ""
+		"root": root.id,
+		"language": projectLang
 	});
 	for (let i = 0; i < dirs.length; i++) {
 		fileTreeMember = {
 			"name": dirs[i].id,
-			"type": getProjectType(),
-			"parent": dirs[i].parentElement.parentElement.previousElementSibling.id,
-			"content": ""
+			"type": "Directory",
+			"parent": dirs[i].parentElement.parentElement.previousElementSibling.id
 		};
 		fileTree.push(fileTreeMember);
 	}
@@ -36,7 +33,7 @@ function fileTreeToObject() {
 
 		fileTreeMember = {
 			"name": files[i].id,
-			"type": getProjectType(),
+			"type": "File",
 			"parent": files[i].parentElement.parentElement.previousElementSibling.id,
 			"content": fileContent
 		};
@@ -68,6 +65,9 @@ function save() {
 		saveMicroservice.state = "running";
 		setIconForMicroservice("saveMicroservice", "running");
 		saveMicroservice.ping = saveMicroservice.accessedDate - startPing;
+		if (response.status == 200) {
+			alert("Saved");
+		}
 		return response.json();
 	}).catch(error => {	//fail callback
 		if (error == "TypeError: NetworkError when attempting to fetch resource.") {
@@ -79,7 +79,7 @@ function save() {
 }
 
 //create a container in load file list window, holding project information
-function createProjectContainer(projectName, projectType) {
+function createProjectContainer(projectName, projectLang) {
 	let projectDiv = document.createElement("div"),
 		lineIcon = document.createElement("img");
 
@@ -87,7 +87,7 @@ function createProjectContainer(projectName, projectType) {
 	lineIcon.className = "slEIcon";
 	lineIcon.setAttribute("src", "imgs/root.png");
 	projectDiv.appendChild(lineIcon);
-	projectDiv.appendChild(document.createTextNode((projectName + " , language: " + projectType)));
+	projectDiv.appendChild(document.createTextNode((projectName + " , language: " + projectLang)));
 
 	return projectDiv;
 }
@@ -141,7 +141,7 @@ function showLoadScreen() {
 			//convert the i-th part of the Json Array into Object with properties
 			let loadMS = JSON.parse(response[i]);
 			//create a styled div with an icon and result, insert it in the load box
-			projectDiv = createProjectContainer(loadMS.Name, loadMS.Type);
+			projectDiv = createProjectContainer(loadMS.Name, loadMS.Language);
 			fileContainer.appendChild(projectDiv);
 			//make it selectable with one click
 			projectDiv.onclick = function (event) {
@@ -198,6 +198,7 @@ function getStructureFromServer(projectName) {
 						let root = document.getElementsByClassName("project")[0];
 						root.lastChild.nodeValue = loadMS.Name;
 						root.id = loadMS.Name;
+						projectLang = loadMS.Type;
 					} else {	//directory
 						let dirStructure = createDirStructure(loadMS.Name);
 						attachDirToParent(dirStructure, document.getElementById(loadMS.Parent));
@@ -205,14 +206,10 @@ function getStructureFromServer(projectName) {
 				} else {	//file
 					let fileStructure = createFileStructure(getFileNameFromFileId(loadMS.Name), loadMS.Parent);
 					attachFileToParent(fileStructure, document.getElementById(loadMS.Parent));
-				}
-				//load the content for files
-				if (loadMS.Content != "") {
-					let tab = createTabFor(loadMS.Name),
-						editor = attachNewEditorFor(tab);
-					setActiveTab(tab);
-					editor.innerHTML = loadMS.Content;
-					setActiveEditor(editor);
+					//load the content for files
+					if (loadMS.Content != "") {
+						saveFileForSession(loadMS.Name, loadMS.Content);
+					}
 				}	
 			}
 			//make new solution window tree visible

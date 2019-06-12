@@ -7,6 +7,7 @@ document.getElementById("addFile").addEventListener("mousedown", createFile);
 document.getElementById("addDir").addEventListener("mousedown", createDirectory);
 document.getElementById("rename").addEventListener("mousedown", rename);
 document.getElementById("delete").addEventListener("mousedown", del);
+document.getElementById("run").addEventListener("mousedown", runProject);
 
 //file structure for solution explorer
 function createFileStructure(fileName, parentName) {
@@ -313,3 +314,7 @@ function doCloseProject() {
 	hideModal();
 }
 
+//run project
+function runProject() {
+
+}

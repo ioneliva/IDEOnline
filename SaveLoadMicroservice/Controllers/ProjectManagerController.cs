@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -33,24 +31,24 @@ namespace SaveLoadMicroservice.Controllers
             string username = User.FindFirst(ClaimTypes.NameIdentifier).Value;
 
             /*find all projects saved by this user (project root has parent == -1)
-             sql would be SELECT * FROM UserFiles
+             sql would be SELECT * FROM Projects
                                     INNER JOIN Users
-                                        WHERE UserFiles.UserId == Users.Id
-                                        AND Users.Name = username AND UserFiles.parentId =-1
+                                        WHERE Projects.UserId == Users.Id
+                                        AND Users.Name = username
              */
-            IQueryable<object> userFiles = from f in _context.UserFiles
-                                           join u in _context.Users on f.UserId equals u.Id
-                                           where u.Name == username && f.ParentId == -1
-                                           select f;
-            if (userFiles.Any())
+            IQueryable<object> userProjects = from p in _context.Projects
+                                           join u in _context.Users on p.UserId equals u.Id
+                                           where u.Name == username
+                                           select p;
+            if (userProjects.Any())
             {
-                foreach (UserFiles file in userFiles)
+                foreach (Projects project in userProjects)
                 {
                     //prepare a response object to contain only certain properties we need for the client
                     SimpleResponseContainer container = new SimpleResponseContainer()
                     {
-                        Name = file.Name,
-                        Type = file.Type,
+                        Name = project.Name,
+                        Language = project.Language,
                     };
                     //add response to an array of jsons
                     jsonResponse.Add(JsonConvert.SerializeObject(container));

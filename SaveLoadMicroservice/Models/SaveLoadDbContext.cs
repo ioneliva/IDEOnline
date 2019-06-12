@@ -1,6 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace SaveLoadMicroservice.Models
 {
@@ -15,22 +13,15 @@ namespace SaveLoadMicroservice.Models
         {
         }
 
-        public virtual DbSet<UserFiles> UserFiles { get; set; }
+        public virtual DbSet<ProjectFiles> ProjectFiles { get; set; }
+        public virtual DbSet<Projects> Projects { get; set; }
         public virtual DbSet<Users> Users { get; set; }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            //if (!optionsBuilder.IsConfigured)
-            //{
-            //    optionsBuilder.UseSqlite("Datasource=Database/SaveLoadDb.db");
-            //}
-        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasAnnotation("ProductVersion", "2.2.3-servicing-35854");
 
-            modelBuilder.Entity<UserFiles>(entity =>
+            modelBuilder.Entity<ProjectFiles>(entity =>
             {
                 entity.Property(e => e.Id)
                     .HasColumnName("id");
@@ -40,21 +31,46 @@ namespace SaveLoadMicroservice.Models
                     .HasColumnType("VARCHAR")
                     .HasDefaultValueSql("\"\"");
 
+                entity.Property(e => e.DirectParent)
+                    .IsRequired()
+                    .HasColumnName("directParent")
+                    .HasColumnType("VARCHAR (30)");
+
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasColumnName("name")
-                    .HasColumnType("VARCHAR");
+                    .HasColumnType("VARCHAR (30)");
 
-                entity.Property(e => e.ParentId).HasColumnName("parentId");
+                entity.Property(e => e.ProjectId).HasColumnName("projectId");
 
                 entity.Property(e => e.Type)
                     .HasColumnName("type")
                     .HasColumnType("VARCHAR (20)");
 
+                entity.HasOne(d => d.Project)
+                    .WithMany(p => p.ProjectFiles)
+                    .HasForeignKey(d => d.ProjectId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<Projects>(entity =>
+            {
+                entity.Property(e => e.Id)
+                    .HasColumnName("id");
+
+                entity.Property(e => e.Language)
+                    .HasColumnName("language")
+                    .HasColumnType("VARCHAR (20)");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasColumnName("name")
+                    .HasColumnType("VARCHAR (30)");
+
                 entity.Property(e => e.UserId).HasColumnName("userId");
 
                 entity.HasOne(d => d.User)
-                    .WithMany(p => p.UserFiles)
+                    .WithMany(p => p.Projects)
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.Cascade);
             });

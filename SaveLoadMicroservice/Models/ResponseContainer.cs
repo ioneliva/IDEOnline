@@ -10,6 +10,6 @@
     public class SimpleResponseContainer
     {
         public string Name { get; set; }
-        public string Type { get; set; }
+        public string Language { get; set; }
     }
 }

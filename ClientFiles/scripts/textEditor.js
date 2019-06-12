@@ -29,7 +29,7 @@ function keyUp(e) {
 		}
 		let startPing = new Date();
 		sendRequest("POST", apiGateway + "/coloring", {
-			"word_and_delimiter": wordComposite, "language": getProjectType(), "position": cursorPosition,
+			"word_and_delimiter": wordComposite, "language": projectLang, "position": cursorPosition,
 			"enterPressed": enterPressed, "preWord": preWord, "preWordPos": preWordPos, "token": token
 		}, function (response) {
 			//get statistical data about access data and ping

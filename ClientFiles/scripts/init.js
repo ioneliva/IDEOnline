@@ -8,8 +8,14 @@ document.getElementsByClassName("selectProjectType")[0].addEventListener("change
 document.getElementById("userFirstFileInput").addEventListener("blur", setCheckboxForOptInput);
 document.getElementById("okSelectProjType").addEventListener("click",okPressedOnProjSelect);
 
+//variable used to memorize project language
+var projectLang;
+
 //on page load events (more accurately, when the DOM is loaded, without waiting on stylesheets, images or subframes )
 function setDefaultValues() {
+	//set project language
+	projectLang = getProjectType();
+	//toggle logged functionality
 	if (getUserFromJWT() != null) { //user logged and saved in local/session storage
 		localStorage.length > 0 ? document.getElementById("displayedAvatar").src = localStorage.getItem('avatar')
 			: document.getElementById("displayedAvatar").src = sessionStorage.getItem('avatar');
