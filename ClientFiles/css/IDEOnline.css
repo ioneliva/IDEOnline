@@ -613,7 +613,7 @@
 /*file selector window for Load*/
 #loadFileSelectorWindow {
     width: 500px;
-    height: 300px;
+    height: 430px;
     top: 25%;
     left: 30%;
     border: 1px solid;
@@ -669,6 +669,16 @@
     float: right;
     margin-right: 2%;
     margin-bottom: 5px;
+}
+#loadFileSelectDeleteBtn {
+    width: 20%;
+    float: right;
+    margin-right: 2%;
+    margin-bottom: 5px;
+}
+#projDelWarn {
+    top: 40%;
+    left: 20%;
 }
 
 #footer {

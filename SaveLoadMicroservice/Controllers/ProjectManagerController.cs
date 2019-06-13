@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -37,9 +38,9 @@ namespace SaveLoadMicroservice.Controllers
                                         AND Users.Name = username
              */
             IQueryable<object> userProjects = from p in _context.Projects
-                                           join u in _context.Users on p.UserId equals u.Id
-                                           where u.Name == username
-                                           select p;
+                                               join u in _context.Users on p.UserId equals u.Id
+                                               where u.Name == username
+                                               select p;
             if (userProjects.Any())
             {
                 foreach (Projects project in userProjects)
@@ -57,6 +58,46 @@ namespace SaveLoadMicroservice.Controllers
                 return Ok(jsonResponse.ToString()); //200
             }
             return NotFound(); //404
+        }
+
+        //POST /projectManager/renameProject
+        [HttpPost("renameProject")]
+        public async Task<IActionResult> RenameProject([FromBody]ProjectRenameRequest req)
+        {
+            //extract user name from JWT Token
+            string username = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            //find project in database
+            Projects project = (from p in _context.Projects
+                                  join u in _context.Users on p.UserId equals u.Id
+                                  where u.Name == username && p.Name== req.Project
+                                  select p).FirstOrDefault();
+            //rename project (if it exists)
+            if (project != null)
+            {
+                project.Name = req.NewName;
+                _context.Projects.Update(project);
+                await _context.SaveChangesAsync();
+            }
+
+            return Ok(); //200
+        }
+
+        //DELETE /projectManager/deleteProject?projectName=name
+        [HttpDelete("deleteProject")]
+        public async Task<IActionResult> DeleteProject(string projectName)
+        {
+            //extract user name from JWT Token
+            string username = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            //find project in database
+            Projects project = (from p in _context.Projects
+                                join u in _context.Users on p.UserId equals u.Id
+                                where u.Name == username && p.Name == projectName
+                                select p).First();  //We are guaranteeed to have exactly one project match
+
+            //delete project
+            _context.Projects.Remove(project);
+            await _context.SaveChangesAsync();
+            return Accepted(); //202
         }
     }
 }

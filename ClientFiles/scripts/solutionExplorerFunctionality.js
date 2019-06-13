@@ -201,6 +201,11 @@ function rename() {
 		if (clickedItem.classList.contains("file")) {
 			inputType = "file";
 		}
+		else {
+			if (clickedItem.classList.contains("project")) {
+				inputType = "project";
+			}
+		}
 		if (isValidInput(inputType, userInput)) {
 			if (clickedItem.classList.contains("project")			//the project can be renamed without duplicate checks
 				|| !isDuplicate(inputType, hierarchyParent, userInput)		//check for duplicate names in the same dir/project
@@ -221,6 +226,9 @@ function rename() {
 					clickedItem.lastChild.textContent = userInput;
 				}
 				else { //for directories and project
+					if (inputType == "project") { //signal the change to Save/Load Microservice so this project doesn't remain untracked in the database
+						signalProjectRename(clickedItem.lastChild.textContent, userInput);
+					}
 					let directChild = clickedItem.nextElementSibling.firstElementChild;
 					while (directChild) {	//directory is not empty
 						//find direct descendant files
@@ -252,8 +260,42 @@ function rename() {
 	};
 }
 
+//signal Save/Load Microservice about project rename
+function signalProjectRename(project, newName) {
+	let token = localStorage.getItem("JWT") || sessionStorage.getItem("JWT");
+
+	if (saveMicroservice.state == "running") {
+		saveMicroservice.state = "busy";
+		setIconForMicroservice("saveMicroservice", "busy");
+	}
+	let startPing = new Date();
+	fetch(apiGateway + "/projectManager/renameProject", {
+		method: 'POST',
+		body: JSON.stringify({
+			"project": project,
+			"newName": newName
+		}),
+		headers: {
+			'Content-Type': 'application/json',
+			'Authorization': "Bearer " + token
+		}
+	}).then(response => {	//success callback
+		//get statistical data about access data and ping
+		saveMicroservice.accessedDate = new Date();
+		saveMicroservice.state = "running";
+		setIconForMicroservice("saveMicroservice", "running");
+		saveMicroservice.ping = saveMicroservice.accessedDate - startPing;
+		return response.json();
+	}).catch(error => {	//fail callback
+		if (error == "TypeError: NetworkError when attempting to fetch resource.") {
+			saveMicroservice.state = "down";
+			setIconForMicroservice("saveMicroservice", "down");
+		}
+	});
+}
+
 //delete file or dir
-function del() {	//"delete" is a reserved word
+function del() {	//note: "delete" is a reserved word in JavaScript
 	prepareUserDiagFor("delete");
 	document.getElementById("UserOkBtn").onclick = function doDelete() {	//yes button pressed for delete
 		let parent = clickedItem.parentElement;

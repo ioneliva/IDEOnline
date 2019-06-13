@@ -99,7 +99,7 @@
 				}
 			],
 			"UpstreamPathTemplate": "/projectManager/{action}",
-			"UpstreamHttpMethod": [ "Get" ]
+			"UpstreamHttpMethod": [ "Get", "Post", "Delete" ]
 		},
 		{
 			"DownstreamPathTemplate": "/load?projectName={query}",

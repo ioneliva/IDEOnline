@@ -48,22 +48,27 @@ namespace SaveLoadMicroservice.Controllers
                 Projects project = new Projects();
                 foreach (JObject item in req.Take(1))
                 {
+                    project.UserId = user.Id;
+                    project.Name = item.GetValue("root").ToString();
+                    project.Language = item.GetValue("language").ToString();
+
                     //check if the project for this user already exists
                     Projects existingProject = (from p in _context.Projects
                                                 where p.Name == item.GetValue("root").ToString() && p.UserId == user.Id
                                                 select p).FirstOrDefault();
                     if (existingProject == null)
                     {
-                        project.UserId = user.Id;
-                        project.Name = item.GetValue("root").ToString();
-                        project.Language = item.GetValue("language").ToString();
                         _context.Projects.Add(project);
-                        await _context.SaveChangesAsync();
                     }
                     else
                     {
-                        project = existingProject;
+                        /*if project already exists we delete it and recreate it based on the data received
+                        this is to track any deleted or renamed files and directories
+                        we could update each element separateley, but that takes more database transactions, more code both here and on the client and is actually slower*/
+                        _context.Projects.Remove(existingProject);
+                        _context.Projects.Add(project);
                     }
+                    await _context.SaveChangesAsync();
                 }
 
                 //after first item in JArray, the files and directories are enumerated
@@ -74,27 +79,15 @@ namespace SaveLoadMicroservice.Controllers
                     {
                         content = item.GetValue("content").ToString();
                     }
-
-                    //find file in the project that is identical to the one processed currently
-                    ProjectFiles existingFile = (from f in _context.ProjectFiles
-                                                 where f.ProjectId == project.Id && f.Name == item.GetValue("name").ToString()
-                                                 select f).FirstOrDefault();
-                    if (existingFile == null)
+                    ProjectFiles projectFile = new ProjectFiles
                     {
-                        ProjectFiles projectFile = new ProjectFiles
-                        {
-                            ProjectId = project.Id,
-                            Name = item.GetValue("name").ToString(),
-                            Type = item.GetValue("type").ToString(),
-                            DirectParent = item.GetValue("parent").ToString(),
-                            Content = content
-                        };
-                        _context.ProjectFiles.Add(projectFile);
-                    }
-                    else
-                    {
-                        existingFile.Content = content;
-                    }
+                        ProjectId = project.Id,
+                        Name = item.GetValue("name").ToString(),
+                        Type = item.GetValue("type").ToString(),
+                        DirectParent = item.GetValue("parent").ToString(),
+                        Content = content
+                    };
+                    _context.ProjectFiles.Add(projectFile);
                     await _context.SaveChangesAsync();
                 }
             }

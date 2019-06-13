@@ -219,12 +219,21 @@
 		<!--file selector container used for Load-->
 		<div id="fileSelectorStretchBackground" class="modalStretchBackground">
 			<div id="loadFileSelectorWindow">
+				<!--warning message on project deletion-->
+				<div id="projDelWarnStretchBackground" class="criticalWarnStretchBackground">
+					<div id="projDelWarn" class="criticalWarn">
+						<label id="delProjLabel"></label><br>
+						<input id="projDelwarnOk" type="submit" class="bigBtn warnOk" name="" value="Yes, proceed!">
+						<input id="projDelwarnCancel" type="button" class="bigBtn warnCancel" name="" value="No, take me back!">
+					</div>
+				</div>
 				<div id="loadFileSelectorHeader" class="sectionHeader">Load a project</div>
 				<div class="boxWrapper">
 					<div id="fileListContainer"></div>
 				</div>
 				<input id="loadFileSelectOkBtn" type="submit" class="loginBoxBtn loadBoxBtn" name="" value="Ok">
 				<input id="loadFileSelectCancelBtn" type="button" class="loginBoxBtn loadBoxBtn" name="" value="Cancel">
+				<input id="loadFileSelectDeleteBtn" type="button" class="loginBoxBtn loadBoxBtn" name="" value="Delete Saved Project">
 			</div>
 		</div>
 		</div>

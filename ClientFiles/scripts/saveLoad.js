@@ -1,7 +1,8 @@
 document.getElementById("toolbar_SaveBtn").addEventListener("click", save);
 document.getElementById("loadProjectBtn").addEventListener("click", showLoadScreen);
 document.getElementById("loadFileSelectCancelBtn").addEventListener("click", hideLoadScreen);
-document.getElementById("loadFileSelectOkBtn").addEventListener("click",load);
+document.getElementById("loadFileSelectOkBtn").addEventListener("click", load);
+document.getElementById("loadFileSelectDeleteBtn").addEventListener("click", deleteProject);
 
 //save solution tree contents into an object
 function fileTreeToObject() {
@@ -45,7 +46,7 @@ function fileTreeToObject() {
 
 //send file structure and contents as Json string to server for storage 
 function save() {
-	let token = localStorage.getItem("JWT") || sessionStorage.getItem("JWT")
+	let token = localStorage.getItem("JWT") || sessionStorage.getItem("JWT");
 
 	if (saveMicroservice.state == "running") {
 		saveMicroservice.state = "busy";
@@ -84,6 +85,7 @@ function createProjectContainer(projectName, projectLang) {
 		lineIcon = document.createElement("img");
 
 	projectDiv.className = "projectInLoadList";
+	projectDiv.id = projectName + "_projectInLoadList";
 	lineIcon.className = "slEIcon";
 	lineIcon.setAttribute("src", "imgs/root.png");
 	projectDiv.appendChild(lineIcon);
@@ -113,9 +115,11 @@ function showLoadScreen() {
 	let fileContainer = document.getElementById("fileListContainer");
 
 	fileContainer.innerHTML = "";
+	document.getElementById("projDelWarnStretchBackground").style.display = "none";
+	document.getElementById("projDelWarn").style.display = "none";
 
 	//populate list with project names from the server
-	let token = localStorage.getItem("JWT") || sessionStorage.getItem("JWT")
+	let token = localStorage.getItem("JWT") || sessionStorage.getItem("JWT");
 
 	if (saveMicroservice.state == "running") {
 		saveMicroservice.state = "busy";
@@ -164,7 +168,7 @@ function showLoadScreen() {
 
 //get file structure from server for a project, replace file tree with it
 function getStructureFromServer(projectName) {
-	let token = localStorage.getItem("JWT") || sessionStorage.getItem("JWT")
+	let token = localStorage.getItem("JWT") || sessionStorage.getItem("JWT");
 
 	if (saveMicroservice.state == "running") {
 		saveMicroservice.state = "busy";
@@ -228,14 +232,69 @@ function getStructureFromServer(projectName) {
 
 //replace file tree with the data from the server
 function load() {
-	getStructureFromServer(clickedProject);
-	hideLoadScreen();
+	if (clickedProject) {	//if no project was selected, ignore load request
+		getStructureFromServer(clickedProject);
+		hideLoadScreen();
+	}
 }
 
 //hide load screen
 function hideLoadScreen() {
 	document.getElementById("fileSelectorStretchBackground").style.display = "none";
 	document.getElementById("loadFileSelectorWindow").style.display = "none";
+}
+
+//delete project from load window
+function deleteProject() {
+	//display warning message
+	if (!clickedProject) {
+		return;
+	}
+	document.getElementById("delProjLabel").innerHTML = "This will delete the project \"" + clickedProject + "\" from the database.<br>Are you sure ?";
+	document.getElementById("projDelWarnStretchBackground").style.display = "block";
+	document.getElementById("projDelWarn").style.display = "block";
+	//user canceled deletion
+	document.getElementById("projDelwarnCancel").onclick = function () {
+		document.getElementById("projDelWarnStretchBackground").style.display = "none";
+		document.getElementById("projDelWarn").style.display = "none";
+		return;
+	}
+	//user accepted to continue on the warning
+	document.getElementById("projDelwarnOk").onclick = function() {
+		let markedProject = document.getElementById(clickedProject + "_projectInLoadList"),
+			token = localStorage.getItem("JWT") || sessionStorage.getItem("JWT");
+
+		if (saveMicroservice.state == "running") {
+			saveMicroservice.state = "busy";
+			setIconForMicroservice("saveMicroservice", "busy");
+		}
+		let startPing = new Date();
+		fetch(apiGateway + "/projectManager/deleteProject?projectName=" + clickedProject, {
+			method: 'DELETE',
+			headers: {
+				'Content-Type': 'application/json',
+				'Authorization': "Bearer " + token
+			}
+		}).then(response => {	//success callback
+			//get statistical data about access data and ping
+			saveMicroservice.accessedDate = new Date();
+			saveMicroservice.state = "running";
+			setIconForMicroservice("saveMicroservice", "running");
+			saveMicroservice.ping = saveMicroservice.accessedDate - startPing;
+			if (response.status == 202) { //deletion was a success
+				markedProject.parentElement.removeChild(markedProject);
+			}
+			return response.json();
+		}).catch(error => {	//fail callback
+			if (error == "TypeError: NetworkError when attempting to fetch resource.") {
+				saveMicroservice.state = "down";
+				setIconForMicroservice("saveMicroservice", "down");
+				alert("Save microservice is down, try again later...");
+			}
+		});
+		document.getElementById("projDelWarnStretchBackground").style.display = "none";
+		document.getElementById("projDelWarn").style.display = "none";
+	}
 }
 
 /*object to hold an array of pairs {"file":file, "content":content}. Used to save file content for current session (locally)
