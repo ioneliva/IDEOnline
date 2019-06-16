@@ -113,6 +113,35 @@ var saveMicroservice = {
 		});
 	}
 };
+var runMicroservice = {
+	name: "runMicroservice",
+	about: "this microservice handles compiling and running of user code",
+	state: "down",
+	accessLevel: "you need to login to access this service",
+	serverStartDate: null,
+	accessedDate: null,
+	warmupPing: 0,
+	ping: 0,
+	whenDown: "you will not be able to run your code",
+	sendPing: function () {
+		let startTime = new Date();
+		fetch(apiGateway + "/statistics/ping", {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		}).then(response => response.json()
+		).then(response => {
+			runMicroservice.warmupPing = new Date() - startTime;
+			runMicroservice.state = "running";
+			runMicroservice.serverStartDate = response.serverStart;
+		}).catch(error => {
+			if (error == "TypeError: NetworkError when attempting to fetch resource.") {
+				runMicroservice.state = "down";
+			}
+		});
+	}
+};
 
 //warm-up the microservice(auto stores data into RAM and cache, makes further requests a lot faster)
 function warmUpMicroservices() {

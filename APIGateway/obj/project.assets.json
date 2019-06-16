@@ -619,13 +619,13 @@
           "lib/netstandard2.0/Microsoft.AspNetCore.Razor.dll": {}
         }
       },
-      "Microsoft.AspNetCore.Razor.Design/2.2.0": {
+      "Microsoft.AspNetCore.Razor.Design/2.1.1": {
         "type": "package",
         "build": {
-          "build/netstandard2.0/Microsoft.AspNetCore.Razor.Design.props": {}
+          "build/netstandard2.0/_._": {}
         },
         "buildMultiTargeting": {
-          "buildMultiTargeting/Microsoft.AspNetCore.Razor.Design.props": {}
+          "buildMultiTargeting/_._": {}
         }
       },
       "Microsoft.AspNetCore.Razor.Language/2.1.1": {
@@ -3445,10 +3445,10 @@
         "microsoft.aspnetcore.razor.nuspec"
       ]
     },
-    "Microsoft.AspNetCore.Razor.Design/2.2.0": {
-      "sha512": "ex8MZwgoyqHim1L6/65FnfjdSMtSKSuSU3DVoiCADZACc05T7f8uRB7SnDIP5LPQKLUBLilfNkd1p14RLyfdQA==",
+    "Microsoft.AspNetCore.Razor.Design/2.1.1": {
+      "sha512": "1XHObHLx6A0/57ZmLG9gfKMO/Z/gQjRXPFWQDMlPZGYwcfgufvSdmI2+RYvR5DGkbba9HIHC35ClNQ2yVNIohw==",
       "type": "package",
-      "path": "microsoft.aspnetcore.razor.design/2.2.0",
+      "path": "microsoft.aspnetcore.razor.design/2.1.1",
       "hasTools": true,
       "files": [
         ".nupkg.metadata",
@@ -3456,8 +3456,10 @@
         "build/netstandard2.0/Microsoft.AspNetCore.Razor.Design.CodeGeneration.targets",
         "build/netstandard2.0/Microsoft.AspNetCore.Razor.Design.props",
         "buildMultiTargeting/Microsoft.AspNetCore.Razor.Design.props",
-        "microsoft.aspnetcore.razor.design.2.2.0.nupkg.sha512",
+        "microsoft.aspnetcore.razor.design.2.1.1.nupkg.sha512",
         "microsoft.aspnetcore.razor.design.nuspec",
+        "tasks/net46/Microsoft.AspNetCore.Razor.Tasks.dll",
+        "tasks/netstandard2.0/Microsoft.AspNetCore.Razor.Tasks.dll",
         "tools/Microsoft.AspNetCore.Razor.Language.dll",
         "tools/Microsoft.CodeAnalysis.CSharp.dll",
         "tools/Microsoft.CodeAnalysis.Razor.dll",
@@ -8483,7 +8485,6 @@
   "projectFileDependencyGroups": {
     ".NETCoreApp,Version=v2.2": [
       "Microsoft.AspNetCore.Cors >= 2.2.0",
-      "Microsoft.AspNetCore.Razor.Design >= 2.2.0",
       "Microsoft.NETCore.App >= 2.2.0",
       "Ocelot >= 13.5.0"
     ]
@@ -8530,11 +8531,6 @@
       "netcoreapp2.2": {
         "dependencies": {
           "Microsoft.AspNetCore.Cors": {
-            "target": "Package",
-            "version": "[2.2.0, )"
-          },
-          "Microsoft.AspNetCore.Razor.Design": {
-            "suppressParent": "All",
             "target": "Package",
             "version": "[2.2.0, )"
           },

@@ -124,6 +124,18 @@
 			],
 			"UpstreamPathTemplate": "/statistics/ping",
 			"UpstreamHttpMethod": [ "Get" ]
+		},
+		{
+			"DownstreamPathTemplate": "/run",
+			"DownstreamScheme": "http",
+			"DownstreamHostAndPorts": [
+				{
+					"Host": "localhost",
+					"Port": 5020
+				}
+			],
+			"UpstreamPathTemplate": "/run",
+			"UpstreamHttpMethod": [ "Post" ]
 		}
 	],
 			"GlobalConfiguration": {

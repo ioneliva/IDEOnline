@@ -5,8 +5,9 @@ document.getElementById("loadFileSelectOkBtn").addEventListener("click", load);
 document.getElementById("loadFileSelectDeleteBtn").addEventListener("click", deleteProject);
 
 //save solution tree contents into an object
-function fileTreeToObject() {
-	let solutionExplorer = document.getElementById("solutionWindow"),
+function fileTreeToObject(usedByRun) {
+	let fileContent = "",
+		solutionExplorer = document.getElementById("solutionWindow"),
 		root = solutionExplorer.querySelector(".project"),
 		dirs = solutionExplorer.querySelectorAll(".directory"),
 		files = solutionExplorer.querySelectorAll(".file"),
@@ -26,10 +27,13 @@ function fileTreeToObject() {
 		fileTree.push(fileTreeMember);
 	}
 	for (let i = 0; i < files.length; i++) {
-		let fileContent = "";
-
 		if (getEditorForFile(files[i].id) != null) {
-			fileContent = getEditorForFile(files[i].id).innerHTML;
+			if (usedByRun) {	//optional parameter passed, function is used for Running
+				fileContent = getEditorForFile(files[i].id).innerText;
+			}
+			else {	//function used for Saving
+				fileContent = getEditorForFile(files[i].id).innerHTML;
+			}
 		}
 
 		fileTreeMember = {

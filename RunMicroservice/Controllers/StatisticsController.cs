@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 
-namespace SaveLoadMicroservice.Controllers
+namespace RunMicroservice.Controllers
 {
     [Route("[controller]")]
     [ApiController]

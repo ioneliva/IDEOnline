@@ -8,6 +8,7 @@ document.getElementById("addDir").addEventListener("mousedown", createDirectory)
 document.getElementById("rename").addEventListener("mousedown", rename);
 document.getElementById("delete").addEventListener("mousedown", del);
 document.getElementById("run").addEventListener("mousedown", runProject);
+document.getElementById("toolbar_RunBtn").addEventListener("mousedown", runProject);
 
 //file structure for solution explorer
 function createFileStructure(fileName, parentName) {
@@ -358,5 +359,32 @@ function doCloseProject() {
 
 //run project
 function runProject() {
+	let token = localStorage.getItem("JWT") || sessionStorage.getItem("JWT");
 
+	if (runMicroservice.state == "running") {
+		runMicroservice.state = "busy";
+		setIconForMicroservice("runMicroservice", "busy");
+	}
+	let startPing = new Date();
+	fetch(apiGateway + "/run", {
+		method: 'POST',
+		body: JSON.stringify(fileTreeToObject(true)),
+		headers: {
+			'Content-Type': 'application/json',
+			'Authorization': "Bearer " + token
+		}
+	}).then(response => {	//success callback
+		//get statistical data about access data and ping
+		runMicroservice.accessedDate = new Date();
+		runMicroservice.state = "running";
+		setIconForMicroservice("runMicroservice", "running");
+		runMicroservice.ping = runMicroservice.accessedDate - startPing;
+		return response.json();
+	}).catch(error => {	//fail callback
+		if (error == "TypeError: NetworkError when attempting to fetch resource.") {
+			runMicroservice.state = "down";
+			setIconForMicroservice("runMicroservice", "down");
+			alert("Run Microservice is down, try again later...");
+		}
+	});
 }
