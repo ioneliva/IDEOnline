@@ -114,7 +114,7 @@
 			"UpstreamHttpMethod": [ "Get" ]
 		},
 		{
-			"DownstreamPathTemplate": "/statistics/ping",
+			"DownstreamPathTemplate": "/statistics/saveLoadPing",
 			"DownstreamScheme": "http",
 			"DownstreamHostAndPorts": [
 				{
@@ -122,7 +122,7 @@
 					"Port": 5010
 				}
 			],
-			"UpstreamPathTemplate": "/statistics/ping",
+			"UpstreamPathTemplate": "/statistics/saveLoadPing",
 			"UpstreamHttpMethod": [ "Get" ]
 		},
 		{
@@ -136,6 +136,42 @@
 			],
 			"UpstreamPathTemplate": "/run",
 			"UpstreamHttpMethod": [ "Post" ]
+		},
+		{
+			"DownstreamPathTemplate": "/statistics/runPing",
+			"DownstreamScheme": "http",
+			"DownstreamHostAndPorts": [
+				{
+					"Host": "localhost",
+					"Port": 5020
+				}
+			],
+			"UpstreamPathTemplate": "/statistics/runPing",
+			"UpstreamHttpMethod": [ "Get" ]
+		},
+		{
+			"DownstreamPathTemplate": "/scaffolds?scaffoldName={query}",
+			"DownstreamScheme": "http",
+			"DownstreamHostAndPorts": [
+				{
+					"Host": "localhost",
+					"Port": 5050
+				}
+			],
+			"UpstreamPathTemplate": "/scaffolds?scaffoldName={query}",
+			"UpstreamHttpMethod": [ "Get" ]
+		},
+		{
+			"DownstreamPathTemplate": "/statistics/scafoldingPing",
+			"DownstreamScheme": "http",
+			"DownstreamHostAndPorts": [
+				{
+					"Host": "localhost",
+					"Port": 5050
+				}
+			],
+			"UpstreamPathTemplate": "/statistics/scafoldingPing",
+			"UpstreamHttpMethod": [ "Get" ]
 		}
 	],
 			"GlobalConfiguration": {

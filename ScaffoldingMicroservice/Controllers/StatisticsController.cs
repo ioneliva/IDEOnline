@@ -1,15 +1,13 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 
-namespace RunMicroservice.Controllers
+namespace ScaffoldingMicroservice.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    [AllowAnonymous]
     public class StatisticsController : Controller
     {
-        [HttpGet("runPing")]
+        [HttpGet("scafoldingPing")]
         public IActionResult GetPing()
         {
             Dictionary<string, string> responsePair = new Dictionary<string, string>

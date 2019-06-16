@@ -96,7 +96,7 @@ var saveMicroservice = {
 	whenDown: "you will not be able save or load your project",
 	sendPing: function () {
 		let startTime = new Date();
-		fetch(apiGateway + "/statistics/ping", {
+		fetch(apiGateway + "/statistics/saveLoadPing", {
 			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json'
@@ -125,7 +125,7 @@ var runMicroservice = {
 	whenDown: "you will not be able to run your code",
 	sendPing: function () {
 		let startTime = new Date();
-		fetch(apiGateway + "/statistics/ping", {
+		fetch(apiGateway + "/statistics/runPing", {
 			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json'
@@ -142,6 +142,35 @@ var runMicroservice = {
 		});
 	}
 };
+var scaffoldingMicroservice = {
+	name: "ScaffoldingMicroservice",
+	about: "this microservice is responsable for the distribution of standard project boiler plate code",
+	state: "down",
+	accessLevel: "no login required, you can access all data on this server",
+	serverStartDate: null,
+	accessedDate: null,
+	warmupPing: 0,
+	ping: 0,
+	whenDown: "you will start with an empty project and will have to create it manually, using the IDE functionality",
+	sendPing: function () {
+		let startTime = new Date();
+		fetch(apiGateway + "/statistics/scafoldingPing", {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		}).then(response => response.json()
+		).then(response => {
+			scaffoldingMicroservice.warmupPing = new Date() - startTime;
+			scaffoldingMicroservice.state = "running";
+			scaffoldingMicroservice.serverStartDate = response.serverStart;
+		}).catch(error => {
+			if (error == "TypeError: NetworkError when attempting to fetch resource.") {
+				scaffoldingMicroservice.state = "down";
+			}
+		});
+	}
+};
 
 //warm-up the microservice(auto stores data into RAM and cache, makes further requests a lot faster)
 function warmUpMicroservices() {
@@ -149,6 +178,8 @@ function warmUpMicroservices() {
 	undoMicroservice.sendPing();
 	loginMicroservice.sendPing();
 	saveMicroservice.sendPing();
+	runMicroservice.sendPing();
+	scaffoldingMicroservice.sendPing();
 }
 
 //get time elapsed since oldDate param, convert it to seconds/minutes/hours/days if needed

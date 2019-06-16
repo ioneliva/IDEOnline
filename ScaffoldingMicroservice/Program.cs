@@ -2,17 +2,17 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 
-namespace RunMicroservice
+namespace ScaffoldingMicroservice
 {
     public class Program
     {
         public static void Main(string[] args)
         {
             var config = new ConfigurationBuilder()
-                     .SetBasePath(Directory.GetCurrentDirectory())
-                     .AddJsonFile("hosting.json", optional: false, reloadOnChange: true)
-                     .AddJsonFile("appsettings.json")
-                     .Build();
+                           .SetBasePath(Directory.GetCurrentDirectory())
+                           .AddJsonFile("hosting.json", optional: false, reloadOnChange: true)
+                           .AddJsonFile("appsettings.json")
+                           .Build();
 
             var host = new WebHostBuilder()
                 .UseContentRoot(Directory.GetCurrentDirectory())

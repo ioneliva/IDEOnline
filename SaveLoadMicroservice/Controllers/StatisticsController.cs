@@ -9,7 +9,7 @@ namespace SaveLoadMicroservice.Controllers
     [AllowAnonymous]
     public class StatisticsController : Controller
     {
-        [HttpGet("ping")]
+        [HttpGet("saveLoadPing")]
         public IActionResult GetPing()
         {
             Dictionary<string, string> responsePair = new Dictionary<string, string>
