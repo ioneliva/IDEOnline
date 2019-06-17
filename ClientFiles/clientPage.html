@@ -80,19 +80,27 @@
 		<div class="modalStretchBackground newProject">
 			<div id="newProjectDiag" class="modal-complex">
 				<span class="backToWelcomeDiag">&#8634; Back</span>
-				<h2>Please pick a name and type for your project:</h2>
-				<label>Name: </label>
-				<input id="userProjNameInput" type="text" autocomplete="off"><span class="checkbox valid" id="projNameCheckbox">&#10004;</span>
+				<h2>Your new project details:</h2>
 				<label>Type:</label>
-				<select class="selectProjectType">
+				<select class="selectProjectType Type">
 					<option value="" selected disabled hidden>--Please select one--</option>
-					<option value="c++">C/C++ </option>
-					<option value="java">Java</option>
 					<option value="c#">C#</option>
-					<option value="html">HTML</option>
-					<option value="javascript">Javascript</option>
-				</select><span class="checkbox valid" id="selectTypeCheckbox">&#10004;</span><br><br>
-				<label>Initial file (optional):</label>
+					<option value="c++">C/C++</option>
+					<option value="java">Java</option>
+				</select><span class="checkbox valid" id="selectTypeCheckbox">&#10004;</span>
+				<label>Scaffold:</label>
+				<select class="selectProjectType CSharpScaffold">
+					<option value="empty" selected>Empty Project</option>
+					<option class="cSharpOption" value="console">Console Application</option>
+					<option class="cSharpOption" value="classlib">Class Library</option>
+					<option class="cSharpOption" value="mvc">MVC</option>
+					<option class="cSharpOption" value="mstest">Unit Test Project</option>
+					<option class="cSharpOption" value="web">ASP.NET Core</option>
+					<option class="cSharpOption" value="is4empty">Identity Server 4</option>
+				</select><br><br>
+				<label>Name: </label>
+				<input id="userProjNameInput" type="text" autocomplete="off"><span class="checkbox valid" id="projNameCheckbox">&#10004;</span><br>
+				<label id="initialFileLabel">Initial file (optional):</label>
 				<input id="userFirstFileInput" type="text" autocomplete="off"><span class="checkbox valid" id="projOptCheckbox">&#10004;</span><br>
 				<button id="okSelectProjType" class="bigBtn welcomeDiagBtn">Ok</button>
 			</div>
@@ -210,6 +218,7 @@
 					<label class="statusIcon">&#128128;</label><button id="undoMicroservice" class="MSinfoBtn">Undo/Redo</button><br>
 					<label class="statusIcon">&#128128;</label><button id="loginMicroservice" class="MSinfoBtn">Login/Register</button><br>
 					<label class="statusIcon">&#128128;</label><button id="saveMicroservice" class="MSinfoBtn">Save/Load</button><br>
+					<label class="statusIcon">&#128128;</label><button id="scaffoldingMicroservice" class="MSinfoBtn">Project Scaffolds</button><br>
 					<label class="statusIcon">&#128128;</label><button id="runMicroservice" class="MSinfoBtn">Compile and run</button><br>
 				</div>
 			</div>

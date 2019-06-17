@@ -18,7 +18,18 @@ function getFileIdFromTabId(tabId) {				//input tab.id
 }
 function getEditorForFile(fileId) {		//input id= "123.cs_Parent"
 	let editorObject = document.getElementById(fileId + "_editor");
-	return editorObject;			//output: object representing the editor linked to the file id
+	return editorObject;			//output object representing the editor linked to the file id
+}
+function getFileExtensionFromId(fileId) {
+	let _charIndex = fileId.lastIndexOf("_"),
+		pointChar = fileId.indexOf("."),
+		secondPointChar = fileId.indexOf(".", pointChar+1);
+	if (secondPointChar == -1) {						 //input 123.cs_Parent
+		return fileId.slice(pointChar, _charIndex);		 //output .cs
+	}
+	else {												 //input 123.cs.nuget.assets..etc
+		return fileId.slice(pointChar, secondPointChar); //output .cs
+	}
 }
 
 //tab switching
@@ -83,9 +94,15 @@ function attachNewEditorFor(tab) {
 	newEditor.setAttribute("spellcheck", false);
 	newEditor.setAttribute("type", "text");
 	//get contents (locally) if file was modified previously and closed in this session
-	let contents = getFileContents(getFileIdFromTabId(tab.id));
+	let fileId = getFileIdFromTabId(tab.id);
+	let contents = getFileContents(fileId);
 	if (contents != "") {
-		newEditor.innerHTML = contents;
+		if (getFileExtensionFromId(fileId) != ".xml" && getFileExtensionFromId(fileId) != ".csproj") {
+			newEditor.innerHTML = contents;
+		}
+		else {
+			newEditor.innerText = contents;
+		}
 	}
 	contentSection.insertBefore(newEditor, contentSection.firstChild);
 	//listeners on the editor window, responsable for all the functionality
@@ -197,11 +214,16 @@ function closeTab(tab) {
 	editor.removeEventListener("cut", handleCut);
 	editor.removeEventListener("paste", handlePaste);
 	//save contents of editor for future opening of it in this session
-	saveFileForSession(getFileIdFromTabId(tab.id), editor.innerHTML);
+	let fileId = getFileIdFromTabId(tab.id);
+	if(getFileExtensionFromId(fileId) != ".xml" && getFileExtensionFromId(fileId) != ".csproj") {
+		saveFileForSession(getFileIdFromTabId(tab.id), editor.innerHTML);
+	}
+	else {
+		saveFileForSession(getFileIdFromTabId(tab.id), editor.innerText);
+	}
 	//remove attached editor
 	editor.parentElement.removeChild(editor);
 	//signal solution window this tab is closed
-	let fileId = getFileIdFromTabId(tab.id);
 	document.getElementById(fileId).classList.remove("inTab");
     //remove parent tab
 	allTabs.removeChild(tab);

@@ -5,6 +5,8 @@ document.getElementsByClassName("backToWelcomeDiag")[0].addEventListener("click"
 document.getElementById("userProjNameInput").addEventListener("blur", setCheckBoxForProjInput);
 document.getElementsByClassName("selectProjectType")[0].addEventListener("blur", setCheckBoxForTypeSelection);
 document.getElementsByClassName("selectProjectType")[0].addEventListener("change", setCheckBoxForTypeSelection);
+document.getElementsByClassName("selectProjectType")[0].addEventListener("change", updateScaffoldsForLanguage);
+document.getElementsByClassName("CSharpScaffold")[0].addEventListener("change", updateScaffoldsForLanguage);
 document.getElementById("userFirstFileInput").addEventListener("blur", setCheckboxForOptInput);
 document.getElementById("okSelectProjType").addEventListener("click",okPressedOnProjSelect);
 
@@ -13,8 +15,27 @@ var projectLang;
 
 //on page load events (more accurately, when the DOM is loaded, without waiting on stylesheets, images or subframes )
 function setDefaultValues() {
-	//set project language
+	//set default project language and options asociated in the New Project Menu
 	projectLang = getProjectType();
+	let optionalFileInput = document.getElementById("userFirstFileInput");
+	if (projectLang == "c#") {
+		let cSharpOptions = document.getElementsByClassName("cSharpOption");
+		for (let i = 0; i < cSharpOptions.length; i++) {
+			cSharpOptions[i].style.display = "block";
+		}
+		if (document.getElementsByClassName("CSharpScaffold")[0].value == "empty") {
+			optionalFileInput.style.display = "inline";
+			optionalFileInput.previousElementSibling.style.display = "inline";
+			optionalFileInput.nextElementSibling.style.display = "inline";
+		}
+	}
+	else {
+		optionalFileInput.style.display = "inline";
+		optionalFileInput.previousElementSibling.style.display = "inline";
+		optionalFileInput.nextElementSibling.style.display = "inline";
+		document.getElementsByClassName("CSharpScaffold")[0].value = "empty";
+	}
+
 	//toggle logged functionality
 	if (getUserFromJWT() != null) { //user logged and saved in local/session storage
 		localStorage.length > 0 ? document.getElementById("displayedAvatar").src = localStorage.getItem('avatar')
@@ -117,6 +138,9 @@ function getProjectName() {
 function getProjectType() {
 	return document.getElementsByClassName("selectProjectType")[0].value;
 }
+function getProjectTemplate() {
+	return document.getElementsByClassName("CSharpScaffold")[0].value;
+}
 function getOptionalFile() {
 	return document.getElementById("userFirstFileInput").value;
 }
@@ -170,6 +194,38 @@ function setCheckboxForOptInput() {
 	}
 }
 
+//set language based on user selection. Also set options visible based on that selection
+function updateScaffoldsForLanguage() {
+	let optionalFileInput = document.getElementById("userFirstFileInput"),
+		cSharpOptions = document.getElementsByClassName("cSharpOption");
+	projectLang = getProjectType();
+
+	if (projectLang == "c#") {
+		if (document.getElementsByClassName("CSharpScaffold")[0].value != "empty") {
+			optionalFileInput.style.display = "none";
+			optionalFileInput.previousElementSibling.style.display = "none";
+			optionalFileInput.nextElementSibling.style.display = "none";
+			document.getElementById("userFirstFileInput").value = "";
+		}
+		else {
+			optionalFileInput.style.display = "inline";
+			optionalFileInput.previousElementSibling.style.display = "inline";
+			optionalFileInput.nextElementSibling.style.display = "inline";
+		}
+		for (let i = 0; i < cSharpOptions.length; i++) {
+			cSharpOptions[i].style.display = "block";
+		}
+	} else {
+		optionalFileInput.style.display = "inline";
+		optionalFileInput.previousElementSibling.style.display = "inline";
+		optionalFileInput.nextElementSibling.style.display = "inline";
+		for (let i = 0; i < cSharpOptions.length; i++) {
+			cSharpOptions[i].style.display = "none";
+		}
+		document.getElementsByClassName("CSharpScaffold")[0].value = "empty";
+	}
+}
+
 //check if user selected a value for project type
 function projectTypeSelected() {
 	let selection = document.getElementsByClassName("selectProjectType")[0],
@@ -187,7 +243,7 @@ function okPressedOnProjSelect() {
 	const projNameInput = document.getElementById("userProjNameInput").getBoundingClientRect(),
 		projFirstFileInput = document.getElementById("userFirstFileInput").getBoundingClientRect(),
 		projTypeSelect = document.getElementsByClassName("selectProjectType")[0].getBoundingClientRect();
-	let userInputProjName, userInputOptional,
+	let projectName = getProjectName(), optionalFileName = getOptionalFile(),
 		projNameInputErrorX = projNameInput.left,
 		projNameInputErrorY = projNameInput.top + projNameInput.height,
 		projTypeErrorX = projTypeSelect.left,
@@ -196,10 +252,8 @@ function okPressedOnProjSelect() {
 		projFirstFileInputY = projFirstFileInput.top + projFirstFileInput.height,
 		allOk = false;
 
-	userInputProjName = getProjectName();
-	userInputOptional = getOptionalFile();
-	if (isValidInput("project", userInputProjName)) {
-		if (isValidInput("file", userInputOptional) || !userInputOptional) {
+	if (isValidInput("project", projectName)) {
+		if (isValidInput("file", optionalFileName) || !optionalFileName) {
 			if (projectTypeSelected()) {
 				allOk = true;
 			}
@@ -208,29 +262,25 @@ function okPressedOnProjSelect() {
 			}
 		}
 		else {	//user enter an invalid value for optional startup file
-			showDiagError(userInputOptional + " is not a valid name for a file! try filename.extension", projFirstFileInputX, projFirstFileInputY);
+			showDiagError(optionalFileName + " is not a valid name for a file! try filename.extension", projFirstFileInputX, projFirstFileInputY);
 		}
 	}
 	else {	//user entered an invalid input for project name
-		showDiagError(userInputProjName + " is not a valid name for a project!", projNameInputErrorX, projNameInputErrorY);
+		showDiagError(projectName + " is not a valid name for a project!", projNameInputErrorX, projNameInputErrorY);
 	}
 
 	//tests passed, all values entered are valid
 	if (allOk) {
 		//delete old project contents
 		doCloseProject();
-		//set root on Solution Explorer window
-		let root = document.getElementsByClassName("project")[0];
-		root.lastChild.nodeValue = getProjectName();
-		root.id = getProjectName();
-		if (userInputOptional) {
-			let fileStructure = createFileStructure(userInputOptional, root.id);
-			attachFileToParent(fileStructure, root);
-			openInTab(fileStructure.lastChild);
+		//empty project option
+		let template = document.getElementsByClassName("CSharpScaffold")[0].value;
+		if (template == "empty") {
+			createEmptyProject(projectName, optionalFileName);
 		}
-		document.getElementById("solExplorerUL").style.display = "block";
-		//hide 'new project' and 'welcome' window so the user can progress
-		document.getElementsByClassName("newProject")[0].style.display = "none";
-		document.getElementsByClassName("welcome")[0].style.display = "none";
+		//project with scaffolding option
+		else {
+			createTemplateProject(getProjectTemplate(), projectName);
+		}
 	}
 }

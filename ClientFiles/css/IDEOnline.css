@@ -146,6 +146,8 @@
     color: #0b175c;
 }
 .selectProjectType, .modal-complex input, .bigBtn {
+    min-width: 165px;
+    text-align: center;
     border: 1px solid #000;
     border-radius: 10px;
     padding: 5px;
@@ -158,6 +160,9 @@
 .selectProjectType:focus, .modal-complex input:focus {
     border-color: #000;
     box-shadow: 3px 8px 8px #888888;
+}
+#userFirstFileInput, #initialFileLabel, .cSharpOption {     /*these inputs need to be hidden for different types of user projects, will change dynamically in code*/
+    display: none;
 }
 .backToWelcomeDiag {
     color: #0e4215;

@@ -11,10 +11,9 @@ function showMicroserviceList() {
 		document.getElementById("MSHiddenInfo").style.display = "none";
 	} else {
 		for (let i = 0; i < document.getElementsByClassName("MSinfoBtn").length; i++) {
-			let microservice = document.getElementsByClassName("MSinfoBtn")[i], state;
+			let microservice = document.getElementsByClassName("MSinfoBtn")[i];
 			//in javascript all variables are available within their scope as named properties of their parent object, so var x == window["x"] for globals
 			let microserviceObject = window[microservice.id];
-			//microservices not finished yet are only present as buttons, with no object implementation
 			if (!(microserviceObject instanceof HTMLButtonElement)) {
 				setIconForMicroservice(microservice.id, microserviceObject.state);
 			}
