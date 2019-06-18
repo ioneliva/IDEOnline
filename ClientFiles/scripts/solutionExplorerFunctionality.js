@@ -359,19 +359,18 @@ function doCloseProject() {
 
 //run project
 function runProject() {
-	let token = localStorage.getItem("JWT") || sessionStorage.getItem("JWT");
-
 	if (runMicroservice.state == "running") {
 		runMicroservice.state = "busy";
 		setIconForMicroservice("runMicroservice", "busy");
 	}
 	let startPing = new Date();
+	//swap the next commented line in to see Roslyn compiler work instead of the CLI
+	//fetch(apiGateway + "/run/Roslyn", {
 	fetch(apiGateway + "/run", {
 		method: 'POST',
-		body: JSON.stringify(fileTreeToObject(true)),
+		body: JSON.stringify(fileTreeToObject(true)),	//this function is defined in saveLoad.js
 		headers: {
-			'Content-Type': 'application/json',
-			'Authorization': "Bearer " + token
+			'Content-Type': 'application/json'
 		}
 	}).then(response => {	//success callback
 		//get statistical data about access data and ping

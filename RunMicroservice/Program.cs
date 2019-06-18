@@ -11,7 +11,6 @@ namespace RunMicroservice
             var config = new ConfigurationBuilder()
                      .SetBasePath(Directory.GetCurrentDirectory())
                      .AddJsonFile("hosting.json", optional: false, reloadOnChange: true)
-                     .AddJsonFile("appsettings.json")
                      .Build();
 
             var host = new WebHostBuilder()

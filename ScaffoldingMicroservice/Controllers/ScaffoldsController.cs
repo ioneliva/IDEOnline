@@ -28,8 +28,8 @@ namespace ScaffoldingMicroservice.Controllers
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 FileName = "dotnet",
-                Arguments = " new " + scaffoldName + " --name " + projectName + " -o " + projectRootPath + "\\Samples\\" + projectName
-                //note: since Core 2.0, dotnet restore is automatically run on dotnet new
+                Arguments = " new " + scaffoldName + " --name " + projectName + " --no-restore" + " -o " + projectRootPath + "\\Samples\\" + projectName
+                //note: since Core 2.0, dotnet restore is automatically run on dotnet new, unless specified, as we did above
             };
 
             string result;

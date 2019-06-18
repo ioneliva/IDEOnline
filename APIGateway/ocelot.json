@@ -138,6 +138,18 @@
 			"UpstreamHttpMethod": [ "Post" ]
 		},
 		{
+			"DownstreamPathTemplate": "/run/Roslyn",
+			"DownstreamScheme": "http",
+			"DownstreamHostAndPorts": [
+				{
+					"Host": "localhost",
+					"Port": 5020
+				}
+			],
+			"UpstreamPathTemplate": "/run/Roslyn",
+			"UpstreamHttpMethod": [ "Post" ]
+		},
+		{
 			"DownstreamPathTemplate": "/statistics/runPing",
 			"DownstreamScheme": "http",
 			"DownstreamHostAndPorts": [

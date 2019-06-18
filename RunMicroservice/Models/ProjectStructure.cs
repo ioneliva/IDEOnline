@@ -16,4 +16,9 @@ namespace RunMicroservice.Models
         public string Parent { get; set; }
         public string Content { get; set; }
     }
+    public class SimpleFileStructure
+    {
+        public string Name { get; set; }
+        public string Path { get; set; }
+    }
 }

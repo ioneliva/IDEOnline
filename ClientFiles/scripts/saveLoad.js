@@ -4,7 +4,7 @@ document.getElementById("loadFileSelectCancelBtn").addEventListener("click", hid
 document.getElementById("loadFileSelectOkBtn").addEventListener("click", load);
 document.getElementById("loadFileSelectDeleteBtn").addEventListener("click", deleteProject);
 
-//save solution tree contents into an object
+//save solution tree contents into an object. The parameters signals the function is used by run functionality
 function fileTreeToObject(usedByRun) {
 	let fileContent = "",
 		solutionExplorer = document.getElementById("solutionWindow"),
@@ -27,13 +27,13 @@ function fileTreeToObject(usedByRun) {
 		fileTree.push(fileTreeMember);
 	}
 	for (let i = 0; i < files.length; i++) {
-		if (getEditorForFile(files[i].id) != null) {
-			if (usedByRun) {	//optional parameter passed, function is used for Running
-				fileContent = getEditorForFile(files[i].id).innerText;
-			}
-			else {	//function used for Saving
-				fileContent = getEditorForFile(files[i].id).innerHTML;
-			}
+		if (usedByRun && getFileExtensionFromId(files[i].id) != ".csproj"
+						&& getFileExtensionFromId(files[i].id) != ".xml"
+						&& getFileExtensionFromId(files[i].id) != ".csproj") {
+			fileContent = getFileContents(files[i].id, true); //pack the files as plain text, for compile and run
+		}
+		else {
+			fileContent = getFileContents(files[i].id);		//pack the files as html, for storing on Save/Load
 		}
 
 		fileTreeMember = {
@@ -214,7 +214,7 @@ function getStructureFromServer(projectName) {
 				} else {	//file
 					let fileStructure = createFileStructure(getFileNameFromFileId(loadMS.Name), loadMS.Parent);
 					attachFileToParent(fileStructure, document.getElementById(loadMS.Parent));
-					//load the content for files
+					//save the content for files
 					if (loadMS.Content != "") {
 						saveFileForSession(loadMS.Name, loadMS.Content);
 					}
@@ -305,6 +305,22 @@ function deleteProject() {
 for saving over multiple sessions, the user will have to to use save Microservice*/
 var projectFilesContents = new Array();
 
+//get text content from html
+function getTextFromHtmlContent(htmlContent) {
+	//creating a temporary container. We allocate an id and re-use it every time. We avoid creating a container for every file
+	let temp;
+	if (document.getElementById("dummyContainer") == null) {
+		temp = document.createElement("div");
+		temp.id = "dummyContainer";
+	}
+	else {
+		temp = document.getElementById("dummyContainer");
+	}
+	temp.innerHTML = htmlContent;
+	//extract textContent
+	return temp.textContent;
+}
+
 //save one file content for the session
 function saveFileForSession(fileId, fileContent) {
 	//remove last saved content for this file
@@ -315,15 +331,21 @@ function saveFileForSession(fileId, fileContent) {
 		}
 	}
 	//add new content
-	projectFilesContents.push({ "fileId": fileId, "fileContent": fileContent});
+	projectFilesContents.push({ "fileId": fileId, "fileContent": fileContent, "fileContentTextOnly": getTextFromHtmlContent(fileContent)});
 }
 
-//get file contents by id
-function getFileContents(fileId) {
-	ret = "";
+//get file contents by id. Second parameter is optional, signals to return text, not html
+function getFileContents(fileId, textOnly) {
+	let ret = "";
+
 	for (let i = 0; i < projectFilesContents.length; i++) {
 		if (projectFilesContents[i].fileId == fileId) {
-			ret = projectFilesContents[i].fileContent;
+			if (textOnly) {
+				ret = projectFilesContents[i].fileContentTextOnly;
+			}
+			else {
+				ret = projectFilesContents[i].fileContent;
+			}
 			break;
 		}
 	}

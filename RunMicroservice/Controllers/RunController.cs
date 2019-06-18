@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using RunMicroservice.Models;
 using System.Collections.Generic;
@@ -11,16 +10,108 @@ using System;
 using System.Reflection;
 using System.Runtime.Loader;
 using Newtonsoft.Json;
+using System.Diagnostics;
 
 namespace RunMicroservice.Controllers
 {
     [Route("[controller]")]
-    [Authorize]
     [ApiController]
     public class RunController : ControllerBase
     {
-        //POST: /run
+        //POST: /Run
+        //this method uses dotnet CLI to compile and run the project
+        //it works for all types of projects and it's consistent, but it is quite slow. See next method for an alternative
         [HttpPost]
+        public IActionResult Run([FromBody]JArray req)
+        {
+            List<SimpleFileStructure> fileList = new List<SimpleFileStructure>();
+            string projectRootPath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "..", "..", ".."));
+            string csprojLocation = "";
+
+            //create root
+            foreach (JObject item in req.Take(1))
+            {
+                SimpleFileStructure file = new SimpleFileStructure();
+                file.Name = item.GetValue("root").ToString();
+                csprojLocation = file.Path = projectRootPath + "\\Samples\\" + item.GetValue("root").ToString();
+                //create root dir
+                Directory.CreateDirectory(file.Path);
+                fileList.Add(file);
+            }
+            
+            //create all files and directories in root
+            foreach (JObject item in req.Skip(1))
+            {
+                SimpleFileStructure file = new SimpleFileStructure();
+                //strip the parent out of the file name (file name comes in the form file.extension_parent)
+                int indexof_ = item.GetValue("name").ToString().IndexOf("_");
+                file.Name = indexof_ == -1 ? item.GetValue("name").ToString() : item.GetValue("name").ToString().Substring(0, indexof_);
+
+                string parentPath = fileList.Where(f => f.Name == item.GetValue("parent").ToString()).FirstOrDefault().Path;
+                file.Path = Path.Combine(parentPath, file.Name);
+
+                if (item.GetValue("type").ToString() == "Directory")
+                {
+                    //create directory
+                    Directory.CreateDirectory(file.Path);
+                }
+                else if (item.GetValue("type").ToString() == "File")
+                {
+                    string content = "";
+                    if (item.GetValue("content") != null && item.GetValue("content").ToString() != "")
+                    {
+                        content = item.GetValue("content").ToString();
+                    }
+                    //create file
+                    System.IO.File.WriteAllText(file.Path, content);
+                }
+                fileList.Add(file);
+            }
+
+            //compile and run created structure using dotnet CLI
+            ProcessStartInfo startInfo = new ProcessStartInfo
+            {
+                CreateNoWindow = true,
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                FileName = "dotnet",
+                Arguments = " run -p " + csprojLocation
+                //note: since Core 2.0, dotnet restore is automatically called on dotnet run
+            };
+            string successResult = "", errResult="";
+            try
+            {
+                using (Process process = Process.Start(startInfo))
+                {
+                    using (StreamReader sr = process.StandardOutput)
+                    {
+                        successResult = sr.ReadToEnd();
+                        
+                    }
+                    using (StreamReader sr = process.StandardError)
+                    {
+                        errResult = sr.ReadToEnd();
+                        
+                    }
+                    process.WaitForExit();
+                }
+            }
+            catch (Exception ex)
+            {
+                return Conflict(ex); //409
+            }
+
+            //delete the temporary project created
+            Directory.Delete(csprojLocation, true);
+
+            return Ok(successResult + "\n" + errResult); //200
+        }
+
+        //POST: /run/Roslyn
+        //this method compiles and runs the project using Roslyn .Net Compiler
+        //works great for single files and is faster than the CLI. It fails for multiple files with inter-dependancies, though...
+        [HttpPost("Roslyn")]
         public IActionResult Runproject([FromBody]JArray req)
         {
             ResponseContainer response = new ResponseContainer();

@@ -38,7 +38,7 @@ function requestScaffoldFromMicroservice(scaffoldName, projectName) {
 			} else {	//file
 				let fileStructure = createFileStructure(getFileNameFromFileId(loadMS.Name), loadMS.Parent);
 				attachFileToParent(fileStructure, document.getElementById(loadMS.Parent));
-				//load the content for files
+				//save the content for files
 				if (loadMS.Content != "") {
 					saveFileForSession(loadMS.Name, loadMS.Content);
 				}
