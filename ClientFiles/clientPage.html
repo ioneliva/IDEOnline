@@ -24,7 +24,7 @@
 
 		<!--Footer section-->
 		<div id="footer">
-			Copyright &copy; 2019, Licenta, Ionel Iva
+			Copyright &copy; 2019, Ionel Iva
 		</div>
 
 		<!--Solution Explorer section-->
@@ -93,10 +93,8 @@
 					<option value="empty" selected>Empty Project</option>
 					<option class="cSharpOption" value="console">Console Application</option>
 					<option class="cSharpOption" value="classlib">Class Library</option>
-					<option class="cSharpOption" value="mvc">MVC</option>
 					<option class="cSharpOption" value="mstest">Unit Test Project</option>
 					<option class="cSharpOption" value="web">ASP.NET Core</option>
-					<option class="cSharpOption" value="is4empty">Identity Server 4</option>
 				</select><br><br>
 				<label>Name: </label>
 				<input id="userProjNameInput" type="text" autocomplete="off"><span class="checkbox valid" id="projNameCheckbox">&#10004;</span><br>
@@ -244,6 +242,13 @@
 				<input id="loadFileSelectCancelBtn" type="button" class="loginBoxBtn loadBoxBtn" name="" value="Cancel">
 				<input id="loadFileSelectDeleteBtn" type="button" class="loginBoxBtn loadBoxBtn" name="" value="Delete Saved Project">
 			</div>
+		</div>
+		<!--message box used for displaying the results of compile and run-->
+		<div id="runResults">
+			<div id="runResultsHeader" class="sectionHeader">Run results</div>
+			<div id="runResultsContent" class="boxWrapper"></div>
+			<input id="runResultsRequestDownload" type="submit" class="bigBtn" name="" value="Download executable">
+			<input id="runResultsClose" type="submit" class="bigBtn" name="" value="Ok, close this window">
 		</div>
 	</div>
 

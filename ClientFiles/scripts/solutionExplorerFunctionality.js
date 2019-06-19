@@ -107,7 +107,7 @@ function isValidInput(inputType, input) {
 		ret = false;
 
 	if (inputType == "file") {
-		regex = /^[a-zA-Z0-9\_\-]+\.[a-zA-Z]+$/i;	//alphanumeric,"_","-", "." ex: file_0.cpp
+		regex = /^[a-zA-Z]+[a-zA-Z0-9\_\-]*\.[a-zA-Z]+$/i;	//alphanumeric,"_","-", ".", cannot start with a number ex: file_0.cpp
 	}
 	if (inputType == "project" || inputType == "directory") {
 		regex = /^[a-zA-Z0-9\_\-]+$/i;		//alphanumeric,"_","-" ex: Work-Dir
@@ -131,17 +131,14 @@ function openInTab(file) {
 			setActiveEditor(getEditorLinkedTo(tab));
 		} else {		//create new tab
 			let tab = createTabFor(file.id);
-			setActiveTab(tab);
-			let editor = attachNewEditorFor(tab);
-			setActiveEditor(editor);
+			if (tab != null) {	//tab will be null if maximum number of tabs have been reached
+				setActiveTab(tab);
+				let editor = attachNewEditorFor(tab);
+				setActiveEditor(editor);
+			}
 		}
 	}
 }
-
-/*note: I am aware the next two functions repeat code, but in this case it's more explicit to declare two functions
-rather than a single parametrized one. I've actually done it, and the code with checks to verify if we are dealing with
-a file or a directory plus the normal function block is longer than these two functions combined. And it's harder to read and understand,
-similarly to the rename() function. I left that one intentionally combined for both cases, just to prove my point*/
 
 //create new directory in solution explorer
 function createDirectory() {
@@ -185,7 +182,7 @@ function createFile() {
 			}
 		}
 		else {	//user pressed ok on an invalid input
-			showDiagError(userInput + " is not a valid name for a file! try filename.extension");
+			showDiagError(userInput + " is not a valid name for a file!");
 		}
 		this.removeEventListener("click", doCreateFile);
 	};
@@ -359,6 +356,15 @@ function doCloseProject() {
 
 //run project
 function runProject() {
+	let runResultsWindow = document.getElementById("runResultsContent");
+
+	//show run results window
+	runResultsWindow.innerText = "please wait...compiling...";
+	document.getElementById("runResults").style.display = "block";
+	//block user from making another request for compile while the microservice is still processing his old one
+	document.getElementById("toolbar_RunBtn").classList.add("disabledBtn");
+	document.getElementById("run").classList.add("disabledBtn");
+
 	if (runMicroservice.state == "running") {
 		runMicroservice.state = "busy";
 		setIconForMicroservice("runMicroservice", "busy");
@@ -378,12 +384,20 @@ function runProject() {
 		runMicroservice.state = "running";
 		setIconForMicroservice("runMicroservice", "running");
 		runMicroservice.ping = runMicroservice.accessedDate - startPing;
+		//enable elements that allow the user to make another run request
+		document.getElementById("toolbar_RunBtn").classList.remove("disabledBtn");
+		document.getElementById("run").classList.remove("disabledBtn");
 		return response.json();
+	}).then(response => {
+		runResultsWindow.innerText = response.successResult;
+		runResultsWindow.innerText += response.errResult;
 	}).catch(error => {	//fail callback
 		if (error == "TypeError: NetworkError when attempting to fetch resource.") {
 			runMicroservice.state = "down";
 			setIconForMicroservice("runMicroservice", "down");
-			alert("Run Microservice is down, try again later...");
+			runResultsWindow.innerText = "Compile/Run Microservice is down...\nTry again later";
+			document.getElementById("toolbar_RunBtn").classList.remove("disabledBtn");
+			document.getElementById("run").classList.remove("disabledBtn");
 		}
 	});
 }

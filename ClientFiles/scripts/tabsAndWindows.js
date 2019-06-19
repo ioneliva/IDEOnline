@@ -49,14 +49,20 @@ function createTabFor(fileId) {
 	let newTab = document.createElement("div"),
 		innerTab = document.createElement("div"),
 		p = document.createElement("p"),
-		closeBtn = document.createElement("button");
+		closeBtn = document.createElement("button"),
+		tabsParentContainer = document.getElementById("tabs"),
+		maxTabsAllowed =7;		//we must set a limit, otherwise a second row of tabs will be created when reaching the right side of screen
 
+	if (tabsParentContainer.childElementCount >= maxTabsAllowed) {
+		alert("Max number of tabs opened. Close some first...");
+		return null;
+	}
 	//create structure for Tab
 	newTab.id = formatForTabId(fileId);
 	innerTab.className = "inner-tab";
 	p.appendChild(document.createTextNode(getFileNameFromFileId(fileId)));
 	closeBtn.innerHTML = "x";
-	closeBtn.id = "closeButton";
+	closeBtn.id = "closeButton_" + fileId;
 	closeBtn.className = "closeButton";
 	//listener for close button
 	closeBtn.addEventListener("click", closeTab);
@@ -67,8 +73,7 @@ function createTabFor(fileId) {
 	//listener for this tab
 	newTab.addEventListener("click", clickOnTab);
 	//put the new tab before the others
-	let tabsParent = document.getElementById("tabs");
-	tabsParent.insertBefore(newTab, tabsParent.firstChild);
+	tabsParentContainer.insertBefore(newTab, tabsParentContainer.firstChild);
 	//modify file in solution explorer to signal it is opened in tab
 	fileId = fileId.replace(/\./g, "\\.");
 	solExplFile = document.getElementById("solExplorerUL").querySelector("#" + fileId);
@@ -98,7 +103,7 @@ function attachNewEditorFor(tab) {
 	let contents = getFileContents(fileId);
 	if (contents != "") {
 		if (getFileExtensionFromId(fileId) != ".xml" && getFileExtensionFromId(fileId) != ".csproj") {
-			newEditor.innerHTML = contents;
+			newEditor.innerHTML = contents;									//TODO: solve problem here. Text is not colored and <> are getting cut out
 		}
 		else {
 			newEditor.innerText = contents;

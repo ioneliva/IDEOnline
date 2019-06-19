@@ -76,10 +76,10 @@ namespace RunMicroservice.Controllers
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 FileName = "dotnet",
-                Arguments = " run -p " + csprojLocation
+                Arguments = " run -p " + csprojLocation + " --verbosity q"
                 //note: since Core 2.0, dotnet restore is automatically called on dotnet run
             };
-            string successResult = "", errResult="";
+            string successResult = "", errResult = "";
             try
             {
                 using (Process process = Process.Start(startInfo))
@@ -87,12 +87,12 @@ namespace RunMicroservice.Controllers
                     using (StreamReader sr = process.StandardOutput)
                     {
                         successResult = sr.ReadToEnd();
-                        
+
                     }
                     using (StreamReader sr = process.StandardError)
                     {
                         errResult = sr.ReadToEnd();
-                        
+
                     }
                     process.WaitForExit();
                 }
@@ -105,7 +105,39 @@ namespace RunMicroservice.Controllers
             //delete the temporary project created
             Directory.Delete(csprojLocation, true);
 
-            return Ok(successResult + "\n" + errResult); //200
+            //strip directory paths from compilation response (these are the directories created on the server, irrelevant for the client)
+            successResult = StripDirectoryPaths(successResult);
+            errResult = StripDirectoryPaths(errResult);
+            //return response as Json Object
+            Dictionary<string, string> responseMessage = new Dictionary<string, string>
+            {
+                { "successResult", successResult },
+                { "errResult", errResult }
+            };
+
+            return Ok(JsonConvert.SerializeObject(responseMessage)); //200
+        }
+
+        //remove directory paths from string. Directories are represented as [path]
+        private string StripDirectoryPaths(string fullPath)
+        {
+            string strippedPath = "";
+            if (fullPath.IndexOf("[") == -1) { return fullPath; }
+            else { 
+                string[] strArray = fullPath.Split('[');
+                foreach (string item in strArray)
+                {
+                    if (item.IndexOf("]") == -1)
+                    {
+                        strippedPath += item;
+                    }
+                    else { 
+                        string clean = item.Remove(0, item.IndexOf("]")+1);
+                        strippedPath += clean;
+                    }
+                }
+                return strippedPath;
+            }
         }
 
         //POST: /run/Roslyn

@@ -30,10 +30,20 @@ function fileTreeToObject(usedByRun) {
 		if (usedByRun && getFileExtensionFromId(files[i].id) != ".csproj"
 						&& getFileExtensionFromId(files[i].id) != ".xml"
 						&& getFileExtensionFromId(files[i].id) != ".csproj") {
-			fileContent = getFileContents(files[i].id, true); //pack the files as plain text, for compile and run
+			if (getEditorForFile(files[i].id) != null) {	//user has file opened in editor, get text from there to reflect all changes
+				fileContent = getEditorForFile(files[i].id).innerText;
+			}
+			else {	//the file is closed, get it for storage
+				fileContent = getFileContents(files[i].id, true); //pack the files as plain text, for compile and run
+			}
 		}
 		else {
-			fileContent = getFileContents(files[i].id);		//pack the files as html, for storing on Save/Load
+			if (getEditorForFile(files[i].id) != null) {
+				fileContent = getEditorForFile(files[i].id).innerText;
+			}
+			else {
+				fileContent = getFileContents(files[i].id);		//pack the files as html, for storing on Save/Load
+			}
 		}
 
 		fileTreeMember = {
@@ -118,7 +128,7 @@ var clickedProject;
 function showLoadScreen() {
 	let fileContainer = document.getElementById("fileListContainer");
 
-	fileContainer.innerHTML = "";
+	fileContainer.innerText = "Loading your projects list, please wait...";
 	document.getElementById("projDelWarnStretchBackground").style.display = "none";
 	document.getElementById("projDelWarn").style.display = "none";
 
@@ -142,6 +152,7 @@ function showLoadScreen() {
 		saveMicroservice.state = "running";
 		setIconForMicroservice("saveMicroservice", "running");
 		saveMicroservice.ping = saveMicroservice.accessedDate - startPing;
+		fileContainer.innerText = "";
 		//convert Json string representation into Json Array
 		return response.json();
 	}).then(response => {	//handle response payload
@@ -158,11 +169,11 @@ function showLoadScreen() {
 				clickedProject = loadMS.Name;
 			}
 		}
-	}).catch(error => {	//fail callback
+		}).catch(error => {	//fail callback
+		fileContainer.innerText = "Save/Load Microservice is down, try again later...";
 		if (error == "TypeError: NetworkError when attempting to fetch resource.") {
 			saveMicroservice.state = "down";
 			setIconForMicroservice("saveMicroservice", "down");
-			alert("Save microservice is down, try again later...");
 		}
 	});
 

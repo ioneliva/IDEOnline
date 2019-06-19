@@ -299,10 +299,10 @@ function updateLineNumbering(count) { //count is an optional parameter
 	if (count) {	//parameter passed, representing addition or substraction of lines
 		if (count > 0) {		//add count lines
 			let brElement = document.createElement("BR"),
-				obj = document.createTextNode("2");
+				obj = document.createTextNode("1");
 
 			if (!lineNumbering.firstChild) {
-				lineNumbering.appendChild(document.createTextNode("1"));
+				lineNumbering.appendChild(document.createTextNode("0"));
 				lineNumbering.appendChild(document.createElement("BR"));
 			}
 			else {

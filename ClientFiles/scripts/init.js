@@ -57,6 +57,9 @@ function setDefaultValues() {
 	dragElement(document.getElementById("toolbar"));
 	dragElement(document.getElementById("solutionWindow"));
 	dragElement(document.getElementById("loadFileSelectorWindow"));
+	dragElement(document.getElementById("runResults"));
+	//hide elements following a page refresh
+	document.getElementById("runResults").style.display="none";
 	//servers warm-up
 	warmUpMicroservices();
 }
