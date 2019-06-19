@@ -95,6 +95,7 @@ namespace WordColorMicroservice_1.Modules
             }
 
             //split de composite word into word+delimiter, construct the span <word><delimiter> structure
+            int id = 0;
             for (int i = 0; i < compositeWord.Length; i++)
             {
                 if ((char.IsLetter(compositeWord[i]) || (char.IsNumber(compositeWord[i])))) //alphanumerc char
@@ -108,7 +109,7 @@ namespace WordColorMicroservice_1.Modules
                         {
                             wordColor = Resources.Colors.BLUE;
                         }
-                        ret += "<span id=" + (id++) + " style=\"color:" + wordColor + "\">" + word + "</span>";
+                        ret += "<span id=" + id++ + " style=\"color:" + wordColor + "\">" + word + "</span>";
                         wordColor = Resources.Colors.BLACK;
                     }
                 }
@@ -120,7 +121,7 @@ namespace WordColorMicroservice_1.Modules
                     }
                     if (word != "") //word is empty if the delimiter is first in the composite word
                     {
-                        ret += "<span id=" + (id++) + " style=\"color:" + wordColor + "\">" + word + "</span>";
+                        ret += "<span id=" + id++ + " style=\"color:" + wordColor + "\">" + word + "</span>";
                         wordColor = Resources.Colors.BLACK;
                     }
                     //adding the delimiter to the span structure
@@ -129,7 +130,7 @@ namespace WordColorMicroservice_1.Modules
                     {
                         delimiterColor = Resources.Colors.GREEN;
                     }
-                    ret += "<span id=" + (id++) + " style=\"color:" + delimiterColor + "\">" + delimiter + "</span>";
+                    ret += "<span id=" + id++ + " style=\"color:" + delimiterColor + "\">" + delimiter + "</span>";
                     delimiterColor = Resources.Colors.BLACK;
 
                     //getting ready for the next word from the composite

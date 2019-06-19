@@ -169,7 +169,7 @@ function showLoadScreen() {
 				clickedProject = loadMS.Name;
 			}
 		}
-		}).catch(error => {	//fail callback
+	}).catch(error => {	//fail callback
 		fileContainer.innerText = "Save/Load Microservice is down, try again later...";
 		if (error == "TypeError: NetworkError when attempting to fetch resource.") {
 			saveMicroservice.state = "down";

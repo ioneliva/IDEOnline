@@ -42,6 +42,30 @@
 			"UpstreamHttpMethod": [ "Get", "Post" ]
 		},
 		{
+			"DownstreamPathTemplate": "/statistics/repairsPing",
+			"DownstreamScheme": "http",
+			"DownstreamHostAndPorts": [
+				{
+					"Host": "localhost",
+					"Port": 5008
+				}
+			],
+			"UpstreamPathTemplate": "/statistics/repairsPing",
+			"UpstreamHttpMethod": [ "Get" ]
+		},
+		{
+			"DownstreamPathTemplate": "/largeText/colorText",
+			"DownstreamScheme": "http",
+			"DownstreamHostAndPorts": [
+				{
+					"Host": "localhost",
+					"Port": 5008
+				}
+			],
+			"UpstreamPathTemplate": "/largeText/colorText",
+			"UpstreamHttpMethod": [ "Post" ]
+		},
+		{
 			"DownstreamPathTemplate": "/users",
 			"DownstreamScheme": "http",
 			"DownstreamHostAndPorts": [

@@ -49,6 +49,35 @@ var undoMicroservice = {
 		});
 	}
 };
+var wordRepairMicroservice = {
+	name: "wordRepairMicroservice",
+	about: "this microservice processes large text. It's basically a 'heavy duty' word coloring",
+	state: "down",
+	accessLevel: "no login required, you can access all data on this server",
+	serverStartDate: null,
+	accessedDate: null,
+	warmupPing: 0,
+	ping: 0,
+	whenDown: "you will have limited use over paste, lag control and scaffolding functionalities",
+	sendPing: function () {
+		let startTime = new Date();
+		fetch(apiGateway + "/statistics/repairsPing", {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		}).then(response => response.json()
+		).then(response => {
+			wordRepairMicroservice.warmupPing = new Date() - startTime;
+			wordRepairMicroservice.state = "running";
+			wordRepairMicroservice.serverStartDate = response.serverStart;
+		}).catch(error => {
+			if (error == "TypeError: NetworkError when attempting to fetch resource.") {
+				wordRepairMicroservice.state = "down";
+			}
+		});
+	}
+};
 var loginMicroservice = {
 	name: "loginMicroservice",
 	about: "this microservice handles all login functionality, as well as security token distribution",
@@ -175,6 +204,7 @@ var scaffoldingMicroservice = {
 //warm-up the microservice(auto stores data into RAM and cache, makes further requests a lot faster)
 function warmUpMicroservices() {
 	wordColorMicroservice.sendPing();
+	wordRepairMicroservice.sendPing();
 	undoMicroservice.sendPing();
 	loginMicroservice.sendPing();
 	saveMicroservice.sendPing();
