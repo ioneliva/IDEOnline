@@ -2,7 +2,6 @@
 using Nancy.Extensions;
 using Nancy.IO;
 using Newtonsoft.Json.Linq;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace DoUndoMicroservice.Modules

@@ -95,7 +95,6 @@ namespace WordColorMicroservice_1.Modules
             }
 
             //split de composite word into word+delimiter, construct the span <word><delimiter> structure
-            int id = 0;
             for (int i = 0; i < compositeWord.Length; i++)
             {
                 if ((char.IsLetter(compositeWord[i]) || (char.IsNumber(compositeWord[i])))) //alphanumerc char

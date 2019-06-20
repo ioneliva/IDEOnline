@@ -3,10 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27004.2009
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WordColorMicroservice", "WordColorMicroservice\WordColorMicroservice.csproj", "{2A7817CC-5D8E-44D1-A6B3-6569C1F6EEC9}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DoUndoMicroservice", "DoUndoMicroservice\DoUndoMicroservice.csproj", "{E0E86DDB-9EC8-4888-A74B-2C54BD2D83A9}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ClientFiles", "ClientFiles", "{483694DC-E289-4F78-8A1B-1B83B9260917}"
 	ProjectSection(SolutionItems) = preProject
 		ClientFiles\clientPage.html = ClientFiles\clientPage.html
@@ -48,8 +44,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{699E
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "APIGateway", "APIGateway\APIGateway.csproj", "{E8EBE6AD-43C0-44C5-952C-EBA2B3033F08}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WordColorMicroservice_1", "WordColorMicroservice_1\WordColorMicroservice_1.csproj", "{31E1E858-47AD-4564-B651-4137B1870EF1}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LoginMicroservice", "LoginMicroservice\LoginMicroservice.csproj", "{CCBA4883-53F3-42F6-A5A5-F480C43FAAB5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{14330B24-1AE7-4218-9B69-783A76C31C37}"
@@ -63,7 +57,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RunMicroservice", "RunMicro
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScaffoldingMicroservice", "ScaffoldingMicroservice\ScaffoldingMicroservice.csproj", "{578D5A61-F433-4E36-90FB-3FD21F338E83}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ColoringRepairsMicroservice", "ColoringRepairsMicroservice\ColoringRepairsMicroservice.csproj", "{6BDFC027-A473-4522-8CC0-64C0F6106518}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ColoringRepairsMicroservice", "ColoringRepairsMicroservice\ColoringRepairsMicroservice.csproj", "{6BDFC027-A473-4522-8CC0-64C0F6106518}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WordColorMicroservice", "WordColorMicroservice\WordColorMicroservice.csproj", "{7C5CA764-D586-4E4B-869E-514DB95514CA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WordColorMicroservice_1", "WordColorMicroservice_1\WordColorMicroservice_1.csproj", "{9B9D7B1A-025B-40D9-AEFC-7E0D8B1E5A0D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DoUndoMicroservice", "DoUndoMicroservice\DoUndoMicroservice.csproj", "{D982B3BD-72B1-49D2-836C-DA69D481C3B8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -71,22 +71,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{2A7817CC-5D8E-44D1-A6B3-6569C1F6EEC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2A7817CC-5D8E-44D1-A6B3-6569C1F6EEC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2A7817CC-5D8E-44D1-A6B3-6569C1F6EEC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2A7817CC-5D8E-44D1-A6B3-6569C1F6EEC9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E0E86DDB-9EC8-4888-A74B-2C54BD2D83A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E0E86DDB-9EC8-4888-A74B-2C54BD2D83A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E0E86DDB-9EC8-4888-A74B-2C54BD2D83A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E0E86DDB-9EC8-4888-A74B-2C54BD2D83A9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E8EBE6AD-43C0-44C5-952C-EBA2B3033F08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E8EBE6AD-43C0-44C5-952C-EBA2B3033F08}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E8EBE6AD-43C0-44C5-952C-EBA2B3033F08}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E8EBE6AD-43C0-44C5-952C-EBA2B3033F08}.Release|Any CPU.Build.0 = Release|Any CPU
-		{31E1E858-47AD-4564-B651-4137B1870EF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{31E1E858-47AD-4564-B651-4137B1870EF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{31E1E858-47AD-4564-B651-4137B1870EF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{31E1E858-47AD-4564-B651-4137B1870EF1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CCBA4883-53F3-42F6-A5A5-F480C43FAAB5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CCBA4883-53F3-42F6-A5A5-F480C43FAAB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CCBA4883-53F3-42F6-A5A5-F480C43FAAB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -107,6 +95,18 @@ Global
 		{6BDFC027-A473-4522-8CC0-64C0F6106518}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6BDFC027-A473-4522-8CC0-64C0F6106518}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6BDFC027-A473-4522-8CC0-64C0F6106518}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7C5CA764-D586-4E4B-869E-514DB95514CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C5CA764-D586-4E4B-869E-514DB95514CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C5CA764-D586-4E4B-869E-514DB95514CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C5CA764-D586-4E4B-869E-514DB95514CA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B9D7B1A-025B-40D9-AEFC-7E0D8B1E5A0D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B9D7B1A-025B-40D9-AEFC-7E0D8B1E5A0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B9D7B1A-025B-40D9-AEFC-7E0D8B1E5A0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B9D7B1A-025B-40D9-AEFC-7E0D8B1E5A0D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D982B3BD-72B1-49D2-836C-DA69D481C3B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D982B3BD-72B1-49D2-836C-DA69D481C3B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D982B3BD-72B1-49D2-836C-DA69D481C3B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D982B3BD-72B1-49D2-836C-DA69D481C3B8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
