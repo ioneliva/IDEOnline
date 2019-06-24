@@ -6,6 +6,7 @@ getEditor().addEventListener("keyup", keyUp);
 //on key up
 function keyUp(e) {
 	let editor = getEditor(),
+		file = getFileIdFromEditor(editor.id),
 		c = readMyPressedKey(e);
 
 	//delimiter keys like (/*;backspace, etc.. or keys that trigger cursor movement like arrow keys or Home,End,PgUp, etc
@@ -53,6 +54,8 @@ function keyUp(e) {
 				} else {
 					setCursorPosition(parseInt(wordColoringMS.position));
 				}
+				//signal the file this editor belongs is no longer uncolored
+				markAsColored(file.id);
 			}
 			//post the current state to undo/redo microservice
 			let currentState = editor.innerHTML;

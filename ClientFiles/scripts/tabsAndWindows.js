@@ -20,6 +20,10 @@ function getEditorForFile(fileId) {		//input id= "123.cs_Parent"
 	let editorObject = document.getElementById(fileId + "_editor");
 	return editorObject;			//output object representing the editor linked to the file id
 }
+function getFileIdFromEditor(editorId) {		//input editor.id
+	let _charIndex = editorId.lastIndexOf("_");
+	return editorId.slice(0, _charIndex);		//output file.id
+}
 function getFileExtensionFromId(fileId) {
 	let _charIndex = fileId.lastIndexOf("_"),
 		pointChar = fileId.indexOf("."),
@@ -102,8 +106,8 @@ function attachNewEditorFor(tab) {
 	let fileId = getFileIdFromTabId(tab.id);
 	let contents = getFileContents(fileId);
 	if (contents != "") {
-		if (getFileExtensionFromId(fileId) != ".xml" && getFileExtensionFromId(fileId) != ".csproj") {
-			newEditor.innerHTML = contents;									//TODO: solve problem here. Text is not colored and <> are getting cut out
+		if (contentIsColored(fileId)) {
+			newEditor.innerHTML = contents;
 		}
 		else {
 			newEditor.innerText = contents;
@@ -220,12 +224,7 @@ function closeTab(tab) {
 	editor.removeEventListener("paste", handlePaste);
 	//save contents of editor for future opening of it in this session
 	let fileId = getFileIdFromTabId(tab.id);
-	if(getFileExtensionFromId(fileId) != ".xml" && getFileExtensionFromId(fileId) != ".csproj") {
-		saveFileForSession(getFileIdFromTabId(tab.id), editor.innerHTML);
-	}
-	else {
-		saveFileForSession(getFileIdFromTabId(tab.id), editor.innerText);
-	}
+	saveFileForSession(getFileIdFromTabId(tab.id), editor.innerHTML);
 	//remove attached editor
 	editor.parentElement.removeChild(editor);
 	//signal solution window this tab is closed

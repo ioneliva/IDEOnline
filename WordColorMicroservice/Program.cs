@@ -10,6 +10,7 @@ namespace WordColorMicroservice
         {
             var config = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
+                .AddCommandLine(args)
                 .AddJsonFile("hosting.json", optional: false, reloadOnChange: true)
                 .Build();
 

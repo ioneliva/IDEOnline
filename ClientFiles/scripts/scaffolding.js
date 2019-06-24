@@ -40,16 +40,18 @@ function requestScaffoldFromMicroservice(scaffoldName, projectName) {
 				attachFileToParent(fileStructure, document.getElementById(loadMS.Parent));
 				//save the content for files
 				if (loadMS.Content != "") {
-					saveFileForSession(loadMS.Name, loadMS.Content);
+					//color incomming content and save it to file
+					colorLargeTextToFile(projectLang, loadMS.Name, loadMS.Content);
 				}
 			}
 		}
 		prepareEditorUI();
 	}).catch(error => {	//fail callback
-		if (error == "TypeError: NetworkError when attempting to fetch resource.") {
+		if (error == "TypeError: NetworkError when attempting to fetch resource." ||
+			error == "SyntaxError: JSON.parse: unexpected end of data at line 1 column 1 of the JSON data") {
 			scaffoldingMicroservice.state = "down";
 			setIconForMicroservice("scaffoldingMicroservice", "down");
-			alert("Scaffolding microservice is down, try again later...");
+			alert("Scaffolding microservice is down, try an empty project instead?");
 		}
 	});
 }
@@ -80,5 +82,5 @@ function createEmptyProject(projectName, optionalFile) {
 //create project from template
 function createTemplateProject(scaffold, projectName) {
 	requestScaffoldFromMicroservice(scaffold, projectName);
-	prepareEditorUI();
+	//prepareEditorUI();
 }

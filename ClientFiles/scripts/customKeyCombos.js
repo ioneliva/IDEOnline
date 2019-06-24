@@ -1,6 +1,4 @@
-getEditor().addEventListener("keydown", triggerOnDownCombos);
-getEditor().addEventListener("cut", handleCut);
-getEditor().addEventListener("paste", handlePaste);
+//the listeners for these functions are defined in tabsAndWindows.js, on attachNewEditorFor(tab)
 
 function triggerOnDownCombos(e) {
 	let c = readMyPressedKey(e);
@@ -128,7 +126,31 @@ function handleCut(e) {
 	}
 }
 
+//paste function overload
 function handlePaste() {
-	//not implemented yet. We set it so it doesn't destroy the line numbering at least
-	updateLineNumbering();
+	setTimeout(function () { //make the execution wait for 1 milisecond to get the results from paste
+		let editor = getEditor();
+
+		//pasted content can come either in text format or part of a html document. To get consistency when pasted
+		//alongside with existing text, we convert the inner line breaks to "\n"'s and transmit as raw text
+		editor.innerHTML = translateNewLinesIntoText(editor.innerHTML);
+		//color the inner text of the entire editor
+		getColoredTextFor(projectLang, editor.innerText).then(response => {
+			return response.json();
+		}).then(response => {
+			editor.innerHTML = response.parsedText;
+			updateLineNumbering();
+		}).catch(error => {
+			if (error == "TypeError: NetworkError when attempting to fetch resource.") {
+				wordRepairMicroservice.state = "down";
+				setIconForMicroservice("wordRepairMicroservice", "down");
+			}
+		});
+
+	},1);
+}
+
+//transform <br> elements into \n
+function translateNewLinesIntoText(htmlText) {
+	return htmlText.replace(/<br\s*[\/]?>/gi, "\n");
 }

@@ -54,7 +54,7 @@ function fileTreeToObject(usedByRun) {
 		};
 		fileTree.push(fileTreeMember);
 	}
-
+	//console.log(JSON.stringify(fileTree));
 	return fileTree;
 }
 
@@ -332,8 +332,8 @@ function getTextFromHtmlContent(htmlContent) {
 	return temp.textContent;
 }
 
-//save one file content for the session
-function saveFileForSession(fileId, fileContent) {
+//save one file content for the session. The 3rd parameter signals the content is saved as uncolored text
+function saveFileForSession(fileId, fileContent, rawText) {
 	//remove last saved content for this file
 	for (let i = 0; i < projectFilesContents.length; i++) {
 		if (projectFilesContents[i].fileId == fileId) {
@@ -342,7 +342,12 @@ function saveFileForSession(fileId, fileContent) {
 		}
 	}
 	//add new content
-	projectFilesContents.push({ "fileId": fileId, "fileContent": fileContent, "fileContentTextOnly": getTextFromHtmlContent(fileContent)});
+	if (rawText) {
+		projectFilesContents.push({ "fileId": fileId, "fileContent": fileContent, "fileContentTextOnly": getTextFromHtmlContent(fileContent), "rawText": rawText });
+	}
+	else {
+		projectFilesContents.push({ "fileId": fileId, "fileContent": fileContent, "fileContentTextOnly": getTextFromHtmlContent(fileContent), "rawText": "" });
+	}
 }
 
 //get file contents by id. Second parameter is optional, signals to return text, not html
@@ -361,4 +366,27 @@ function getFileContents(fileId, textOnly) {
 		}
 	}
 	return ret;
+}
+
+//check if file content has been colored
+function contentIsColored(fileId) {
+	for (let i = 0; i < projectFilesContents.length; i++) {
+		if (projectFilesContents[i].fileId == fileId) {
+			if (projectFilesContents[i].rawText == "") {
+				return true;
+			} else {
+				return false;
+			}
+		}
+	}
+}
+
+//mark file contents as colored
+function markAsColored(fileId) {
+	for (let i = 0; i < projectFilesContents.length; i++) {
+		if (projectFilesContents[i].fileId == fileId) {
+			projectFilesContents[i].rawText = "";
+			return;
+		}
+	}
 }

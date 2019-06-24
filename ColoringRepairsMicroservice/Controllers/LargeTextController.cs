@@ -14,6 +14,9 @@ namespace ColoringRepairsMicroservice.Controllers
         [HttpPost("colorText")]
         public IActionResult ColorText([FromBody]RequestModel req)
         {
+            //replace all newlines strings with a placeholder (for example "\r\n"->"§", "\n"->"§", etc)
+            //the idea is to eliminate them and replace the lines with divs
+            req.Text = req.Text.Replace("\r\n", "§").Replace("\n", "§").Replace("\r", "§");
             string coloredText = MatchToColor(req.Text, req.Language);
 
             Dictionary<string, string> responsePair = new Dictionary<string, string>
@@ -27,8 +30,6 @@ namespace ColoringRepairsMicroservice.Controllers
         //input: large raw string, output: colored, parsed string
         private string MatchToColor(string largeText, string lang)
         {
-            string word = "", ret = "";
-            char delimiter;
             var regex = Resources.Delimiters.PRINTABLE;
             string wordColor = Resources.Colors.BLACK,
                    delimiterColor = Resources.Colors.BLACK;
@@ -47,46 +48,61 @@ namespace ColoringRepairsMicroservice.Controllers
                     break;
             }
 
-            //split the text into words+delimiters, construct the spans <word><delimiter>
             int id = 0;
+            char delimiter;
+            string word = "", line = "", ret = "";
             for (int i = 0; i < largeText.Length; i++)
             {
-                if ((char.IsLetter(largeText[i]) || (char.IsNumber(largeText[i])))) //alphanumerc char
+                //alphanumerc char
+                if ((char.IsLetter(largeText[i]) || char.IsNumber(largeText[i])))
                 {
                     word += largeText[i];
-                    //test if we reached the end of the text without encountering a delimiter
+                    //test if we reached the end of the text
                     if (i == largeText.Length - 1)
                     {
                         if (dictionary.Contains(word))
                         {
                             wordColor = Resources.Colors.BLUE;
                         }
-                        ret += "<span id=" + id++ + " style=\"color:" + wordColor + "\">" + word + "</span>";
-                        wordColor = Resources.Colors.BLACK;
+                        line += "<span id=" + id++ + " style=\"color:" + wordColor + "\">" + word + "</span>";
+                        ret += "<div>"+line+"</div>";
                     }
                 }
-                else
-                {       //reached a delimiter
-                    //adding the word(up to the encountered delimiter) to the span structure
+                else     //reached a delimiter
+                {      
+                    delimiter = largeText[i];
                     if (dictionary.Contains(word))
                     {
                         wordColor = Resources.Colors.BLUE;
                     }
                     if (word != "") //word is empty if the delimiter is first in the composite text
                     {
-                        ret += "<span id=" + id++ + " style=\"color:" + wordColor + "\">" + word + "</span>";
+                        line += "<span id=" + id++ + " style=\"color:" + wordColor + "\">" + word + "</span>";
                         wordColor = Resources.Colors.BLACK;
                     }
-                    //adding the delimiter to the span structure
-                    delimiter = largeText[i];
-                    if (Regex.Match(delimiter.ToString(), regex).Success)
+                    //delimiter is new line symbol
+                    if (largeText[i].ToString() == "§")
                     {
-                        delimiterColor = Resources.Colors.GREEN;
+                        if (line.Length == 0)
+                        {
+                            ret+= "<div><br></div>";
+                        }
+                        else
+                        {
+                            ret += "<div>"+line+"</div>";
+                            line = "";
+                        }
                     }
-                    ret += "<span id=" + id++ + " style=\"color:" + delimiterColor + "\">" + delimiter + "</span>";
-                    delimiterColor = Resources.Colors.BLACK;
-
-                    //getting ready for the next word from the composite text
+                    //delimiter is normal
+                    else
+                    {
+                        if (Regex.Match(delimiter.ToString(), regex).Success)
+                        {
+                            delimiterColor = Resources.Colors.GREEN;
+                        }
+                        line += "<span id=" + id++ + " style=\"color:" + delimiterColor + "\">" + delimiter + "</span>";
+                        delimiterColor = Resources.Colors.BLACK;
+                    }
                     word = "";
                 }
             }
