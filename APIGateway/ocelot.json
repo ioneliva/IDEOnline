@@ -162,6 +162,18 @@
 			"UpstreamHttpMethod": [ "Post" ]
 		},
 		{
+			"DownstreamPathTemplate": "/getExecutable",
+			"DownstreamScheme": "http",
+			"DownstreamHostAndPorts": [
+				{
+					"Host": "localhost",
+					"Port": 5020
+				}
+			],
+			"UpstreamPathTemplate": "/getExecutable",
+			"UpstreamHttpMethod": [ "Post" ]
+		},
+		{
 			"DownstreamPathTemplate": "/run/Roslyn",
 			"DownstreamScheme": "http",
 			"DownstreamHostAndPorts": [

@@ -247,9 +247,32 @@
 		<div id="runResults">
 			<div id="runResultsHeader" class="sectionHeader">Run results</div>
 			<div id="runResultsContent" class="boxWrapper"></div>
-			<input id="runResultsRequestDownload" type="submit" class="bigBtn" name="" value="Download executable">
-			<input id="runResultsClose" type="submit" class="bigBtn" name="" value="Ok, close this window">
+			<input id="runResultsRunBtn" type="submit" class="bigBtn" name="" value="Run">
+			<input id="runResultsRequestDownloadBtn" type="submit" class="bigBtn" name="" value="Download executable">
+			<input id="runResultsCloseBtn" type="submit" class="bigBtn" name="" value="Close this window">
+			<!--modal window used to get values for project downloads runtime details-->
+			<div id="selectEnvDetails" class="bigBtn">
+				<div id="selectEnvDetailsHeader">Select target OS:</div>
+				<br>
+				<label>I will run it on </label>
+				<select class="selectSystem">
+					<option value="win10-x64" selected>Windows 10 x64</option>
+					<option value="win10-x86" selected>Windows 10 x32</option>
+					<option value="win81-x64" selected>Windows 8.1 x64</option>
+					<option value="win81-x86" selected>Windows 8.1 x32</option>
+					<option value="win7-x64" selected>Windows 7 x64</option>
+					<option value="win7-x86" selected>Windows 7 x32</option>
+					<option value="linux-x64" selected>CentOS, Debian, Fedora, Ubuntu</option>
+					<option value="rhel-x64" selected>Linux RedHat</option>
+					<option value="osx.10.10-x64" selected>Mac Yosemite</option>
+					<option value="osx.10.12-x64" selected>Mac Sierra</option>
+					<option value="osx.10.14-x64" selected>Mac Mojave</option>
+				</select><br><br>
+				<input id="selectOSConfirmBtn" type="submit" class="bigBtn" name="" value="Ok">
+				<input id="selectOSCancelBtn" type="submit" class="bigBtn" name="" value="Cancel">
+			</div>
 		</div>
+
 	</div>
 
 	<!--scripts must load after the elements they are applied to-->
@@ -265,6 +288,7 @@
 	<script type="text/javascript" src="scripts/solutionExplorerUI.js"></script>
 	<script type="text/javascript" src="scripts/solutionExplorerUserDiagModals.js"></script>
 	<script type="text/javascript" src="scripts/solutionExplorerFunctionality.js"></script>
+	<script type="text/javascript" src="scripts/run.js"></script>
 	<script type="text/javascript" src="scripts/editorUtilities.js"></script>
 	<script type="text/javascript" src="scripts/customKeys.js"></script>
 	<script type="text/javascript" src="scripts/customKeyCombos.js"></script>

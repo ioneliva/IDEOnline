@@ -27,19 +27,21 @@ function fileTreeToObject(usedByRun) {
 		fileTree.push(fileTreeMember);
 	}
 	for (let i = 0; i < files.length; i++) {
-		if (usedByRun && getFileExtensionFromId(files[i].id) != ".csproj"
-						&& getFileExtensionFromId(files[i].id) != ".xml"
-						&& getFileExtensionFromId(files[i].id) != ".csproj") {
-			if (getEditorForFile(files[i].id) != null) {	//user has file opened in editor, get text from there to reflect all changes
+		if (usedByRun) {	//called for use in Run
+			if (getEditorForFile(files[i].id) != null && getEditorForFile(files[i].id).classList.contains("activeEditorWindow")) {	//file is opened in editor
+				console.log("using innerText of editor, for run purposes");
+				console.log("CONTENT=" + getEditorForFile(files[i].id).innerText);
 				fileContent = getEditorForFile(files[i].id).innerText;
 			}
 			else {	//the file is closed, get it for storage
+				console.log("getting raw text, for run purposes");
+				console.log("CONTENT=" + getFileContents(files[i].id, true));
 				fileContent = getFileContents(files[i].id, true); //pack the files as plain text, for compile and run
 			}
 		}
-		else {
+		else {		//called for use in Save/Load
 			if (getEditorForFile(files[i].id) != null) {
-				fileContent = getEditorForFile(files[i].id).innerText;
+				fileContent = getEditorForFile(files[i].id).innerHTML;
 			}
 			else {
 				fileContent = getFileContents(files[i].id);		//pack the files as html, for storing on Save/Load

@@ -7,8 +7,7 @@ document.getElementById("addFile").addEventListener("mousedown", createFile);
 document.getElementById("addDir").addEventListener("mousedown", createDirectory);
 document.getElementById("rename").addEventListener("mousedown", rename);
 document.getElementById("delete").addEventListener("mousedown", del);
-document.getElementById("run").addEventListener("mousedown", runProject);
-document.getElementById("toolbar_RunBtn").addEventListener("mousedown", runProject);
+//note: run functionality is defined separate, in run.js
 
 //file structure for solution explorer
 function createFileStructure(fileName, parentName) {
@@ -352,52 +351,4 @@ function doCloseProject() {
 	//the next 2 lines fire only when there is user interaction and nothing will happend otherwise
 	document.getElementById("UserOkBtn").removeEventListener("click", doCloseProject);
 	hideModal();
-}
-
-//run project
-function runProject() {
-	let runResultsWindow = document.getElementById("runResultsContent");
-
-	//show run results window
-	runResultsWindow.innerText = "please wait...compiling...";
-	document.getElementById("runResults").style.display = "block";
-	//block user from making another request for compile while the microservice is still processing his old one
-	document.getElementById("toolbar_RunBtn").classList.add("disabledBtn");
-	document.getElementById("run").classList.add("disabledBtn");
-
-	if (runMicroservice.state == "running") {
-		runMicroservice.state = "busy";
-		setIconForMicroservice("runMicroservice", "busy");
-	}
-	let startPing = new Date();
-	//swap the next commented line in to see Roslyn compiler work instead of the CLI
-	//fetch(apiGateway + "/run/Roslyn", {
-	fetch(apiGateway + "/run", {
-		method: 'POST',
-		body: JSON.stringify(fileTreeToObject(true)),	//this function is defined in saveLoad.js
-		headers: {
-			'Content-Type': 'application/json'
-		}
-	}).then(response => {	//success callback
-		//get statistical data about access data and ping
-		runMicroservice.accessedDate = new Date();
-		runMicroservice.state = "running";
-		setIconForMicroservice("runMicroservice", "running");
-		runMicroservice.ping = runMicroservice.accessedDate - startPing;
-		//enable elements that allow the user to make another run request
-		document.getElementById("toolbar_RunBtn").classList.remove("disabledBtn");
-		document.getElementById("run").classList.remove("disabledBtn");
-		return response.json();
-	}).then(response => {
-		runResultsWindow.innerText = response.successResult;
-		runResultsWindow.innerText += response.errResult;
-	}).catch(error => {	//fail callback
-		if (error == "TypeError: NetworkError when attempting to fetch resource.") {
-			runMicroservice.state = "down";
-			setIconForMicroservice("runMicroservice", "down");
-			runResultsWindow.innerText = "Compile/Run Microservice is down...\nTry again later";
-			document.getElementById("toolbar_RunBtn").classList.remove("disabledBtn");
-			document.getElementById("run").classList.remove("disabledBtn");
-		}
-	});
 }

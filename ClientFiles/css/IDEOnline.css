@@ -687,8 +687,8 @@
     left: 20%;
 }
 #runResults {
-    width: 450px;
-    height: 270px;
+    width: 515px;
+    height: 370px;
     top: 25%;
     left: 30%;
     border: 1px solid;
@@ -701,13 +701,41 @@
     z-index: 51;
     display: none;
 }
-#runResultsRequestDownload {
+#runResultsRunBtn {
+    font-weight: bolder;
     float: left;
     margin-left: 10px;
+    margin-right: 10px;
 }
-#runResultsClose {
+#runResultsRequestDownloadBtn {
     float: right;
     margin-right: 10px;
+}
+#selectEnvDetailsHeader {
+    padding: 1%;
+    z-index: 50;
+    background-color: #808080;
+    color: #fff;
+    user-select: none;
+    -moz-user-select: none;
+}
+#selectEnvDetails {
+    float: left;
+    margin-left: 10px;
+    position: absolute;
+    top: 30%;
+    left: 15%;
+    background: #fff;
+    z-index: 52;
+    display: none;
+}
+.selectSystem {
+    text-align: center;
+}
+#runResultsCloseBtn {
+    float: right;
+    margin-right: 10px;
+    margin-top: 10px;
 }
 
 #footer {
