@@ -28,14 +28,10 @@ function fileTreeToObject(usedByRun) {
 	}
 	for (let i = 0; i < files.length; i++) {
 		if (usedByRun) {	//called for use in Run
-			if (getEditorForFile(files[i].id) != null && getEditorForFile(files[i].id).classList.contains("activeEditorWindow")) {	//file is opened in editor
-				console.log("using innerText of editor, for run purposes");
-				console.log("CONTENT=" + getEditorForFile(files[i].id).innerText);
+			if (getEditorForFile(files[i].id) != null /*&& getEditorForFile(files[i].id).classList.contains("activeEditorWindow")*/) {	//file is opened in editor
 				fileContent = getEditorForFile(files[i].id).innerText;
 			}
 			else {	//the file is closed, get it for storage
-				console.log("getting raw text, for run purposes");
-				console.log("CONTENT=" + getFileContents(files[i].id, true));
 				fileContent = getFileContents(files[i].id, true); //pack the files as plain text, for compile and run
 			}
 		}
